@@ -1,0 +1,64 @@
+{% load static %}
+<DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Login</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+        
+        <link rel="stylesheet" href="{% static 'css/login.css' %}" type="text/css" />
+        
+        <script type="text/javascript">
+            function preventBack(){
+                window.history.forward()
+            };
+            setTimeout("preventBack()",0);
+                window.onunload=function(){
+                    null;
+                }
+        </script>
+     
+        
+    </head>
+    <body>
+        <div class="center">
+            <h1>Hamro Tuition</h1>
+            {% if messages %}
+            <div class="col-12">
+                {% for message in messages %}
+                {% if message.tags == 'error' %}
+                <div class="alert alert-danger text-center ">
+                    {{message }}
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+            {% endif %}
+            <form action="Login/" method="post">
+                {% csrf_token %}
+                <div class="txt_field">
+                    <input required type="email" name='email' >
+                    <span></span>
+                    <label>Email</label>
+                </div>
+                <div class="txt_field">
+                    <input required type="password" name='password'>
+                    <span></span>
+                    <label>Password</label>
+                </div>
+                
+                <div class="icheck">
+                    <input type="checkbox" id="remember">
+                    <label>Remember Me</label>
+                </div>
+                        
+                {% comment %} <div class="pass">Forgot Password?</div> {% endcomment %}
+                <input type="submit" value="Login">
+               
+            </form>
+        </div>
+
+    </body>
+</html>

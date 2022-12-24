@@ -1,0 +1,249 @@
+{% load static %}
+<aside class="main-sidebar sidebar-dark-info elevation-4">
+    {% if request.user.user_type == '1' %}
+    <a href="{% url 'admin_home_page' %}" class="brand-link"></a>
+    <a href="#" class="brand">
+        <span class="homeicon">
+            <ion-icon name="logo-apple-appstore"></ion-icon>
+        </span>
+        Admin Panel
+    </a>
+    <ul class="side-menu">
+        <li>
+            {% url 'admin_home_page' as admin_home_page %}
+            <a href="{{admin_home_page}}" class="nav-link {% if admin_home_page == request.path %} active {% endif %}">
+                <span class="icon">
+                    <ion-icon name="home-sharp"></ion-icon>
+                </span>
+                <span class="title">Home</span>
+            </a>
+         </li>
+        <li>
+            <a href="#">
+                <span class="icon">
+                    <ion-icon name="school-sharp"></ion-icon>
+                </span>
+                <span class="title">Class</span>
+                <span class="icon-right">
+                    <ion-icon name="caret-forward-sharp"></ion-icon>
+                </span>
+            </a>
+
+            <ul class="side-dropdown">
+                <li>
+                    {% url 'add_class' as add_class %}
+                    <a href="{{add_class}}" class="nav-link {% if add_class == request.path %} active {% endif %}">
+                        <span class="icon">
+                            <ion-icon name="add-circle-sharp"></ion-icon>
+                        </span>
+                        <span class="sub-title">Add Class</span>
+                    </a>   
+                </li>
+                <li>
+                    {% url 'manage_class' as manage_class %}
+                    <a href="{{manage_class}}"class="nav-link {% if manage_class == request.path %} active {% endif %}">
+                        <span class="icon">
+                            <ion-icon name="newspaper-sharp"></ion-icon>
+                        </span>
+                        <span class="sub-title">Manage Class</span>
+                    </a>   
+                </li>
+                
+            </ul>
+        </li>
+        <li>
+            <a href="#">
+                <span class="icon">
+                    <ion-icon name="apps"></ion-icon>
+                </span>
+                <span class="title">Section</span>
+                <span class="icon-right">
+                    <ion-icon name="caret-forward-sharp"></ion-icon>
+                </span>
+            </a>
+
+            <ul class="side-dropdown">
+                <li>
+                    <a href="#">
+                        <span class="icon">
+                            <ion-icon name="add-circle-sharp"></ion-icon>
+                        </span>
+                        <span class="sub-title">Add Section</span>
+                    </a>   
+                </li>
+                <li>
+                    <a href="#">
+                        <span class="icon">
+                            <ion-icon name="newspaper-sharp"></ion-icon>
+                        </span>
+                        <span class="sub-title">Manage Section</span>
+                    </a>   
+                </li>
+                
+            </ul>
+        </li>
+        <li>
+            <a href="#">
+                <span class="icon">
+                    <ion-icon name="apps-sharp"></ion-icon>
+                </span>
+                <span class="title">Subject</span>
+                <span class="icon-right">
+                    <ion-icon name="caret-forward-sharp"></ion-icon>
+                </span>
+            </a>
+
+            <ul class="side-dropdown">
+                <li>
+                    <a href="#">
+                        <span class="icon">
+                            <ion-icon name="add-circle-sharp"></ion-icon>
+                        </span>
+                        <span class="sub-title">Add Subject</span>
+                    </a>   
+                </li>
+                <li>
+                    <a href="#">
+                        <span class="icon">
+                            <ion-icon name="newspaper-sharp"></ion-icon>
+                        </span>
+                        <span class="sub-title">Manage Subject</span>
+                    </a>   
+                </li>
+            </ul>
+        </li>
+        <li>
+            <a href="#">
+                <span class="icon">
+                    <ion-icon name="person-sharp"></ion-icon>
+                </span>
+                <span class="title">Teacher</span>
+                <span class="icon-right">
+                    <ion-icon name="caret-forward-sharp"></ion-icon>
+                </span>
+            </a>
+
+            <ul class="side-dropdown">
+                <li>
+                    <a href="#">
+                        <span class="icon">
+                            <ion-icon name="add-circle-sharp"></ion-icon>
+                        </span>
+                        <span class="sub-title">Add Teacher</span>
+                    </a>   
+                </li>
+                <li>
+                    <a href="#">
+                        <span class="icon">
+                            <ion-icon name="newspaper-sharp"></ion-icon>
+                        </span>
+                        <span class="sub-title">Manage Teacher</span>
+                    </a>   
+                </li>
+                
+            </ul>
+        </li>
+        <li>
+            <a href="#">
+                <span class="icon">
+                    <ion-icon name="people-sharp"></ion-icon>
+                </span>
+                <span class="title">Student</span>
+                <span class="icon-right">
+                    <ion-icon name="caret-forward-sharp"></ion-icon>
+                </span>
+            </a>
+
+            <ul class="side-dropdown">
+                <li>
+                    <a href="#">
+                        <span class="icon">
+                            <ion-icon name="add-circle-sharp"></ion-icon>
+                        </span>
+                        <span class="sub-title">Add Student</span>
+                    </a>   
+                </li>
+                <li>
+                    <a href="#">
+                        <span class="icon">
+                            <ion-icon name="newspaper-sharp"></ion-icon>
+                        </span>
+                        <span class="sub-title">Manage Student</span>
+                    </a>   
+                </li>
+                
+            </ul>
+        </li>
+        <li>
+            <a href="#">
+                <span class="icon">
+                    <ion-icon name="book-sharp"></ion-icon>
+                </span>
+                <span class="title">Book</span>
+                <span class="icon-right">
+                    <ion-icon name="caret-forward-sharp"></ion-icon>
+                </span>
+            </a>
+
+            <ul class="side-dropdown">
+                <li>
+                    <a href="#">
+                        <span class="icon">
+                            <ion-icon name="add-circle-sharp"></ion-icon>
+                        </span>
+                        <span class="sub-title">Add Book</span>
+                    </a>   
+                </li>
+                <li>
+                    <a href="#">
+                        <span class="icon">
+                            <ion-icon name="newspaper-sharp"></ion-icon>
+                        </span>
+                        <span class="sub-title">Manage Book</span>
+                    </a>   
+                </li>
+                
+            </ul>
+        </li>
+        <li>
+            <a href="#">
+                <span class="icon">
+                    <ion-icon name="share-sharp"></ion-icon>
+                </span>
+                <span class="title">Testimonials</span>
+            </a>
+         </li>
+         <li>
+            <a href="#">
+                <span class="icon">
+                    <ion-icon name="chatbubbles-sharp"></ion-icon>
+                </span>
+                <span class="title">Feedback</span>
+            </a>
+         </li>
+         <li>
+            <a href="#">
+                <span class="icon">
+                    <ion-icon name="walk-sharp"></ion-icon>
+                </span>
+                <span class="title">Leave</span>
+            </a>
+         </li>
+         <li>
+            <a href="#">
+                <span class="icon">
+                    <ion-icon name="megaphone-sharp"></ion-icon>
+                </span>
+                <span class="title">Notice</span>
+            </a>
+         </li>
+
+    </ul>
+    <!-- /.content -->
+    {% block content %}
+
+    {% endblock content %}
+
+    {% endif %}
+    
+</aside> 

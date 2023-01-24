@@ -1,0 +1,217 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }}{% endblock title %}
+{% load static %}
+
+
+{% block content %}
+
+<main style="margin-top:-55px;margin-bottom:45px;">
+    <ul class="breadcrumbs"> 
+        <li>
+            <span class="color-indicator bg-primary"></span> News   
+        </li>
+        <li>
+            <span class="color-indicator bg-purple"></span> Events
+        </li>
+    </ul>
+</main>
+<div class="container">
+    {% comment %} <div id="input-nav" class="p-2">Home</div> {% endcomment %}
+
+    {% comment %} {% if request.user.user_type == '1' %}
+    <div class="manage-wrap">
+        <a class="btn btn-primary" href="{% url 'add_notice' %}"><i class="fas fa-plus"></i>Add New Post</a>
+    </div>
+    {% endif %} {% endcomment %}
+
+
+    <style>
+        .color-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+        }
+
+        .bg-purple {
+            background-color: #6f42c1;
+        }
+    </style>
+
+    {% comment %} <div class="title">News & Events</div> {% endcomment %}
+
+    
+    <style>
+        .card-header-ne {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background:pink;
+        }
+
+        .card-header-ne .title {
+            vertical-align: middle;
+        }
+
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            }
+            
+            {% comment %} .col-md-4 {
+            flex: 1;
+            margin-bottom: 16px;
+            } {% endcomment %}
+
+            .col-md-4 {
+                width: 33.33%; /* or width: calc(100%/3); /
+                padding: 0 15px;
+                margin-bottom: 16px; / or margin-bottom: 1rem; */
+                }
+                
+                @media only screen and (max-width: 768px) {
+                .col-md-4 {
+                width: 100%;
+                margin-bottom: 16px; /* or margin-bottom: 1rem; */
+                }
+                }
+                
+                .mb-4 {
+                margin-bottom: 1.5rem;
+                }
+                
+                
+                
+                
+                
+            
+            .bg-white {
+            background-color: white;
+            }
+            
+            .border {
+            border: 1px solid #ccc;
+            }
+            
+            {% comment %} .card-header-ne {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            } {% endcomment %}
+            
+            .news {
+            background-color: #007bff;
+            color: white;
+            }
+            
+            .events {
+            background-color: #6f42c1;
+            color: white;
+            }
+            
+            .p-2 {
+            padding: 16px;
+            }
+            
+            .dropdown {
+            position: relative;
+            }
+            
+            .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            display: none;
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            }
+            
+            .dropdown-item {
+            display: block;
+            padding: 8px 16px;
+            text-decoration: none;
+            color: #6c757d;
+            }
+            
+            .dropdown-item:hover {
+            background-color: #f1f1f1;
+            }
+            
+            .date-wrapper {
+            display: flex;
+            align-items: center;
+            padding: 8px 16px;
+            font-size: 12px;
+            color: #6c757d;
+            background:#efeff5;
+            }
+            
+            .date-wrapper ion-icon {
+            margin-right: 8px;
+            }
+            
+            @media only screen and (max-width: 768px) {
+            .col-md-4 {
+            flex-basis: 100%;
+            }
+            }
+
+
+
+
+
+    </style>
+    {% if items %}
+    <div class="row">
+        {% for item in items %}
+        <div class="col-md-4 mb-4">
+            <div class="bg-white border">
+                <div class="card-header-ne {% if item.posted_as == 'News' %}news{% else %}events{% endif %} p-2">
+                    <span class="p-0">
+                        {{ item.title|title }}
+                    </span>
+                    {% if request.user.user_type == '1' %}
+                    <div class="dropdown">
+                        <button class="btn btn-sm" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
+                            aria-expanded="false">
+                            <ion-icon name="reorder-four-sharp"></ion-icon>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+                            <a class="dropdown-item" href="{% url 'edit_notice' pk=item.id %}">
+                                <ion-icon name="create-sharp"></ion-icon>
+                                Edit
+                            </a>
+                            <a class="dropdown-item" href="{% url 'delete_notice' pk=item.id %}"onclick="return confirm('Are you sure you want to delete this notice ?')">
+                                <ion-icon name="trash-sharp"></ion-icon> 
+                                Delete
+                            </a>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="p-2">{{ item.summary }}</div>
+
+                <div class="date-wrapper">
+                    <ion-icon name="calendar-sharp"></ion-icon>
+
+                    {{ item.updated_date|timesince }} ago
+                </div>
+
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% comment %} {% else %}
+    <p>
+        <i class="far fa-frown fa-2x"></i>So empty.
+    </p> {% endcomment %}
+
+    {% endif %}
+
+</div>
+
+{% endblock content %}

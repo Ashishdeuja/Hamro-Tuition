@@ -23,7 +23,9 @@ class CustomUserForm(FormSettings):
         'password': forms.PasswordInput(),
     }
     profile_pic = forms.ImageField()
-
+    dob=forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
+    phone_number=forms.CharField(required=True)
+    
     def __init__(self, *args, **kwargs):
         super(CustomUserForm, self).__init__(*args, **kwargs)
 
@@ -52,7 +54,7 @@ class CustomUserForm(FormSettings):
 
     class Meta:
         model = CustomUser
-        fields = ['first_name', 'last_name', 'email', 'gender',  'password','profile_pic', 'address' ]
+        fields = ['first_name', 'last_name', 'email', 'gender',  'password','profile_pic', 'address','dob','phone_number' ]
 
 class AdminForm(CustomUserForm):
     def __init__(self, *args, **kwargs):
@@ -70,3 +72,70 @@ class ClassForm(FormSettings):
     class Meta:
         fields = ['level']
         model = Level
+        
+class SectionForm(FormSettings):
+    def __init__(self, *args, **kwargs):
+        super(SectionForm, self).__init__(*args, **kwargs)
+    
+    class Meta:
+        fields=['section']
+        model=Section    
+    
+class SubjectForm(FormSettings):
+
+    def __init__(self, *args, **kwargs):
+        super(SubjectForm, self).__init__(*args, **kwargs)
+
+    class Meta:
+        model = Subject
+        fields = ['code','subject_name', 'marks', 'level']
+
+class SessionForm(FormSettings):
+    def __init__(self, *args, **kwargs):
+        super(SessionForm, self).__init__(*args, **kwargs)
+
+    class Meta:
+        model = Session
+        fields = '__all__'
+        widgets = {
+            'year': DateInput(attrs={'type': 'date'}),
+        }
+
+
+class TeacherForm(CustomUserForm):
+    def __init__(self, *args, **kwargs):
+        super(TeacherForm, self).__init__(*args, **kwargs)
+
+    class Meta(CustomUserForm.Meta):
+        model = Teacher
+        fields = CustomUserForm.Meta.fields + \
+            ['salary','level','subject' ]
+
+class StudentForm(CustomUserForm):
+    def __init__(self, *args, **kwargs):
+        super(StudentForm, self).__init__(*args, **kwargs)
+    
+    class Meta(CustomUserForm.Meta):
+        model=Student
+        fields = CustomUserForm.Meta.fields + \
+            ['fathers_name','fathers_number','mothers_name','mothers_number','level', 'session','section']
+
+class BookForm(FormSettings):
+    def __init__(self, *args, **kwargs):
+        super(BookForm, self).__init__(*args, **kwargs)
+        
+    class Meta:
+        model = Book
+        fields = ['title', 'author', 'publisher', 'year', 'desc','cover','pdf']        
+
+
+class NewsAndEventsForm(forms.ModelForm):
+    class Meta:
+        model = NewsAndEvents
+        fields = ['title', 'summary', 'posted_as']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['title'].widget.attrs.update({'class': 'form-control'})
+        self.fields['summary'].widget.attrs.update({'class': 'form-control'})
+        self.fields['posted_as'].widget.attrs.update({'class': 'form-control'})

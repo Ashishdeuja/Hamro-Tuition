@@ -9,3 +9,6 @@ class UserModel(UserAdmin):
 
 
 admin.site.register(CustomUser, UserModel)
+admin.site.register(Teacher)
+admin.site.register(Level)
+admin.site.register(Student)

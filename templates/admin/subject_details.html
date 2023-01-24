@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block page_title %}{{page_title}}{% endblock page_title %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-lg-7">
+        <div class="card">
+            <div class="card-header">
+                 <i class="fa fa-align-justify"></i> Details
+            </div>
+            <div class="card-body">
+                <tbody>
+                    <tr>
+                        <td>Subject Code: {{ subject_details.code }}</td>
+                        <br>
+                        <td>Subject Name: {{ subject_details.subject_name }}</td>
+                        <br>
+                        <td>Subject Marks: {{ subject_details.marks }}</td>
+                        <br>
+                        <td>Class: {{ subject_details.level }}</td>
+                    </tr>
+                </tbody>
+            </div>
+            
+        </div>
+    </div>
+    
+</div>
+
+{% endblock %}
+

@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% comment %} {% block title %}{{ title }}{% endblock title %} {% endcomment %}
+{% comment %} {% load crispy_forms_tags %} {% endcomment %}
+{% block page_title %}{{page_title}}{% endblock page_title %}
+{% load static %}
+
+{% block content %}
+{% comment %} <div id="input-nav"><a href="{% url 'view_notice' %}" class="primary1">Home</a> <i>&rsaquo;</i> Add Item & Update</div>
+<br>
+
+<div class="row">
+    <div class="col-md-6 mx-auto">
+        <div class="card pb-3">
+            <p class="form-title">Item Post & Update Form</p>
+            <div class="container"><br>
+                <form action="" method="POST">{% csrf_token %}
+                    {{ form }}
+                    <input class="btn btn-primary" type="submit" value="POST">
+                    <a class="btn btn-danger" href="{% url 'view_notice' %}" style="float: right;">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div> {% endcomment %}
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card card-dark">
+                    <div class="card-header">
+                        <h3 class="card-title">{{page_title}}</h3>
+                    </div>
+
+                    {% include "login/form.html" with messages=messages  form=form button_text="Add Notice"%}
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock content %}

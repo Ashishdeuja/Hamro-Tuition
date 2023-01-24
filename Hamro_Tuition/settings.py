@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'administratior',
+    'widget_tweaks',
+    'teacher'
 ]
 
 MIDDLEWARE = [
@@ -48,6 +50,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # 'administratior.middleware.LoginCheckMiddleWare',
 ]
 
 ROOT_URLCONF = 'Hamro_Tuition.urls'
@@ -77,7 +80,8 @@ WSGI_APPLICATION = 'Hamro_Tuition.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'hamro_tuition.db',
+        # 'NAME': 'Hamro_Tuition.db',
+        'NAME': 'tuition_hamro.db',
         'USER': 'postgres',
         'PASSWORD': '12345',
         'HOST': 'localhost',
@@ -144,11 +148,8 @@ AUTHENTICATION_BACKENDs = ['administratior.EmailBackend.EmailBackend']
 
 
 
-# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 STATICFILES_DIRS = [
-   "static",
+   os.path.join(BASE_DIR, 'static')
 ]
-
-# prod_db = dj_database_url.config(conn_max_age=500)
-# DATABASES['default'].update(prod_db)

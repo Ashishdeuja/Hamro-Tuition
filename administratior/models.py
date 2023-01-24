@@ -1,3 +1,4 @@
+import datetime
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import UserManager
 from django.dispatch import receiver
@@ -40,6 +41,8 @@ class CustomUser(AbstractUser):
     gender = models.CharField(max_length=1, choices=GENDER)
     profile_pic = models.ImageField()
     address = models.TextField()
+    dob = models.DateField(null=True)
+    phone_number = models.CharField(max_length=25,default="")
     fcm_token = models.TextField(default="")  # For firebase notifications
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -66,48 +69,87 @@ class Level(models.Model):
     
 class Section(models.Model):
     section=models.CharField(max_length=22)
-    level=models.ForeignKey(Level, on_delete=models.CASCADE)
+    # level=models.ForeignKey(Level, on_delete=models.CASCADE)
     
     def __str__(self):
         return self.section
     
-    
+
+class Session(models.Model):
+    year = models.DateField()
+
+    def __str__(self):
+        return str(self.year) 
+ 
 class Subject(models.Model):
     code=models.CharField(max_length=10)
-    name=models.CharField(max_length=25)
+    subject_name=models.CharField(max_length=25)
     marks=models.IntegerField()
     level=models.ForeignKey(Level, on_delete=models.CASCADE)
     
     def __str__(self):
-        return self.name
+        return self.subject_name
     
 
 class Teacher(models.Model):
-    name=models.CharField(max_length=50)
-    email=models.EmailField()
-    address=models.CharField(max_length=35)
-    phone_number= models.CharField(max_length=25)
-    gender=models.CharField(max_length=15)
-    education=models.CharField(max_length=35)
-    level=models.ForeignKey(Level,on_delete=models.CASCADE)
+    admin = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+    # admin=None
+    salary=models.IntegerField(null=True)
+    level=models.ForeignKey(Level,on_delete=models.DO_NOTHING, null=True, blank=False)
+    subject=models.ForeignKey(Subject,on_delete=models.DO_NOTHING, null=True)
     
     def __str__(self):
-        return self.name
+        return self.admin.first_name + " " + self.admin.last_name
     
 class Student(models.Model):
-    name=models.CharField(max_length=40)
-    email=models.EmailField()
-    phone_number=models.CharField(max_length=15)
-    address=models.CharField(max_length=30)
-    gender=models.CharField(max_length=10)
-    level=models.ForeignKey(Level, on_delete=models.CASCADE)
-    section=models.ForeignKey(Section, on_delete=models.CASCADE)
+    admin = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+    fathers_name=models.CharField(max_length=100)
+    fathers_number = models.BigIntegerField(null=True)
+    mothers_name = models.CharField(max_length=100)
+    mothers_number = models.BigIntegerField(null=True)
+    level=models.ForeignKey(Level, on_delete=models.CASCADE, null=True, blank=False)
+    section=models.ForeignKey(Section, on_delete=models.CASCADE, null=True)
+    session = models.ForeignKey(Session, on_delete=models.DO_NOTHING, null=True)
     
     def __str__(self):
-        return self.name
+        return self.admin.first_name + " " + self.admin.last_name
     
     
+
+class Book(models.Model):
+    title = models.CharField(max_length=100)
+    author = models.CharField(max_length=100)
+    year = models.CharField(max_length=100)
+    publisher = models.CharField(max_length=200)
+    desc = models.CharField(max_length=1000)
+    pdf = models.FileField(upload_to='bookapp/pdfs/')
+    cover = models.ImageField(upload_to='bookapp/covers/', null=True, blank=True)
+
+    def __str__(self):
+        return self.title
+
+    def delete(self, *args, **kwargs):
+        self.pdf.delete()
+        self.cover.delete()
+        super().delete(*args, **kwargs) 
+
+class NewsAndEvents(models.Model):
+    NEWS = "News"
+    EVENTS = "Event"
+
+    POST = (
+        (NEWS, "News"),
+        (EVENTS, "Event"),
+    )
     
+    title = models.CharField(max_length=200, null=True)
+    summary = models.TextField(max_length=500, blank=True, null=True)
+    posted_as = models.CharField(choices=POST, max_length=10)
+    updated_date = models.DateTimeField(auto_now=True, auto_now_add=False, null=True)
+    upload_time = models.DateTimeField(auto_now=False, auto_now_add=True, null=True)
+
+    def __str__(self):
+        return self.title
 
 
 @receiver(post_save, sender=CustomUser)
@@ -115,6 +157,10 @@ def create_user_profile(sender, instance, created, **kwargs):
     if created:
         if instance.user_type == 1:
             Admin.objects.create(admin=instance)
+        if instance.user_type == 2:
+            Teacher.objects.create(admin=instance)
+        if instance.user_type==3:
+            Student.objects.create(admin=instance)
         
 
 
@@ -122,6 +168,10 @@ def create_user_profile(sender, instance, created, **kwargs):
 def save_user_profile(sender, instance, **kwargs):
     if instance.user_type == 1:
         instance.admin.save()
+    if instance.user_type == 2:
+        instance.teacher.save()
+    if instance.user_type==3:
+        instance.student.save()
     
 
 

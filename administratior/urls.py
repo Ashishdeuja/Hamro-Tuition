@@ -43,5 +43,6 @@ urlpatterns = [
     path('add/notice/',views.add_notice, name='add_notice'),
     path('edit/notice/<int:pk>',views.edit_notice, name='edit_notice'),
     path('delete/notice/<int:pk>',views.delete_notice, name='delete_notice'),
+    path("view/leave/", views.view_leave, name="view_leave",),
     
 ]

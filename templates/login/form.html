@@ -1,5 +1,6 @@
 <form role="form" method="POST" enctype="multipart/form-data">
     {% csrf_token %}
+    {{form.media}}
     <div class="card-body">
 
 
@@ -8,6 +9,7 @@
             {{field.errors}}
             {{field.label_tag}}
             {{field}}
+            
 
         </div>
         {% endfor %}

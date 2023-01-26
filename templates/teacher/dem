@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ page_title }}</title>
+</head>
+<body>
+    <h1>Add Notes</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label>Title</label>
+        <input type="text" name="title">
+        <br>
+        <label>Description</label>
+        <textarea name="description"></textarea>
+        <br>
+        <label>Level</label>
+        <select name="level" id="level_select">
+            {% for level in levels %}
+                <option value="{{ level.id }}">{{ level.name }}</option>
+            {% endfor %}
+        </select>
+        <br>
+        <label>Subject</label>
+        <select name="subject" id="subject_select">
+            {% for subject in subjects %}
+                <option value="{{ subject.id }}" data-level="{{ subject.level.id }}">{{ subject.name }}</option>
+            {% endfor %}
+        </select>
+        <br>
+        <label>Images</label>
+        <input type="file" name="images">
+        <br>
+        <label>File</label>
+        <input type="file" name="file">
+        <br>
+        <input type="submit" value="Add">
+    </form>
+    {% if messages %}
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+    <script>
+        let levelSelect = document.getElementById("level_select");
+        let subjectSelect = document.getElementById("subject_select");
+
+        levelSelect.addEventListener("change", function(){
+            let selectedLevel = levelSelect.options[levelSelect.selectedIndex].value;
+            let subjects = subjectSelect.getElementsByTagName("option");
+            for(let i = 0; i < subjects.length; i++){
+                let subject = subjects[i];
+                if(subject.dataset.level == selectedLevel){
+                    subject.style.display = "block";
+                } else {
+                    subject.style.display = "none";
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+In this updated HTML file, when a user selects a level in the "Level" dropdown menu, the script will filter the options in the "Subject" dropdown menu to only show the subjects that belong to the selected level.
+The script uses the data-level attribute on each <option> tag in the subject select to store the level ID of that subject. It uses the options property of the select element to access the selected level ID, and then loops through each subject option and compare their data-level attribute with the selected level ID. If they match, the subject option is displayed, otherwise it is hidden.

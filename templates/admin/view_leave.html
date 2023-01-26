@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block page_title %}{{page_title}}{% endblock page_title %}
+
+{% block content %}
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <!-- general form elements -->
+                <div class="card card-dark">
+                    <div class="card-header">
+                        <h3 class="card-title">{{page_title}}</h3>
+                    </div>
+
+                    <div class="table card-body">
+                        <table class="table table-bordered table-hover">
+                            <tr>
+                                <th>S.N.</th>
+                                <th>Teacher</th>
+                                <th>Message</th>
+                                <th>Leave Date</th>
+                                <th>Submitted On</th>
+                                <th>Status</th>
+                                <th>Action</th>
+
+                            </tr>
+                            {% for leave in  allLeave %}
+                              <tr>
+                                  <td>{{forloop.counter}}</td>
+                                  <td>{{leave.teacher}}</td>
+                                  <td>{{leave.reason}}</td>
+                                  <td>From {{leave.start_date}} to {{leave.end_date}}</td>
+                                  
+
+                                  <td>{{leave.created_at}}</td>
+                                  <td>
+                                    {% if leave.status == 1 %}
+                                    <div style="background:green;">
+                                        <h6 style='text-align:center;'>Approved</h3>
+                                    </div>
+                                    
+                                    {% elif leave.status == -1 %}
+                                    <div style="background:red;">
+                                        <h6 style='text-align:center;'>Rejected</h3>
+                                    </div>
+                                    
+                                    {% else %}
+                                    <div style="background:yellow;">
+                                        <h6 style='text-align:center;'>Pending</h3>
+                                    </div>
+                                    {% endif %}
+                                  </td>
+                                  <td>
+
+
+                                    <form method="post" enctype="multipart/form-data" id="myForm">
+                                        <input type="hidden" name="id" value="{{ leave.id }}">
+                                        <button type="submit" name="status" value="1" id="approve-button">Approve</button>
+                                        <button type="submit" name="status" value="-1" id="reject-button">Reject</button>
+                                    </form>
+
+                                     </td>
+                                  
+                                      
+                                    
+                       
+                              </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                    </div>
+                <!-- /.card -->
+
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock content %}
+{% block custom_js %}
+{% comment %} <script>
+    var approveButtons = document.querySelectorAll("button[name='status'][value='1']");
+    var rejectButtons = document.querySelectorAll("button[name='status'][value='-1']");
+    approveButtons.forEach(function(button) {
+        button.addEventListener("click", function(e) {
+            e.preventDefault();
+            var form = button.closest("form");
+            var id = form.elements["id"].value;
+            alert("Leave request has been approved.");
+            //form.submit();
+            
+        });
+    });
+    rejectButtons.forEach(function(button) {
+        button.addEventListener("click", function(e) {
+            e.preventDefault();
+            var form = button.closest("form");
+            var id = form.elements["id"].value;
+            alert("Leave request has been rejected.");
+            //form.submit();
+            button.innerHTML = "Rejected";
+        });
+    });
+</script> {% endcomment %}
+
+{% comment %} <script>
+    $(document).ready(function(){
+        var buttons = document.querySelectorAll("button[name='status']");
+        buttons.forEach(function(button) {
+            button.addEventListener("click", function(e) {
+                e.preventDefault();
+                var form = button.closest("form");
+                var id = form.elements["id"].value;
+                if(button.value == "1"){
+                  alert("Leave request has been approved.");
+                  //form.submit();
+                  
+                }
+                else if(button.value == "-1"){
+                  alert("Leave request has been rejected.");
+                  //form.submit();
+                  button.innerHTML = "Rejected";
+                }
+            });
+        });
+    });
+</script> {% endcomment %}
+
+
+
+
+
+
+{% endblock custom_js %}

@@ -4,6 +4,8 @@ import requests
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse
 from django.core.files.storage import FileSystemStorage
+
+from teacher.models import Leave
 from .forms import *
 from .EmailBackend import EmailBackend
 from django.contrib import messages
@@ -847,7 +849,29 @@ def delete_notice(request, pk):
     return redirect('view_notice')
 
 
-
+@csrf_exempt
+def view_leave(request):
+    if request.method != 'POST':
+        allLeave = Leave.objects.all()
+        context = {
+            'allLeave': allLeave,
+            'page_title': 'Leave Applications '
+        }
+        return render(request, "admin/view_leave.html", context)
+    else:
+        id = request.POST.get('id')
+        status = request.POST.get('status')
+        if (status == '1'):
+            status = 1
+        else:
+            status = -1
+        try:
+            leave = get_object_or_404(Leave, id=id)
+            leave.status = status
+            leave.save()
+            return HttpResponse(True)
+        except Exception as e:
+            return False
 
 @csrf_exempt
 def check_email(request):

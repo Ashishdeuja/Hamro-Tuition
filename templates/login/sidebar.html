@@ -301,6 +301,15 @@
                         <span class="title">Manage Notice</span>
                     </a>
                 </li>
+                <li>
+                    {% url 'view_leave' as view_leave %}
+                    <a href="{{view_leave}}" class="nav-link {% if view_leave == request.path %} active {% endif %}">
+                        <span class="icon">
+                            <ion-icon name="newspaper-sharp"></ion-icon>
+                        </span>
+                        <span class="title">Leave</span>
+                    </a>
+                </li>
             </ul>
         </li>
         
@@ -335,6 +344,71 @@
                 <span class="title">Home</span>
             </a>
          </li>
+         <li>
+            <a href="#">
+                <span class="icon">
+                    <ion-icon name="home-sharp"></ion-icon>
+                </span>
+                <span class="title">Notes</span>
+                <span class="icon-right">
+                    <ion-icon name="caret-forward-sharp"></ion-icon>
+                </span>
+            </a>
+            <ul class="side-dropdown">
+                <li>
+                    {% url 'add_notes' as add_notes %}
+                    <a href="{{add_notes}}" class="nav-link {% if add_notes == request.path %} active {% endif %}">
+                        <span class="icon">
+                            <ion-icon name="add-circle-sharp"></ion-icon>
+                        </span>
+                        <span class="sub-title">Add Notes</span>
+                    </a>   
+                </li>
+                <li>
+                    {% url 'manage_notes' as manage_notes %}
+                    <a href="{{manage_notes}}" class="nav-link {% if manage_notes == request.path %} active {% endif %}">
+                        <span class="icon">
+                            <ion-icon name="newspaper-sharp"></ion-icon>
+                        </span>
+                        <span class="sub-title">Manage Notes</span>
+                    </a>   
+                </li>
+                
+            </ul>
+         </li>
+         <li>
+            <a href="#">
+                <span class="icon">
+                    <ion-icon name="book-sharp"></ion-icon>
+                </span>
+                <span class="title">Question</span>
+                <span class="icon-right">
+                    <ion-icon name="caret-forward-sharp"></ion-icon>
+                </span>
+            </a>
+
+            <ul class="side-dropdown">
+                <li>
+                    {% url 'add_question' as add_question %}
+                    <a href="{{add_question}}" class="nav-link {% if add_question == request.path %} active {% endif %}">
+                        <span class="icon">
+                            <ion-icon name="add-circle-sharp"></ion-icon>
+                        </span>
+                        <span class="sub-title">Add Question</span>
+                    </a>   
+                </li>
+                <li>
+                    {% url 'manage_question' as manage_question %}
+                    <a href="{{manage_question}}" class="nav-link {% if manage_question == request.path %} active {% endif %}">
+                        <span class="icon">
+                            <ion-icon name="newspaper-sharp"></ion-icon>
+                        </span>
+                        <span class="sub-title">Manage Question</span>
+                    </a>   
+                </li>
+                
+            </ul>
+        </li>
         <li>
             <a href="#">
                 <span class="icon">
@@ -375,6 +449,15 @@
                     <ion-icon name="megaphone-sharp"></ion-icon>
                 </span>
                 <span class="title">Notice</span>
+            </a>
+        </li>
+        <li>
+            {% url 'apply_leave' as apply_leave %}
+            <a href="{{apply_leave}}" class="nav-link {% if apply_leave == request.path %} active {% endif %}">
+                <span class="icon">
+                    <ion-icon name="megaphone-sharp"></ion-icon>
+                </span>
+                <span class="title">Apply Leave</span>
             </a>
         </li>
         <li>
@@ -399,6 +482,15 @@
     </a>
     <ul class="side-menu">
         <li>
+            {% url 'view_aa' as view_notice %}
+            <a href="{{view_notice}}" class="nav-link {% if view_notice == request.path %} active {% endif %}">
+                <span class="icon">
+                    <ion-icon name="megaphone-sharp"></ion-icon>
+                </span>
+                <span class="title">Notes</span>
+            </a>
+        </li>
+        <li>
             <a href="#">
                 <span class="icon">
                     <ion-icon name="book-sharp"></ion-icon>
@@ -440,6 +532,7 @@
                 <span class="title">Notice</span>
             </a>
         </li>
+        
     </ul>
     <!-- /.content -->
     {% block content %}

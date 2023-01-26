@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block page_title %}{{page_title}}{% endblock page_title %}
+
+{% block content %}
+
+{% comment %} <section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card card-dark">
+                    <div class="card-header">
+                        <h3 class="card-title">{{page_title}}</h3>
+                    </div>
+
+                    {% include "login/form.html" with messages=messages  form=form button_text="Add Question"%}
+                    
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section> {% endcomment %}
+
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <!-- general form elements -->
+                    <form method="POST" action="{% url 'add_question' %}">
+                        {% csrf_token %}
+                <div class="card card-dark">
+                    <div class="card-header">
+                        <h3 class="card-title">{{page_title}}</h3>
+                    </div>
+
+       
+                    <!-- /.card-header -->
+                    <!-- form start -->
+                    <div class="card-body">
+
+
+                        <div class="form-group">
+                            <label>Subject</label>
+                            <select name="subject" class="form-control" id='subject'>
+                                <option value="">----</option>
+                                {% for subject in subjects  %}
+                                <option value="{{subject.id}}">{{subject.subject_name}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="question">Question:</label>
+                            <input type="text" class="form-control" id="question" name="question">
+                        </div>
+                        <div class="form-group">
+                            <label for="op1">Option 1:</label>
+                            <input type="text"class="form-control" id="op1" name="op1">
+                        </div>
+                        <div class="form-group">
+                            <label for="op2">Option 2:</label>
+                            <input type="text"class="form-control" id="op2" name="op2">
+                        </div>
+                            <label for="op3">Option 3:</label>
+                            <input type="text"class="form-control" id="op3" name="op3">
+                        <div class="form-group">
+                            <label for="op4">Option 4:</label>
+                            <input type="text" class="form-control"id="op4" name="op4">
+                        </div>
+                        <div class="form-group">
+                            <label for="ans">Answer:</label>
+                            <input type="text"class="form-control" id="ans" name="ans">
+                        </div>
+                    </div>
+
+                    <div class="card-footer">
+                        <input type="submit" class='btn btn-primary' value="Add Question">
+                    </div>
+                </form>
+                </div>
+                <!-- /.card -->
+
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock content %}

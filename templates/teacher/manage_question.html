@@ -4,17 +4,8 @@
 
 {% block content %}
 
-<section class="content">
-    {% comment %} <div class="container-fluid">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card"> {% endcomment %}
-                    {% comment %} <div class="card card-dark">
-                        <div class="card-header">
-                            <h3 class="card-title">{{page_title}}</h3>
-                        </div>
-                    </div> {% endcomment %}
-                    <!-- /.card-header -->
+{% comment %} <section class="content">
+    
                     <div class="card-body">
                         <table id="example2" class="table table-bordered table-hover">
                             <thead >
@@ -40,11 +31,159 @@
                             </tbody>
                         </table>
                     </div>
-                {% comment %} </div>
-            </div>
-        </div>
-    </div> {% endcomment %}
-</section>
+  
+</section> {% endcomment %}
+<style>
+.col-md-4 {
+    width: 33.33%; /* or width: calc(100%/3); /
+    padding: 0 15px;
+    margin-bottom: 16px; / or margin-bottom: 1rem; */
+    }
+    
+    @media only screen and (max-width: 768px) {
+    .col-md-4 {
+    width: 100%;
+    margin-bottom: 16px; /* or margin-bottom: 1rem; */
+    }
+    }
+    
+    .mb-4 {
+    margin-bottom: 1.5rem;
+    }
+    @media only screen and (max-width: 768px) {
+        .col-md-4 {
+        flex-basis: 100%;
+        }
+        }
+.slide-container{
+    max-width: 1120px;
+    width: 100%;
+    padding: 40px 0;
+    display: flex;
+        flex-wrap: wrap;
+  }
+  .slide-content{
+    margin: 0 40px;
+    overflow: hidden;
+    border-radius: 25px;
+  }
+  .card{
+    border-radius: 25px;
+    background-color: #FFF;
+  }
+  .image-content,
+  .card-content{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 14px;
+  }
+  .image-content{
+    position: relative;
+    row-gap: 5px;
+    padding: 25px 0;
+  }
+  .overlay{
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    background-color: #4070F4;
+    border-radius: 25px 25px 0 25px;
+  }
+  .overlay::before,
+  .overlay::after{
+    content: '';
+    position: absolute;
+    right: 0;
+    bottom: -40px;
+    height: 40px;
+    width: 40px;
+    background-color: #4070F4;
+  }
+  .overlay::after{
+    border-radius: 0 25px 0 0;
+    background-color: #FFF;
+  }
+  .card-image{
+    position: relative;
+    height: 150px;
+    width: 150px;
+    border-radius: 5%;
+    background: #FFF;
+    padding: 3px;
+  }
+  .card-image .card-img{
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+    border-radius: 5%;
+    {% comment %} border: 1px solid #4070F4; {% endcomment %}
+  }
+  .name{
+    font-size: 18px;
+    font-weight: 500;
+    color: #333;
+    margin-top:8px;
+    text-align:center;
+  }
+  .sub-name{
+    font-size: 14px;
+    color: #707070;
+    text-align: center;
+  }
+  .description{
+    font-size: 14px;
+    color: #707070;
+    text-align: center;
+  }
+  .button{
+    border: none;
+    font-size: 16px;
+    color: #FFF;
+    padding: 8px 16px;
+    background-color: #4070F4;
+    border-radius: 6px;
+    margin: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  .button:hover{
+    background: #265DF2;
+  }
+  
+</style>
+{% if subject %}
+    <div class="slide-container swiper">
+        {% for subjects in subject %}
+            <div class="col-md-4 mb-4">
+               <div class="slide-content">
+                    <div class="card-wrapper">
+                        <div class="card">
+                            <div class="image-content">
+                                <span class="overlay">
+                                    {% url 'view_questions' subjects.id  as view_questions %}
+                                    <a href="{{view_questions}}" class="nav-link {% if view_questions == request.path %} active {% endif %}">
+                                    <h2 class="name">{{subjects.level}}</h2>
+                                    
+                                    </a>
+                                </span>
+                                
+                            </div>
+                            <div class="card-content">
+                                <h5 class="sub-name">Subject: {{subjects.subject_name}}</h5>
+                                <br> 
+                                <h3 class="description">Here are the questions of the {{subjects.level}}
+                                <br><br>                        
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div> 
+        {% endfor %}
+    </div>
+{% endif %}
 {% endblock content %}
 
 

@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block page_title %}{{ page_title }}{% endblock page_title %}
+
+{% block content %}
+
+<form method='post' action='{% url "test_question" subject_id %}'>
+    {% csrf_token %}
+<div class="container">
+    <h1 class="text-danger mt-3">Lets start the Test</h1>
+    <hr>
+    <div>
+        {% for i in  questions %}
+        <table>
+            <tr>
+                <td class="text-primary">{{forloop.counter}}) {{i.question}} ?</td>
+            </tr>
+            <tr>
+                <td><input type = "radio" class="rb" name = "{{i.id}}__answer" id="Option1" value="{{i.op1}}">  {{i.op1}}</td>
+            </tr>
+            <tr>
+                <td><input type = "radio" class="rb" name = "{{i.id}}__answer" id="Option2" value="{{i.op2}}">  {{i.op2}}</td>
+            </tr>
+            <tr>
+                <td><input type = "radio" class="rb" name = "{{i.id}}__answer" id="Option3" value="{{i.op3}}">  {{i.op3}}</td>
+            </tr>
+            <tr>
+                <td><input type = "radio" class="rb" name = "{{i.id}}__answer" id="Option4" value="{{i.op4}}">  {{i.op4}}</td>
+            </tr>
+
+            <tr>
+                <td><label id="ans" class= "rb" style="display:none ; color : green"><b>{{i.ans}}</b></label></td>
+            </tr>
+
+        </table>
+<hr>
+
+        {% endfor %}
+        <input type="submit" class="btn btn-success" value="Submit" id="b1" onclick="getanswers()">
+        <br>
+        <b id="UserAnswers"></b>
+        </div>
+</div><br><br><br><br>
+
+</form>
+{% endblock content %}
+
+
+{% block custom_js %}
+<script>
+    $(document).ready(function(){
+    $("#b1").click(function(){
+        $(".rb").show();
+        $(".rb").attr("disabled",true);
+
+
+    });
+    });
+
+    {% comment %} function getanswers() {
+        var score = 0;
+        var questions = document.getElementsByClassName("rb");
+        for (var i = 0; i < questions.length; i++) {
+            if (questions[i].checked) {
+                var userAnswer = questions[i].value;
+                var correctAnswer = document.getElementsByClassName("rb")[i+4].innerHTML;
+                if (userAnswer === correctAnswer) {
+                    score++;
+                }
+            }
+        }
+        document.getElementById("UserAnswers").innerHTML = "Your score is: " + score + "/" + questions.length;
+    } {% endcomment %}
+        {% comment %} function 
+        {
+        document.getElementById("UserAnswers").innerHTML = "";
+        var e = document.getElementsByTagName("input");
+            for(i = 0 ; i<=e.length;i++)
+            {
+                if(e[i].type=="radio")
+                {
+                    if(e[i].checked)
+                    {
+                        document.getElementById("UserAnswers").innerHTML+="Q "+e[i].name + " The Answers You Are Selected Is : "+e[i].value+"<br>";
+
+                    }
+                }
+            }
+        } {% endcomment %}
+        {% comment %} function getanswers() {
+            var userAnswers = document.getElementsByClassName("rb");
+    for (var i = 0; i < userAnswers.length; i++) {
+        if (!userAnswers[i].checked) {
+            alert("Please answer all questions before submitting.");
+            return false;
+        }
+    }
+    return true;
+
+        } {% endcomment %}
+    </script>
+
+{% endblock custom_js %}

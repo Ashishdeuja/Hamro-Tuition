@@ -124,6 +124,8 @@ class Book(models.Model):
     desc = models.CharField(max_length=1000)
     pdf = models.FileField(upload_to='bookapp/pdfs/')
     cover = models.ImageField(upload_to='bookapp/covers/', null=True, blank=True)
+    created_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.title
@@ -150,6 +152,23 @@ class NewsAndEvents(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class TimeTable(models.Model):
+    DAY_CHOICES = (
+        ('Monday', 'Monday'),
+        ('Tuesday', 'Tuesday'),
+        ('Wednesday', 'Wednesday'),
+        ('Thursday', 'Thursday'),
+        ('Friday', 'Friday'),
+        ('Saturday', 'Saturday'),
+        ('Sunday', 'Sunday'),
+    )
+    day = models.CharField(max_length=20, choices=DAY_CHOICES)
+    start_time = models.TimeField()
+    end_time = models.TimeField()
+    class_name = models.CharField(max_length=50)
+    teacher = models.CharField(max_length=50)
 
 
 @receiver(post_save, sender=CustomUser)

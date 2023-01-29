@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block page_title %}{{page_title}}{% endblock page_title %}
+
+{% block content %}
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">{{page_title}}</h3>
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body">
+                        <table id="example2" class="table table-bordered table-hover">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th>S.N.</th>
+                                    <th>Cover</th>
+                                    <th>Name</th>
+                                    <th>Author</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for book in bookmarks %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>
+                                        {% if book.book.cover == ""  %}
+                                        No Image
+                                        {% else %}
+                                        <img class="img img-fluid mb-2" height="100" width="100"
+                                            src="{{book.book.cover.url}}" alt="">
+                                        {% endif %}
+                                    </td>
+                                    <td>{{book.book.title}}</td>
+                                    <td>{{book.book.author}}</td>
+                                    <td>
+                                        {% if book.book.pdf %}
+                                        <a href="{{ book.book.pdf.url }}" class="btn btn-primary mr-3" target="_blank">
+                                            <ion-icon name="eye-off-sharp"></ion-icon>
+                                        </a> -
+                                        <a href="{{ book.book.pdf.url }}" download class="btn btn-success">
+                                            <ion-icon name="download-sharp"></ion-icon>
+                                        </a> -
+                                        {% else %}
+                                            <span class="text-muted">No PDF</span>
+                                        {% endif %}
+                                        <a href="{% url 'delete_bookmark' book.id %}" class="btn btn-danger" onclick="return confirm('Are you sure about this ?')">
+                                            <ion-icon name="trash-bin-sharp"></ion-icon>
+                                        </a>
+                                    
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock content %}

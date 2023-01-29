@@ -4,7 +4,7 @@ import requests
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse
 from django.core.files.storage import FileSystemStorage
-
+from django.core.mail import send_mail
 from teacher.models import Leave
 from .forms import *
 from .EmailBackend import EmailBackend
@@ -24,7 +24,7 @@ def login_page(request):
             return redirect(reverse("admin_home_page"))
         elif request.user.user_type == '2':
             return redirect(reverse("teacher_home_page"))
-        elif request.user_type == '3':
+        elif request.user.user_type == '3':
                 return redirect(reverse("teacher_home_page"))
     return render(request, 'login/login1.html')
 
@@ -500,7 +500,7 @@ def delete_teacher(request, teacher_id):
  
 
 def manage_book(request):
-    books = Book.objects.all()
+    books = Book.objects.all().order_by('-updated_date')
     context = {
         'books': books,
         'page_title': 'Books'
@@ -859,12 +859,48 @@ def view_leave(request):
         }
         return render(request, "admin/view_leave.html", context)
     else:
+        
         id = request.POST.get('id')
         status = request.POST.get('status')
+        leave=Leave.objects.filter(id=id).select_related('teacher')
+        email=leave[0].teacher.admin.email
+        teacher_name=leave[0].teacher
+        first_name=request.user.first_name
+        last_name=request.user.last_name
         if (status == '1'):
             status = 1
+            # leave=Leave.objects.filter(id=id).select_related('teacher')
+            # print(leave[0].teacher.admin.email)
+            # print(leave[0].teacher)
+            # print(request.user.first_name)
+            # print(request.user.last_name)
+            
+            email_to = email
+            email_from = "aasishdeuja@gmail.com"
+            email_subject = "Approved Leave Application"
+            email_body = "Dear {0},\n\nI am writing to inform you that your leave application has been approved.\n\nRegards,\n{1} {2}".format(teacher_name,first_name,last_name)
+
+            try:
+                send_mail(email_subject, email_body, email_from, [email_to], fail_silently=False)
+                messages.success(request, "The leave approved application has benn sent to teacher.")
+            except Exception:
+                    messages.error(request, "Could not send email to teacher.")
+
+                    return redirect(reverse('view_leave'))
         else:
             status = -1
+            email_to = email
+            email_from = "aasishdeuja@gmail.com"
+            email_subject = "Rejected Leave Application"
+            email_body = "Dear {0},\n\nI am writing to inform you that your leave application has been rejected.\n\nRegards,\n{1} {2}".format(teacher_name,first_name,last_name)
+
+            try:
+                send_mail(email_subject, email_body, email_from, [email_to], fail_silently=False)
+                messages.success(request, "The leave approved application has been sent to teacher.")
+            except Exception:
+                    messages.error(request, "Could not send email to teacher.")
+
+                    return redirect(reverse('view_leave'))
         try:
             leave = get_object_or_404(Leave, id=id)
             leave.status = status
@@ -872,6 +908,13 @@ def view_leave(request):
             return HttpResponse(True)
         except Exception as e:
             return False
+
+
+def view_timetable(request):
+    timetable = TimeTable.objects.all()
+    context = {'timetable': timetable}
+    return render(request, 'admin/timetable.html', context)
+
 
 @csrf_exempt
 def check_email(request):
@@ -884,4 +927,4 @@ def check_email(request):
     except Exception as e:
         return HttpResponse(False)
     
-    
+

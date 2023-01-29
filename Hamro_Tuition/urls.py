@@ -21,6 +21,7 @@ from . import settings
 urlpatterns = [
     path("", include('administratior.urls')),
     path('teacher/',include('teacher.urls')),
+    path('student/',include('student.urls')),
     path('tinymce/', include('tinymce.urls')),
     path("accounts/", include('django.contrib.auth.urls')),
     path('admin/', admin.site.urls),

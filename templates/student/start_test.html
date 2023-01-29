@@ -1,0 +1,254 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% block page_title %}{{page_title}}{% endblock page_title %}
+
+{% block content %}
+
+<style>
+    
+
+
+.custome-box{
+	max-width: 700px;
+	background-color: #0daed6;
+	margin:40px auto;
+	padding: 30px;
+	border-radius: 10px;
+	animation: fadeInRight 1s ease;
+}
+
+
+input{
+	padding: 15px 45px;
+	background-color: #08825f;
+	color: #ffffff;
+	border: none;
+	border-radius: 5px;
+	font-family: 'Montserrat', sans-serif;
+	font-size: 16px;
+	cursor: pointer;
+	display: inline-block;
+}
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight:bold;
+  }
+  select {
+    padding: 6px;
+    height: 32px;
+    border-radius: 2px;
+  }
+  select {
+    background: rgba(255,255,255,0.1);
+    border: none;
+    font-size: 16px;
+    height: auto;
+    margin: 0;
+    outline: 0;
+    padding: 15px;
+    width: 100%;
+    background-color: #e8eeef;
+    box-shadow: 0 1px 0 rgba(0,0,0,0.03) inset;
+    margin-bottom: 30px;
+  }
+</style>
+
+    <form action="{% url 'start_test' subject_id %}" method="post">
+        {% csrf_token %}
+        <div class="custome-box">
+            <h3 align="center">You can take the test according to the level i.e. Easy or Difficult</h3>
+            <hr class="my-1">	<br>       
+            <label>Select Level</label>
+            <select id="select_level" name="select_level">
+                <option value="">-------</option>
+                <option value="Easy">Easy</option>
+                <option value="Difficult">Difficult</option>
+            </select>
+            <input type="submit" value="Start Test">
+        </div>
+    </form>
+
+
+{% comment %} 
+    <div class="col-lg-12">
+        <div class="projecttype-wrap">
+            <div class="project-type">
+                <div class=" nav">
+                    <h1 ><a data-toggle="tab" href="#all" class="active btn-tab pr-2 pl-2 mr-3"><button type="button" class="btn btn-primary">All</button></a></h1>
+                    <h1 ><a data-toggle="tab" href="#webdevelopment" class="btn-tab pl-2 pr-1"><button type="button" class="btn btn-primary">Web Development</button></a></h1>
+                    <h1 ><a data-toggle="tab" href="#photography" class="btn-tab pl-2 pr-1"><button type="button" class="btn btn-primary">Photography</button></a></h1>
+                    <h1 ><a data-toggle="tab" href="#Cinematography" class="btn-tab pl-2 pr-1"><button type="button" class="btn btn-primary">Cinematography</button></a></h1>
+                </div>
+            </div>
+        </div>
+    </div>  
+        <div  id="all" class="tab-pane fade in active show col-lg-12 ">
+           <div class="row">
+            <div class="col-lg-4">
+                <div class="project-wrap">
+                    <div class="project-imnages">
+                        <img src="images/library.png" alt="">
+                    </div>
+                    <h2>Name of project</h2>
+                    <h3>Project Type </h3>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="project-wrap">
+                    <div class="project-imnages">
+                        <img src="images/library.png" alt="">
+                    </div>
+                    <h2>Name of project</h2>
+                    <h3>Project Type </h3>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="project-wrap">
+                    <div class="project-imnages">
+                        <img src="images/library.png" alt="">
+                    </div>
+                    <h2>Name of project</h2>
+                    <h3>Project Type </h3>
+                </div>
+            </div>
+           </div>
+        </div>
+        <div  id="webdevelopment" class="tab-pane fade col-lg-12  exc ">
+            <div class="row">
+                <div class="col-lg-4">
+                    <div class="project-wrap">
+                        <div class="project-imnages">
+                            <img src="images/web.jpeg" alt="">
+                        </div>
+                        <h2>webdevelopment</h2>
+                        <h3>Project Type </h3>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="project-wrap">
+                        <div class="project-imnages">
+                            <img src="images/web.jpeg" alt="">
+                        </div>
+                        <h2>webdevelopment</h2>
+                        <h3>Project Type </h3>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="project-wrap">
+                        <div class="project-imnages">
+                            <img src="images/web.jpeg" alt="">
+                        </div>
+                        <h2>webdevelopment</h2>
+                        <h3>Project Type </h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div  id="photography" class="tab-pane fade col-lg-12  exc ">
+            <div class="row">
+                <div class="col-lg-4">
+                    <div class="project-wrap">
+                        <div class="project-imnages">
+                            <img src="images/photography.jpeg" alt="">
+                        </div>
+                        <h2>photography</h2>
+                        <h3>Project Type </h3>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="project-wrap">
+                        <div class="project-imnages">
+                            <img src="images/photography.jpeg" alt="">
+                        </div>
+                        <h2>photography</h2>
+                        <h3>Project Type </h3>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="project-wrap">
+                        <div class="project-imnages">
+                            <img src="images/photography.jpeg" alt="">
+                        </div>
+                        <h2>photography</h2>
+                        <h3>Project Type </h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div  id="Cinematography" class="tab-pane fade col-lg-12 exc ">
+            <div class="row">
+                <div class="col-lg-4">
+                    <div class="project-wrap">
+                        <div class="project-imnages">
+                            <img src="images/cinematography.jpeg" alt="">
+                        </div>
+                        <h2>photography</h2>
+                        <h3>Project Type </h3>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="project-wrap">
+                        <div class="project-imnages">
+                            <img src="images/cinematography.jpeg" alt="">
+                        </div>
+                        <h2>photography</h2>
+                        <h3>Project Type </h3>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="project-wrap">
+                        <div class="project-imnages">
+                            <img src="images/cinematography.jpeg" alt="">
+                        </div>
+                        <h2>photography</h2>
+                        <h3>Project Type </h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+     </div>
+ {% endcomment %}
+
+
+{% endblock content %}
+
+
+{% block custom_js %}
+{% comment %} <script>
+    function showData(e) {
+        var allData = document.getElementById("all");
+        var webdevelopmentData = document.getElementById("webdevelopment");
+        var photographyData = document.getElementById("photography");
+        var CinematographyData = document.getElementById("Cinematography");
+        if (e.target.textContent === "all") {
+            allData.style.display = "block";
+            webdevelopmentData.style.display = "block";
+            photographyData.style.display = "block";
+            CinematographyData.style.display = "block";
+        } else if (e.target.textContent === "webdevelopment") {
+            webdevelopmentData.style.display = "block";
+            allData.style.display = "none";
+            photographyData.style.display = "none";
+            CinematographyData.style.display = "none";
+        } else if (e.target.textContent === "photography") {
+            photographyData.style.display = "block";
+            allData.style.display = "none";
+            webdevelopmentData.style.display = "none";
+            CinematographyData.style.display = "none";
+        } else if (e.target.textContent === "Cinematography") {
+            CinematographyData.style.display = "block";
+            allData.style.display = "none";
+            webdevelopmentData.style.display = "none";
+            photographyData.style.display = "none";
+        }
+    }
+      
+      var buttons = document.querySelectorAll(".nav button");
+      for (var i = 0; i < buttons.length; i++) {
+        buttons[i].addEventListener("click", showData);
+      }
+  </script> {% endcomment %}
+{% endblock custom_js %}

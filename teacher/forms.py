@@ -9,7 +9,7 @@ class QuestionForm(FormSettings):
         
     class Meta:
         model = Question
-        fields = ['subject','question', 'op1', 'op2', 'op3', 'op4','ans'] 
+        fields = ['select_level','question', 'op1', 'op2', 'op3', 'op4','ans'] 
         
 class NoteForm(FormSettings):
     def __init__(self, *args, **kwargs):

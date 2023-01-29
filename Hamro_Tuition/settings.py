@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'ckeditor',
     'tinymce',
     'crispy_forms',
+    'student',
 ]
 
 MIDDLEWARE = [

@@ -312,6 +312,16 @@
                 </li>
             </ul>
         </li>
+
+        <li>
+            {% url 'view_timetable' as view_timetable %}
+            <a href="{{view_timetable}}" class="nav-link {% if view_timetable == request.path %} active {% endif %}">
+                <span class="icon">
+                    <ion-icon name="timer-sharp"></ion-icon>
+                </span>
+                <span class="title">Time Table</span>
+            </a>
+         </li>
         
          <li>
             {% url 'admin_profile' as admin_profile %}
@@ -345,69 +355,23 @@
             </a>
          </li>
          <li>
-            <a href="#">
+            {% url 'manage_notes' as manage_notes %}
+            <a href="{{manage_notes}}" class="nav-link {% if manage_notes == request.path %} active {% endif %}">
                 <span class="icon">
-                    <ion-icon name="home-sharp"></ion-icon>
+                    <ion-icon name="create-sharp"></ion-icon>
                 </span>
                 <span class="title">Notes</span>
-                <span class="icon-right">
-                    <ion-icon name="caret-forward-sharp"></ion-icon>
-                </span>
             </a>
-            <ul class="side-dropdown">
-                <li>
-                    {% url 'add_notes' as add_notes %}
-                    <a href="{{add_notes}}" class="nav-link {% if add_notes == request.path %} active {% endif %}">
-                        <span class="icon">
-                            <ion-icon name="add-circle-sharp"></ion-icon>
-                        </span>
-                        <span class="sub-title">Add Notes</span>
-                    </a>   
-                </li>
-                <li>
-                    {% url 'manage_notes' as manage_notes %}
-                    <a href="{{manage_notes}}" class="nav-link {% if manage_notes == request.path %} active {% endif %}">
-                        <span class="icon">
-                            <ion-icon name="newspaper-sharp"></ion-icon>
-                        </span>
-                        <span class="sub-title">Manage Notes</span>
-                    </a>   
-                </li>
-                
-            </ul>
          </li>
          <li>
-            <a href="#">
+            {% url 'manage_question' as manage_question %}
+            <a href="{{manage_question}}" class="nav-link {% if manage_question == request.path %} active {% endif %}">
                 <span class="icon">
-                    <ion-icon name="book-sharp"></ion-icon>
+                    <ion-icon name="help-circle-sharp"></ion-icon>
                 </span>
-                <span class="title">Question</span>
-                <span class="icon-right">
-                    <ion-icon name="caret-forward-sharp"></ion-icon>
-                </span>
-            </a>
-
-            <ul class="side-dropdown">
-                <li>
-                    {% url 'add_question' as add_question %}
-                    <a href="{{add_question}}" class="nav-link {% if add_question == request.path %} active {% endif %}">
-                        <span class="icon">
-                            <ion-icon name="add-circle-sharp"></ion-icon>
-                        </span>
-                        <span class="sub-title">Add Question</span>
-                    </a>   
-                </li>
-                <li>
-                    {% url 'manage_question' as manage_question %}
-                    <a href="{{manage_question}}" class="nav-link {% if manage_question == request.path %} active {% endif %}">
-                        <span class="icon">
-                            <ion-icon name="newspaper-sharp"></ion-icon>
-                        </span>
-                        <span class="sub-title">Manage Question</span>
-                    </a>   
-                </li>
+                <span class="title">Questions</span>
                 
-            </ul>
+            </a>
         </li>
         <li>
             <a href="#">
@@ -455,11 +419,21 @@
             {% url 'apply_leave' as apply_leave %}
             <a href="{{apply_leave}}" class="nav-link {% if apply_leave == request.path %} active {% endif %}">
                 <span class="icon">
-                    <ion-icon name="megaphone-sharp"></ion-icon>
+                    <ion-icon name="walk-sharp"></ion-icon>
                 </span>
                 <span class="title">Apply Leave</span>
             </a>
         </li>
+        <li>
+            {% url 'bookmark_book' as bookmark_book %}
+            <a href="{{bookmark_book}}" class="nav-link {% if bookmark_book == request.path %} active {% endif %}">
+            {% comment %} <a href="#"> {% endcomment %}
+                <span class="icon">
+                    <ion-icon name="bookmark-sharp"></ion-icon>
+                </span>
+                <span class="title">Bookmark</span>
+            </a>
+         </li>
         <li>
             {% url 'teacher_profile' as teacher_profile %}
             <a href="{{teacher_profile}}" class="nav-link {% if teacher_profile == request.path %} active {% endif %}">
@@ -522,6 +496,16 @@
                 </li>
                 
             </ul>
+        </li>
+        <li>
+            {% url 'student_view_question' as student_view_question %}
+            <a href="{{student_view_question}}" class="nav-link {% if student_view_question == request.path %} active {% endif %}">
+                <span class="icon">
+                    <ion-icon name="help-circle-sharp"></ion-icon>
+                </span>
+                <span class="title">Questions</span>
+                
+            </a>
         </li>
         <li>
             {% url 'view_notice' as view_notice %}

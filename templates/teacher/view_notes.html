@@ -106,7 +106,7 @@
       .description{
         font-size: 14px;
         color: #707070;
-        text-align: center;
+        text-align: left;
       }
       .button{
         border: none;
@@ -122,13 +122,30 @@
       .button:hover{
         background: #265DF2;
       }
+
+
+      
       
 </style>
-{% if request.user.user_type == '2' %}
-<div class="manage-wrap">
+<section class="content">
+  <div class="container-fluid">
+    {% if request.user.user_type == '2' %}
+    <div class="row">
+      <div class="col-md-12">
+          <!-- general form elements -->
+          <div class="card card-dark"style="float:right;">
+              <div class="card-header">
+                <a class="btn btn-primary" href="{% url 'add_notes' subject_id %}"><i class="fas fa-plus"></i>Add Notes</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+{% comment %} {% if request.user.user_type == '2' %}
+<div class="manage-wrap" style="float:right;">
     <a class="btn btn-primary" href="{% url 'add_notes' subject_id %}"><i class="fas fa-plus"></i>Add Notes</a>
 </div>
-{% endif %}
+{% endif %} {% endcomment %}
 {% if note %}
     <div class="slide-container swiper">
         {% for levels in note %}
@@ -176,7 +193,8 @@
         {% endfor %}
     </div>
 {% endif %}
-                            
+  </div>
+  </section >                          
 {% endblock %}
 
 

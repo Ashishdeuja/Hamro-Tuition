@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block page_title %}{{page_title}}{% endblock page_title %}
+
+{% block content %}
+
+<section class="content">
+    <div class="container-fluid">
+        {% comment %} <div class="row">
+            <div class="col-md-12">
+                <!-- general form elements -->
+                <div class="card card-dark">
+                    <div class="card-header">
+                        <h3 class="card-title">{{page_title}}</h3>
+                    </div>
+
+                    {% include "login/form.html" with messages=messages  form=form button_text="Add Testimonial"%}
+                </div> {% endcomment %}
+                <!-- /.card -->
+
+<div class="card card-default">
+    <div class="col-md-12">
+        <!-- general form elements -->
+        <div class="card card-dark"style="float:right;">
+            <div class="card-header">
+              <a class="btn btn-primary" href="{% url 'add_testimonial' %}"><i class="fas fa-plus"></i>Add</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    <div class="card-header"><h3 class="card-title"><b>Testimonials</b></h3>
+
+
+       <table class="table">
+           <thead>
+            <tr>
+                <th>S.N.</th>
+                <th>Image</th>
+                <th>Description</th>
+                <th>Status</th>
+         </tr>
+           </thead>
+           <tbody>
+        {% for testimonial in testimonials %}
+        <tr>
+            
+            <td>{{forloop.counter}}</td>
+            <td>
+                <img class="img img-fluid mb-2" height="100" width="100" src="{{testimonial.image.url}}" alt="">
+            </td>
+            <td>{{testimonial.description|safe}}</td>
+              <td>
+                  
+                  {% if testimonial.status == -1 %}
+                  <span class="btn btn-danger">Rejected</span>
+                  {% elif testimonial.status == 1 %}
+                  <span class="btn btn-success">Accepted</span>
+                  
+                    {% else %}
+                    <span class="btn btn-warning">Pending</span>
+                    
+                    {% endif %}
+                    
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        </table>
+    </div>
+    </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock content %}

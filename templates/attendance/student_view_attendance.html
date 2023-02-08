@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block page_title %}{{page_title}}{% endblock page_title %}
+
+{% block content %}
+<style>
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+        margin-top: 1rem;
+        float:right;
+        margin-right: 1rem;
+      }
+      
+      .step-links a {
+        padding: 0.5rem 1rem;
+        background-color: #e1e1e1;
+        color: #333;
+        text-decoration: none;
+        margin-right: 0.5rem;
+        border-radius: 5px;
+      }
+      
+      .step-links a:hover {
+        background-color: #333;
+        color: #fff;
+      }
+      
+      .current-page {
+        padding: 0.5rem 1rem;
+        background-color: #333;
+        color: #fff;
+        margin-right: 0.5rem;
+        border-radius: 5px;
+      }
+
+</style>
+
+
+
+
+{% comment %} <a style='float:right;margin-right:2rem;' href='{% url "edit_attendance" section_id attendance_id %}' class="btn btn-primary">Edit</a> {% endcomment %}
+<section class="content">
+    <div class="container-fluid">
+
+{% for month, records in attendance_by_month_paginated %}
+  <h3 style='text-align:center;'>Attendance of {{ request.user.first_name }} {{ request.user.last_name }} ({{ month }})</h3>
+  <table class='table'>
+    <thead>
+      <tr>
+
+        <th>Date</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+        {% comment %} {% for student in students %} {% endcomment %}
+          {% for attend in records %}
+            {% comment %} {% if attend.student == student %} {% endcomment %}
+              <tr>
+                <td>{{ attend.date }}</td>
+                <td>
+                  {% if attend.present %}
+                    Present
+                  {% else %}
+                    Absent
+                  {% endif %}
+                </td>
+               
+              </tr>
+            {% comment %} {% endif %} {% endcomment %}
+          {% comment %} {% endfor %} {% endcomment %}
+        {% endfor %}
+      </tbody>
+
+  </table>
+  <div class="pagination">
+    <span class="step-links">
+      {% if attendance_by_month_paginated.has_previous %}
+        <a href="?page=1"> &laquo;</a>
+        <a href="?page={{ attendance_by_month_paginated.previous_page_number }}">{{ attendance_by_month_paginated.previous_page_number }}</a>
+      {% endif %}
+      <span class="current-page">
+        {{ attendance_by_month_paginated.number }}
+      </span>
+      {% if attendance_by_month_paginated.has_next %}
+        <a href="?page={{ attendance_by_month_paginated.next_page_number }}">{{ attendance_by_month_paginated.next_page_number }}</a>
+        <a href="?page={{ attendance_by_month_paginated.paginator.num_pages }}">&raquo; </a>
+      {% endif %}
+    </span>
+  </div>
+{% endfor %}
+</div>
+</section> 
+
+{% endblock content %}

@@ -32,3 +32,4 @@ class LeaveForm(FormSettings):
             'start_date': DateInput(attrs={'type': 'date'}),
             'end_date': DateInput(attrs={'type': 'date'}),
         }
+        

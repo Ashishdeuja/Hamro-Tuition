@@ -1,3 +1,6 @@
+from datetime import timezone
+from http.client import HTTPResponse
+import json
 from django.shortcuts import render,get_object_or_404,redirect,reverse
 from .forms import *
 from django.core.mail import send_mail
@@ -5,6 +8,8 @@ from administratior.forms import *
 from administratior.models import *
 from django.core.files.storage import FileSystemStorage
 from django.contrib import messages
+from django.http import HttpResponse, JsonResponse
+from django.core.paginator import Paginator
 
 # Create your views here.
 def teacher_home_page(request):
@@ -111,12 +116,21 @@ def add_question(request,subject_id):
 #     }
 #     return render(request, "teacher/manage_question.html", context)
 
+def manage_question_class(request):
+    level= Level.objects.all()
+    context = {
+        'level':level,
+        'page_title': 'Questions'
+    }
+    return render(request, "teacher/manage_question_class.html", context)
 
-def manage_question(request):
-    subject= Subject.objects.all()
+
+def manage_question(request,level_id):
+    subject= Subject.objects.filter(level=level_id)
+    level= Level.objects.get(id=level_id)
     context = {
         'subject':subject,
-        'page_title': 'Questions'
+        'page_title': 'Select Subject to Add Questions for {0}'.format(level.level)
     }
     return render(request, "teacher/manage_question.html", context)
 
@@ -214,15 +228,22 @@ def add_notes(request,subject_id):
             messages.error(request, "Could Not Add")
     return render(request, 'teacher/add_notes.html', context)
 
-def manage_notes(request):
-    note = Notes.objects.all()
-    level = Subject.objects.all()
-    teacher=Teacher.objects.all()
+
+def manage_notes_class(request):
+    level= Level.objects.all()
     context = {
-        'note': note,
         'level':level,
-        'teacher':teacher,
         'page_title': 'Notes'
+    }
+    return render(request, "teacher/manage_notes_class.html", context)
+
+
+def manage_notes(request,level_id):
+    subject= Subject.objects.filter(level=level_id)
+    level= Level.objects.get(id=level_id)
+    context = {
+        'subject':subject,
+        'page_title': 'Select Subject to Add/View Notes for {0}'.format(level.level)
     }
     return render(request, "teacher/manage_notes.html", context)
 
@@ -237,21 +258,21 @@ def view_notes(request,subject_id):
     return render(request, "teacher/view_notes.html", context)
 
 
-def view_aa(request):
-    student= get_object_or_404(Student, admin=request.user)
-    note = Notes.objects.all()
-    # subject=Subject.objects.all()
-    subject=Subject.objects.filter(level__student=student)
-    level = Level.objects.filter(student=student)
-    # subject=Subject.objects.filter(level=level).select_related('level')
-    context = {
-        'note': note,
-        'level':level,
-        'subject':subject,
-        'page_title': 'Manage Note'
-    }
+# def view_aa(request):
+#     student= get_object_or_404(Student, admin=request.user)
+#     note = Notes.objects.all()
+#     # subject=Subject.objects.all()
+#     subject=Subject.objects.filter(level__student=student)
+#     level = Level.objects.filter(student=student)
+#     # subject=Subject.objects.filter(level=level).select_related('level')
+#     context = {
+#         'note': note,
+#         'level':level,
+#         'subject':subject,
+#         'page_title': 'Manage Note'
+#     }
 
-    return render(request, "teacher/aa_notes.html", context)
+#     return render(request, "student/student_view_notes.html", context)
 
 
 def apply_leave(request):
@@ -266,11 +287,9 @@ def apply_leave(request):
         if form.is_valid():
             try:
                 obj = form.save(commit=False)
-                obj.teacher = teacher
-                # email = request.user.email      
+                obj.teacher = teacher   
                 obj.save()
                 email_to = "aasishdeuja@gmail.com"
-                # email_to = "dipinbhandari101@gmail.com "
                 email_from = "aasishdeuja@gmail.com"
                 email_subject = "Leave Application - {0}".format(teacher)
                 email_body = "Dear Administrator,\n\nI am writing to inform you that I have submitted a leave application. The details of my leave application are as follows:\n\nStart Date: {0}\nEnd Date: {1}\nReason for Leave: {2}\n\nThank you for your attention to this matter.\n\nSincerely,\n{3}".format(obj.start_date, obj.end_date, obj.reason, teacher)
@@ -278,54 +297,218 @@ def apply_leave(request):
                 try:
                     send_mail(email_subject, email_body, email_from, [email_to], fail_silently=False)
                     messages.success(request, "Application for leave has been submitted for approval and an email has been sent to the administrator.")
+                    return redirect(reverse('teacher_view_leave'))
                 except Exception:
                     messages.error(request, "Could not send email to school administrator.")
 
-                    return redirect(reverse('apply_leave'))
+                    return redirect(reverse('teacher_view_leave'))
             except Exception as e:
                 messages.error(request, "Could not apply! " +str(e))
         else:
             messages.error(request, "Form has errors!")
+    return render(request, "teacher/add_leave.html", context)
+
+def teacher_view_leave(request):
+    teacher = get_object_or_404(Teacher, admin_id=request.user.id)
+    context = {
+       
+        'leave_history': Leave.objects.filter(teacher=teacher),
+        'page_title': 'Apply for Leave'
+    }
     return render(request, "teacher/apply_leave.html", context)
 
 
-
-
-def bookmarked_book(request):
-    teacher = get_object_or_404(Teacher, admin_id=request.user.id)
+def manage_attendance(request):
+    level = Section.objects.all()
     context = {
-        'bookmarks': Bookmark.objects.filter(teacher=teacher).order_by('-updated_at'),
-        'page_title': 'Books'
+        'level':level,
+        'page_title': 'Attendance'
     }
-    return render(request, "book/bookmark.html", context)
+    return render(request, "teacher/manage_attendance.html", context)
 
-def create_bookmark(request, book_id): 
-    teacher = get_object_or_404(Teacher, admin=request.user)
-    book = get_object_or_404(Book, pk=book_id)
-    existing_bookmark = Bookmark.objects.filter(teacher=teacher, book=book).first()
-    try:
-        if existing_bookmark:
-            messages.info(request, "This book is already bookmarked.")
-            return redirect(reverse('bookmark_book'))
-        else:
-            Bookmark.objects.create(teacher=teacher, book=book)
-            messages.success(request, "The book has been bookmarked successfully.")
-            return redirect(reverse('bookmark_book'))
-    except Exception as e:
-        messages.error(request, "An error occurred while bookmarking the book.")
-        return redirect(reverse('bookmark_book'))
 
-def delete_bookmark(request, bookmark_id):
-    teacher = get_object_or_404(Teacher, admin_id=request.user.id)
-    bookmark = get_object_or_404(Bookmark, pk=bookmark_id, teacher=teacher)
-    try:
-        bookmark.delete()
-        messages.success(request, "Bookmark removed successfully.")
-        return redirect(reverse('bookmark_book'))
-    except Bookmark.DoesNotExist:
-        messages.error(request, "This bookmark does not exist.")
-        return redirect(reverse('bookmark_book'))
-    except Exception as e:
-        messages.error(request, "An error occurred while removing the bookmark.")
-        return redirect(reverse('bookmark_book'))
-    return redirect(reverse('bookmark_book'))
+
+def view_students_attendance(request,section_id):
+    student= Student.objects.all()
+    # students = Student.objects.filter(section=section_id)
+    section=Student.objects.filter(section=section_id)
+
+
+    context = {
+        'section':section,
+        'page_title': 'Manage Attendance'
+    }
+
+    return render(request, "teacher/students.html", context)
+
+
+
+# def view_attendance(request,section_id):
+#     students = Student.objects.filter(section=section_id)
+#     # attendance = Attendance1.objects.all()
+#     dates = Attendance1.objects.values_list('date', flat=True).distinct().order_by('date')
+#     context = {
+#         'students': students,
+#         # 'attendance': attendance,
+#         'dates': dates,
+#         'page_title': 'Attendance'
+#     }
+    
+#     return render(request, "attendance/view_attendance.html", context)
+
+
+def view_attendance(request,section_id):
+    students = Student.objects.filter(section=section_id)
+    attendance = Attendance.objects.all().order_by('-date')
+    attendance_by_month = {}
+    for record in attendance:
+        month = record.date.strftime("%B %Y")
+        if month not in attendance_by_month:
+            attendance_by_month[month] = []
+        attendance_by_month[month].append(record)
+
+    attendance_by_month_items = list(attendance_by_month.items())
+    paginator = Paginator(attendance_by_month_items, 1) # show 1 month per page
+    page = request.GET.get('page')
+    attendance_by_month_paginated = paginator.get_page(page)
+    
+    
+    
+    context = {
+        'students': students,
+        'attendance': attendance,
+        'section_id':section_id,
+        # 'attendance_id':attendance_id,
+        'attendance_by_month_paginated': attendance_by_month_paginated,
+        'page_title': 'Attendance'
+    }
+    
+    return render(request, "attendance/view_attendance.html", context)
+
+
+# def view_attendance(request, section_id, month=None, year=None):
+#     students = Student.objects.filter(section=section_id)
+#     attendance = Attendance1.objects.all()
+#     dates = Attendance1.objects.values_list('date', flat=True).distinct().order_by('date')
+#     filtered_dates = [date for date in dates if date.month == month and date.year == year]
+    
+#     context = {
+#         'students': students,
+#         'attendance': attendance,
+#         'dates': filtered_dates,
+#         'page_title': 'Attendance'
+#     }
+    
+#     return render(request, "attendance/view_attendance.html", context)
+
+
+
+# def create_attendance(request):
+#     if request.method == 'POST':
+#         date = request.POST['date']
+#         student_id = request.POST['student']
+#         present = request.POST['present'] == 'on'
+        
+#         student = Student.objects.get(id=student_id)
+#         attendance = Attendance1(date=date, student=student, present=present)
+#         attendance.save()
+        
+#         return redirect('view_attendance')
+        
+#     students = Student.objects.all()
+    
+#     context = {
+#         'students': students,
+#         'page_title': 'Create Attendance'
+#     }
+    
+#     return render(request, "attendance/create_attendance.html", context)
+
+# def create_attendance(request):
+#     if request.method == 'POST':
+#         date = request.POST['date']
+#         student_ids = request.POST.getlist('student')
+#         presents = request.POST.getlist('present')
+
+#         for i, student_id in enumerate(student_ids):
+#             student = Student.objects.get(id=student_id)
+#             present = presents[i] == 'on' if presents else False
+#             attendance = Attendance1(date=date, student=student, present=present)
+#             attendance.save()
+        
+#         return redirect('view_attendance')
+        
+#     students = Student.objects.all()
+    
+#     context = {
+#         'students': students,
+#         'page_title': 'Create Attendance'
+#     }
+    
+#     return render(request, "attendance/create_attendance.html", context)
+
+
+def create_attendance(request,section_id):
+    if request.method == 'POST':
+        date = request.POST['date']
+        students = Student.objects.filter(section=section_id)
+        section = Section.objects.get(id=section_id)
+        
+        if Attendance.objects.filter(date=date,section=section_id).exists():
+            messages.error(request, 'Attendance for this date has already been recorded')
+            return redirect('create_attendance',section_id=section_id)
+        for student in students:
+            student_id = student.id
+            present = request.POST.get(str(student_id), False) == 'on'
+            attendance = Attendance(date=date, student=student, section=section, present=present)
+            attendance.save()
+        
+        return redirect('manage_attendance')
+        
+    students = Student.objects.filter(section=section_id)
+    
+    context = {
+        'students': students,
+        # 'section_id':section_id,
+        'page_title': 'Create Attendance'
+    }
+    
+    return render(request, "attendance/create_attendance.html", context)
+
+
+
+
+def edit_attendance(request,section_id, attendance_id):
+    attendance = Attendance.objects.get(id=attendance_id)
+    if request.method == 'POST':
+        date = request.POST['date']
+        students = Student.objects.filter(section=section_id)
+        section = Section.objects.get(id=section_id)
+        # if Attendance.objects.filter(date=date,section=section_id).exclude(id=attendance_id).exists():
+        #     messages.error(request, 'Attendance for this date has already been recorded')
+        #     return redirect('edit_attendance',section_id=section_id, attendance_id=attendance_id)
+        for student in students:
+            student_id = student.id
+            present = request.POST.get(str(student_id), False) == 'on'
+            attendance.date = date
+            attendance.student = student
+            attendance.section = section
+            attendance.present = present
+            attendance.save()
+            
+        messages.error(request, 'Attendance for this date has been updated successfully.')
+        return redirect('manage_attendance')
+    
+    students = Student.objects.filter(section=section_id)
+
+    context = {
+        'attendance': attendance,
+        'students': students,
+        # 'section_id':section_id,
+        'page_title': 'Edit Attendance'
+    }
+
+    return render(request, "attendance/edit_attendance.html", context)
+
+
+

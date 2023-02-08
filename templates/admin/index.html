@@ -1,0 +1,256 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Hamro Tuition</title>
+
+   <!-- swiper css link  -->
+   <link rel="stylesheet" href="https://unpkg.com/swiper@8/swiper-bundle.min.css" />
+
+   <!-- font awesome cdn link  -->
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+
+   <!-- custom css file link  -->
+   <link rel="stylesheet" href="{% static 'css/index.css' %}">
+
+</head>
+<body>
+   
+<!-- header section starts  -->
+
+<header class="header">
+
+   <section class="flex">
+      {% for homecontent in home %}
+      <a href="#home" class="logo"><img src="{{homecontent.logo.url}}" alt="" style='height:50px;width:100px;'></a>
+{% endfor %}
+      <nav class="navbar">
+         <a href="#home">Home</a>
+         <a href="#about">About</a>
+         <a href="#teachers">Founders</a>
+         <a href="#reviews">Testimonials</a>
+         <a href="#contact">Contact</a>
+         <a href="{% url 'loginpage' %}">Login</a>
+      </nav>
+
+      <div id="menu-btn" class="fas fa-bars"></div>
+
+   </section>
+
+</header>
+
+<!-- header section ends -->
+
+<!-- home section starts  -->
+
+
+<section class="home" id="home">
+   <br><br><br><br><br><br><br><br>
+  <div class="row">
+
+     <div class="content">
+       {% for homecontent in home %}
+        <h3>{{homecontent.name}} <span>Tuition</span></h3>
+        <a href="#contact" class="btn">contact us</a>
+       
+     </div>
+
+     <div class="image">
+        <img src="{{homecontent.home_image.url}}" alt="">
+     </div>
+
+  </div>
+  {% endfor %}
+</section><br><br><br><br><br><br><br><br><br><br><br><br><br>
+
+<!-- home section ends -->
+
+<!-- couter section stars  -->
+
+
+
+<!-- couter section ends -->
+
+<!-- about section starts  -->
+
+<section class="about" id="about">
+
+   <div class="row">
+    {% for homecontent in about %}
+      <div class="image">
+         {% if homecontent.about_image %}
+         <img src="{{homecontent.about_image.url}}" alt="">
+         {% endif %}
+      </div>
+
+      <div class="content">
+         <h3>why choose us?</h3>
+         <p>{{homecontent.description|safe}}</p>
+         <a href="#contact" class="btn">contact us</a>
+      </div>
+{% endfor %}
+   </div>
+
+</section><br><br><br><br><br><br><br><br><br><br><br><br><br>
+
+<!-- about section ends -->
+
+<!-- courses section starts  -->
+
+
+
+<!-- courses section ends -->
+
+<!-- teachers section starts  -->
+
+<section class="teachers" id="teachers">
+
+   <h1 class="heading">Founder <span>Member's</span></h1>
+
+   <div class="swiper teachers-slider">
+
+      <div class="swiper-wrapper">
+
+         {% for bods in bod %}
+         <div class="swiper-slide slide">
+            <img src="{{bods.image.url}}" alt="">
+            <div class="share">
+               <a href="{{bods.facebook_link}}" class="fab fa-facebook-f"></a>
+               <a href="{{bods.twiter_link}}" class="fab fa-twitter"></a>
+               <a href="{{bods.instagram_link}}" class="fab fa-instagram"></a>
+               <a href="{{bods.linkedin_link}}" class="fab fa-linkedin"></a>
+            </div>
+            <h3>{{bods.name}}</h3>
+         </div>
+         {% endfor %}
+         
+         
+
+      </div>
+
+      <div class="swiper-pagination"></div>
+
+   </div>
+
+</section><br><br><br><br><br><br>
+
+<!-- teachers section ends -->
+
+<!-- reviews section starts  -->
+
+<section class="reviews" id="reviews">
+
+   <h1 class="heading"> student's <span>reviews</span></h1>
+
+   <div class="swiper reviews-slider">
+
+      <div class="swiper-wrapper">
+
+         {% for leave in leave_history %}
+        {% if leave.status == 1 %}
+         <div class="swiper-slide slide">
+            
+            <div class="user">
+               <img src="{{leave.image.url}}" alt="">
+               <div class="user-info">
+                  <h3>Ashish Deuja</h3>
+                  
+               </div>
+            </div>
+            <p>{{leave.description|safe}}</p>
+         </div>
+         {% endif %}
+         {% endfor %}
+
+      </div>
+
+      <div class="swiper-pagination"></div>
+
+   </div>
+
+</section><br><br><br><br><br><br>
+
+<!-- reviews section ends -->
+
+<!-- contact section starts  -->
+
+<section class="contact" id="contact">
+
+   <h1 class="heading"><span>contact</span> us</h1>
+
+   <div class="row">
+
+      <div class="image">
+         <img src="{% static 'images/contact.png' %}" alt="">
+      </div>
+
+      <form action="" method="post">
+         {% csrf_token %} 
+         <span>Name</span>
+         <input type="text" required placeholder="Enter your full name" maxlength="50" name="name" class="box">
+         <span>Email</span>
+         <input type="email" required placeholder="Enter your valid email" maxlength="50" name="email" class="box">
+         <span>Message</span>
+         <textarea required rows="9" cols="50" placeholder="Enter your message" maxlength="500" class="box" name="message"></textarea>
+         <input type="submit" value="send message" class="btn" name="send">
+      </form>
+
+   </div>
+
+</section>
+
+<!-- contact section ends -->
+
+<!-- footer section starts  -->
+
+<footer class="footer">
+
+   <section>
+
+      
+
+      <div class="credit">&copy; copyright @ 2022 by <span>mr. Ashish Deuja</span> | all rights reserved!</div>
+
+   </section>
+
+</footer>
+
+<!-- footer section ends -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- swiper js link  -->
+<script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>
+
+<!-- custom js file link  -->
+<script src="{% static 'js/index.js' %}"></script>
+<!--Start of Tawk.to Script-->
+<script type="text/javascript">
+   var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+   (function(){
+   var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+   s1.async=true;
+   s1.src='https://embed.tawk.to/63da87e4474251287910ebf0/1go6q5m6s';
+   s1.charset='UTF-8';
+   s1.setAttribute('crossorigin','*');
+   s0.parentNode.insertBefore(s1,s0);
+   })();
+   </script>
+   <!--End of Tawk.to Script-->
+</body>
+</html>
+
+

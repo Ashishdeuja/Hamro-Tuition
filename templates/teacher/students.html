@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block page_title %}{{page_title}}{% endblock page_title %}
+
+{% block content %}
+
+<section class="content">
+    <div class="container-fluid">
+        <table class='table'>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Section</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for student in section %}
+                <tr>
+                  <td>{{ student.id }}</td>
+                  <td>{{ student.admin.first_name }} {{ student.admin.last_name }}</td>
+                  <td>{{ student.section }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+    </div>
+</section>
+{% endblock content %}

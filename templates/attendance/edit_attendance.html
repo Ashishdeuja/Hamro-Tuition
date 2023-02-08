@@ -1,0 +1,24 @@
+<form method="post">
+    {% csrf_token %}
+    <label for="date">Date:</label>
+    <input type="text" name="date" value="{{ attendance.date }}">
+    <table>
+      <thead>
+        <tr>
+          <th>Student</th>
+          <th>Present</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for student in students %}
+          <tr>
+            <td>{{ student.admin.first_name }} {{ student.admin.last_name }}</td>
+            <td>
+              <input type="checkbox" name="{{ student.admin.id }}" {% if attendance.present %}checked{% endif %}>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <input type="submit" value="Save">
+  </form>

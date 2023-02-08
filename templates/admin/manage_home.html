@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block page_title %}{{page_title}}{% endblock page_title %}
+
+{% block content %}
+
+<section class="content">
+    <div class="container-fluid">
+        {% comment %} <div class="row">
+            <div class="col-md-12">
+                <!-- general form elements -->
+                <div class="card card-dark">
+                    <div class="card-header">
+                        <h3 class="card-title">{{page_title}}</h3>
+                    </div>
+
+                    {% include "login/form.html" with messages=messages  form=form button_text="Add Testimonial"%}
+                </div> {% endcomment %}
+                <!-- /.card -->
+
+<div class="card card-default">
+    <div class="col-md-12">
+        <!-- general form elements -->
+        <div class="card card-dark"style="float:right;">
+            <div class="card-header">
+              <a class="btn btn-primary" href="{% url 'about_home' %}"><i class="fas fa-plus"></i>Add</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    <div class="card-header"><h3 class="card-title"><b>Home Content</b></h3>
+   <div class="table">
+
+       <table class="table table-bordered table-hover">
+           <thead class="thead-dark">
+            <tr>
+                <th>S.N.</th>
+                <th>Name</th>
+                <th>Logo</th>
+                <th>Image</th>
+                <th>Action</th>
+         </tr>
+           </thead>
+        {% for homes in home %}
+        <tr>
+            <td>{{forloop.counter}}</td>
+            <td>{{homes.name}}</td>
+            <td>
+                {% if homes.logo %}
+                <img class="img img-fluid mb-2" height="100" width="100"
+                src="{{homes.logo.url}}" alt="">
+                {% endif %}
+            </td>
+                <td>
+                    {% if homes.home_image %}
+                    <img class="img img-fluid mb-2" height="100" width="100"
+                    src="{{homes.home_image.url}}" alt="">
+                    {% endif %}
+                </td>
+                    <td>
+                    <a class="btn btn-primary" href="{% url 'edit_home' pk=homes.id %}">
+                        
+                        Edit
+                    </a> - 
+                    <a class="btn btn-danger" href="{% url 'delete_home' pk=homes.id %}"onclick="return confirm('Are you sure you want to delete this home content ?')">
+                        
+                        Delete
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock content %}

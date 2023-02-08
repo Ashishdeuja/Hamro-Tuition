@@ -145,13 +145,13 @@
                                             
                                         </div>
                                     {% endif %}
-                                    {% comment %} {% if request.user.user_type == '3' %} {% endcomment %}
+                                    {% if request.user.user_type == '3' %}
                                             <div class ="bookmark"style="float:right;">
                                               <a class="dropdown-item" href="{% url 'create_bookmark' book.id %}"onclick="return confirm('Are you sure you want to bookmark this book ?')">
                                                 <ion-icon name="bookmarks-sharp"></ion-icon>
                                               </a>
                                             </div>
-                                            {% comment %} {% endif %} {% endcomment %}
+                                            {% endif %}
                                     
                                 </span>
                                 <div class="card-image">

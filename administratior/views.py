@@ -43,13 +43,15 @@ def Login(request, **kwargs):
                 return redirect(reverse("teacher_home_page"))
         else:   
             messages.error(request, "Enter the valid detalis")
-            return redirect("/")
+            return redirect(reverse("loginpage"))
+            # return redirect("/")
         
 
 def Logout(request):
     if request.user != None:
         logout(request)
-    return redirect("/")
+        # return redirect("/")
+    return redirect(reverse("index"))
 
 def admin_home_page(request):
     context = {
@@ -133,9 +135,11 @@ def add_section(request):
     if request.method == 'POST':
         if form.is_valid():
             section = form.cleaned_data.get('section')
+            level = form.cleaned_data.get('level')
             try:
                 sections =Section()
                 sections.section = section
+                sections.level=level
                 sections.save()
                 messages.success(request, "Successfully Added")
                 return redirect(reverse('add_section'))
@@ -164,9 +168,11 @@ def edit_section(request, section_id):
     if request.method == 'POST':
         if form.is_valid():
             section = form.cleaned_data.get('section')
+            level = form.cleaned_data.get('level')
             try:
                 sections = Section.objects.get(id=section_id)
                 sections.section = section
+                sections.level=level
                 sections.save()
                 messages.success(request, "Section Successfully Updated")
                 return redirect(reverse('manage_section'))
@@ -850,11 +856,14 @@ def delete_notice(request, pk):
 
 
 @csrf_exempt
-def view_leave(request):
+def teacher_check_leave(request):
     if request.method != 'POST':
+        teacher=Teacher.objects.all()
+        # teacher = get_object_or_404(Teacher)
         allLeave = Leave.objects.all()
         context = {
             'allLeave': allLeave,
+            'teacher':teacher,
             'page_title': 'Leave Applications '
         }
         return render(request, "admin/view_leave.html", context)
@@ -882,11 +891,11 @@ def view_leave(request):
 
             try:
                 send_mail(email_subject, email_body, email_from, [email_to], fail_silently=False)
-                messages.success(request, "The leave approved application has benn sent to teacher.")
+                messages.success(request, "The leave approved application has been sent to teacher.")
             except Exception:
                     messages.error(request, "Could not send email to teacher.")
 
-                    return redirect(reverse('view_leave'))
+                    return redirect(reverse('teacher_check_leave'))
         else:
             status = -1
             email_to = email
@@ -900,14 +909,80 @@ def view_leave(request):
             except Exception:
                     messages.error(request, "Could not send email to teacher.")
 
-                    return redirect(reverse('view_leave'))
+                    return redirect(reverse('teacher_check_leave'))
         try:
             leave = get_object_or_404(Leave, id=id)
             leave.status = status
             leave.save()
-            return HttpResponse(True)
+            return redirect(reverse('teacher_check_leave'))
         except Exception as e:
             return False
+
+
+
+@csrf_exempt
+def student_check_leave(request):
+    if request.method != 'POST':
+        student=Student.objects.all()
+        # teacher = get_object_or_404(Teacher)
+        allLeave = Leave.objects.all()
+        context = {
+            'allLeave': allLeave,
+            'student':student,
+            'page_title': 'Student Leave Applications '
+        }
+        return render(request, "admin/student_view_leave.html", context)
+    else:
+        
+        id = request.POST.get('id')
+        status = request.POST.get('status')
+        leave=Leave.objects.filter(id=id).select_related('student')
+        email=leave[0].student.admin.email
+        student_name=leave[0].student
+        first_name=request.user.first_name
+        last_name=request.user.last_name
+        if (status == '1'):
+            status = 1
+            # leave=Leave.objects.filter(id=id).select_related('teacher')
+            # print(leave[0].teacher.admin.email)
+            # print(leave[0].teacher)
+            # print(request.user.first_name)
+            # print(request.user.last_name)
+            
+            email_to = email
+            email_from = "aasishdeuja@gmail.com"
+            email_subject = "Approved Leave Application"
+            email_body = "Dear {0},\n\nI am writing to inform you that your leave application has been approved.\n\nRegards,\n{1} {2}".format(student_name,first_name,last_name)
+
+            try:
+                send_mail(email_subject, email_body, email_from, [email_to], fail_silently=False)
+                messages.success(request, "The leave approved application has been sent to student.")
+            except Exception:
+                    messages.error(request, "Could not send email to student.")
+
+                    return redirect(reverse('student_check_leave'))
+        else:
+            status = -1
+            email_to = email
+            email_from = "aasishdeuja@gmail.com"
+            email_subject = "Rejected Leave Application"
+            email_body = "Dear {0},\n\nI am writing to inform you that your leave application has been rejected.\n\nRegards,\n{1} {2}".format(student_name,first_name,last_name)
+
+            try:
+                send_mail(email_subject, email_body, email_from, [email_to], fail_silently=False)
+                messages.success(request, "The leave approved application has been sent to teacher.")
+            except Exception:
+                    messages.error(request, "Could not send email to teacher.")
+
+                    return redirect(reverse('student_check_leave'))
+        try:
+            leave = get_object_or_404(Leave, id=id)
+            leave.status = status
+            leave.save()
+            return redirect(reverse('student_check_leave'))
+        except Exception as e:
+            return False
+
 
 
 def view_timetable(request):
@@ -926,5 +1001,282 @@ def check_email(request):
         return HttpResponse(False)
     except Exception as e:
         return HttpResponse(False)
+
+
     
+def home(request):
+    if request.method == 'POST':
+        email_to = "aasishdeuja@gmail.com"
+        email_from = "aasishdeuja@gmail.com"
+        email_subject = "Enquiry by {0}".format(request.POST.get('name'))
+        email_body = "Dear Administratior,\n\n{0}.\n\nRegards,\n{1}\n{2}".format(request.POST.get('message'),request.POST.get('name'),request.POST.get('email'))
+        
+        send_mail(email_subject, email_body, email_from, [email_to], fail_silently=False) 
+        return redirect(reverse('index'))
+    context = {
+        'leave_history': Testimonial.objects.all(),
+        'home':About.objects.all(),
+        'about':AboutPage.objects.all(),
+        'bod':BOD.objects.all(),
+        'page_title': 'Testimonial'
+    }
+    return render(request,'admin/index.html',context)
+
+
+@csrf_exempt
+def testimonial(request):
+    if request.method != 'POST':
+        # teacher = get_object_or_404(Teacher)
+        testimonials = Testimonial.objects.all()
+        context = {
+            'testimonials': testimonials,
+            # 'teacher':teacher,
+            'page_title': 'Testimonials '
+        }
+        return render(request, "admin/view_testimonials.html", context)
+    else:
+        id = request.POST.get('id')
+        status = request.POST.get('status')
+        if (status == '1'):
+            status = 1
+        else:
+            status = -1
+        try:
+            leave = get_object_or_404(Testimonial, id=id)
+            leave.status = status
+            leave.save()
+            return redirect('testimonial')
+        except Exception as e:
+            return False
+        
+def about_home(request):
+    form = AboutForm(request.POST or None, request.FILES or None)
+    context = {
+        'form': form,
+        'page_title': 'Home Page Content'
+    }
+    if request.method == 'POST':
+        if form.is_valid():
+            name=form.cleaned_data.get('name')
+            logo = request.FILES.get('logo')
+            home_image = request.FILES.get('home_image')
+            try:
+                home=About()
+                home.name=name
+                home.logo=logo
+                home.home_image=home_image
+                home.save()
+                messages.success(request, (name + ' has been uploaded.'))
+                return redirect('manage_home_page')
+            except Exception as e:
+                messages.error(request, "Could Not Add " + str(e))
+                
+        else:
+            messages.error(request, 'Please correct the error(s) below.')
+    return render(request, 'admin/add_home.html',context)
+
+def edit_home(request, pk):
+    instance = get_object_or_404(About, pk=pk)
+    form = AboutForm(request.POST or None, instance=instance)
+    context = {
+        'form': form,
+        'pk': pk,
+        'page_title': 'Edit Home Page Content'
+    }
+    if request.method == 'POST':
+        if form.is_valid():
+            name=form.cleaned_data.get('name')
+            logo = request.FILES.get('logo')
+            home_image = request.FILES.get('home_image')
+            try:
+                home=About()
+                home.name=name
+                home.logo=logo
+                home.home_image=home_image
+                home.save()
+                messages.success(request, (name + ' has been uploaded.'))
+                return redirect('manage_home_page')
+            except Exception as e:
+                messages.error(request, "Could Not Add " + str(e))
+                
+        else:
+            messages.error(request, 'Please correct the error(s) below.')
+    return render(request, 'admin/edit_home.html',context)
+
+
+def delete_home(request, pk):
+    home = get_object_or_404(About, pk=pk)
+    try:
+        home.delete()
+        messages.success(request, ('Home content has been deleted.'))
+    except Exception:
+        messages.error(request, "The home content couldn't be deleted !!")
+    return redirect('manage_home_page')
+
+
+def manage_home_page(request):
+    
+    context = {
+       
+        'home': About.objects.all(),
+        'page_title': 'Home Content'
+    }
+    return render(request, "admin/manage_home.html", context)
+
+
+def aboutpage_home(request):
+    form = AboutPageForm(request.POST or None, request.FILES or None)
+    context = {
+        'form': form,
+        'page_title': 'About Page Content'
+    }
+    if request.method == 'POST':
+        if form.is_valid():
+            about_image = request.FILES.get('about_image')
+            description = form.cleaned_data.get('description')
+            try:
+                about=AboutPage()
+                about.about_image=about_image
+                about.description=description
+                about.save()
+                messages.success(request, ('About Content has been uploaded.'))
+                return redirect('manage_about_page')
+            except Exception as e:
+                messages.error(request, "Could Not Add " + str(e))
+                
+        else:
+            messages.error(request, 'Please correct the error(s) below.')
+    return render(request, 'admin/add_about.html',context)
+
+
+def manage_about_page(request):
+    
+    context = {
+       
+        'abouts': AboutPage.objects.all(),
+        'page_title': 'About Content'
+    }
+    return render(request, "admin/manage_about.html", context)
+
+def edit_about(request, pk):
+    instance = get_object_or_404(AboutPage, pk=pk)
+    form = AboutPageForm(request.POST or None, instance=instance)
+    context = {
+        'form': form,
+        'pk': pk,
+        'page_title': 'Edit About Page Content'
+    }
+    if request.method == 'POST':
+        if form.is_valid():
+            about_image = request.FILES.get('about_image')
+            description = form.cleaned_data.get('description')
+            try:
+                about=AboutPage.objects.get(pk=pk)
+                about.about_image=about_image
+                about.description=description
+                about.save()
+                messages.success(request, ('About Content has been updated.'))
+                return redirect('manage_about_page')
+            except Exception as e:
+                messages.error(request, "Could Not Add " + str(e))
+                
+        else:
+            messages.error(request, 'Please correct the error(s) below.')
+    return render(request, 'admin/edit_home.html',context)
+
+def delete_about(request, pk):
+    about = get_object_or_404(AboutPage, pk=pk)
+    try:
+        about.delete()
+        messages.success(request, ('About content has been deleted.'))
+    except Exception:
+        messages.error(request, "The about content couldn't be deleted !!")
+    return redirect('manage_about_page')
+
+
+def bod_page(request):
+    form = BODForm(request.POST or None, request.FILES or None)
+    context = {
+        'form': form,
+        'page_title': 'BOD Page Content'
+    }
+    if request.method == 'POST':
+        if form.is_valid():
+            image = request.FILES.get('image')
+            name=form.cleaned_data.get('name')
+            facebook_link = form.cleaned_data.get('facebook_link')
+            twiter_link = form.cleaned_data.get('twiter_link')
+            instagram_link = form.cleaned_data.get('instagram_link')
+            linkedin_link = form.cleaned_data.get('linkedin_link')
+            try:
+                bod=BOD()
+                bod.image=image
+                bod.name=name
+                bod.facebook_link=facebook_link
+                bod.instagram_link=instagram_link
+                bod.twiter_link=twiter_link
+                bod.linkedin_link=linkedin_link
+                bod.save()
+                messages.success(request, ('BOD Content has been uploaded.'))
+                return redirect('manage_bod_page')
+            except Exception as e:
+                messages.error(request, "Could Not Add " + str(e))
+                
+        else:
+            messages.error(request, 'Please correct the error(s) below.')
+    return render(request, 'admin/add_bod.html',context)
+
+
+def manage_bod_page(request):
+    
+    context = {
+       
+        'bod': BOD.objects.all(),
+        'page_title': 'BOD Content'
+    }
+    return render(request, "admin/manage_bod.html", context)
+
+
+def edit_bod_page(request,pk):
+    instance = get_object_or_404(BOD, pk=pk)
+    form = BODForm(request.POST or None, instance=instance)
+    context = {
+        'form': form,
+        'pk': pk,
+        'page_title': 'Edit About Page Content'
+    }
+    if request.method == 'POST':
+        if form.is_valid():
+            image = request.FILES.get('image')
+            name=form.cleaned_data.get('name')
+            facebook_link = form.cleaned_data.get('facebook_link')
+            twiter_link = form.cleaned_data.get('twiter_link')
+            instagram_link = form.cleaned_data.get('instagram_link')
+            linkedin_link = form.cleaned_data.get('linkedin_link')
+            try:
+                bod=BOD.objects.get(pk=pk)
+                bod.image=image
+                bod.name=name
+                bod.facebook_link=facebook_link
+                bod.instagram_link=instagram_link
+                bod.twiter_link=twiter_link
+                bod.linkedin_link=linkedin_link
+                bod.save()
+                messages.success(request, ('BOD Content has been updated.'))
+                return redirect('manage_bod_page')
+            except Exception as e:
+                messages.error(request, "Could Not Add " + str(e))
+                
+        else:
+            messages.error(request, 'Please correct the error(s) below.')
+    return render(request, 'admin/edit_home.html',context)
+
+def delete_bod(request, pk):
+    bod = get_object_or_404(BOD, pk=pk)
+    try:
+        bod.delete()
+        messages.success(request, ('BOD content has been deleted.'))
+    except Exception:
+        messages.error(request, "The bod content couldn't be deleted !!")
+    return redirect('manage_bod_page')
 

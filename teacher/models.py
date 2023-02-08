@@ -1,3 +1,4 @@
+import math
 from django.db import models
 from ckeditor.fields import RichTextField
 from administratior.models import *
@@ -61,10 +62,15 @@ class Leave(models.Model):
 
 class Feedback(models.Model):
     message=models.TextField()
+    updated_date = models.DateTimeField(auto_now=True, auto_now_add=False, null=True)
+    upload_time = models.DateTimeField(auto_now=False, auto_now_add=True, null=True)
+
     
     
-class Bookmark(models.Model):
-    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, null=True, blank=True)
-    book=models.ForeignKey(Book,on_delete=models.CASCADE,null=True,blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+class Attendance(models.Model):
+    date = models.DateField()
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    section = models.ForeignKey(Section, on_delete=models.CASCADE)
+    present = models.BooleanField(default=False)
+    updated_date = models.DateTimeField(auto_now=True, auto_now_add=False, null=True)
+    upload_time = models.DateTimeField(auto_now=False, auto_now_add=True, null=True)   

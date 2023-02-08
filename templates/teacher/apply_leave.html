@@ -4,7 +4,7 @@
 
 {% block content %}
 
-<section class="content">
+{% comment %} <section class="content">
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-12">
@@ -15,9 +15,19 @@
                     </div>
 
                     {% include "login/form.html" with messages=messages  form=form button_text="Apply For Leave"%}
-                </div>
+                </div> {% endcomment %}
                 <!-- /.card -->
+
 <div class="card card-default">
+    <div class="col-md-12">
+        <!-- general form elements -->
+        <div class="card card-dark"style="float:right;">
+            <div class="card-header">
+              <a class="btn btn-primary" href="{% url 'apply_leave' %}"><i class="fas fa-plus"></i>Apply Leave</a>
+            </div>
+          </div>
+        </div>
+      </div>
     <div class="card-header"><h3 class="card-title"><b>Leave History</b></h3>
    <div class="table">
 

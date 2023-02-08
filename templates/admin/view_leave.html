@@ -14,8 +14,9 @@
                         <h3 class="card-title">{{page_title}}</h3>
                     </div>
 
-                    <div class="table card-body">
+                    <div class="table">
                         <table class="table table-bordered table-hover">
+                            <thead>
                             <tr>
                                 <th>S.N.</th>
                                 <th>Teacher</th>
@@ -26,7 +27,10 @@
                                 <th>Action</th>
 
                             </tr>
+                        </thead>
+                        {% for teachers in teacher %}
                             {% for leave in  allLeave %}
+                            {% if leave.teacher == teachers %}
                               <tr>
                                   <td>{{forloop.counter}}</td>
                                   <td>{{leave.teacher}}</td>
@@ -61,12 +65,11 @@
                                         <button type="submit" name="status" value="-1" id="reject-button">Reject</button>
                                     </form>
                                     {% endif %}
-                                     </td>
-                                  
-                                      
-                                    
+                                     </td> 
                        
                               </tr>
+                            {% endif %}
+                            {% endfor %}
                             {% endfor %}
                         </table>
                     </div>

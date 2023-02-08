@@ -2,9 +2,10 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path("", views.login_page, name='loginpage'),
+    path("", views.home, name='index'),
+    path("login", views.login_page, name='loginpage'),
     path("Login/", views.Login, name='login'),
-    path("Logout/", views.Logout, name='logout'),
+    path("Logout/", views.Logout, name='user_logout'),
     path("admin/home/", views.admin_home_page, name='admin_home_page'),
     path("add/class/", views.add_class, name='add_class'),
     path("manage/class/", views.manage_class, name='manage_class'),
@@ -43,7 +44,25 @@ urlpatterns = [
     path('add/notice/',views.add_notice, name='add_notice'),
     path('edit/notice/<int:pk>',views.edit_notice, name='edit_notice'),
     path('delete/notice/<int:pk>',views.delete_notice, name='delete_notice'),
-    path("view/leave/", views.view_leave, name="view_leave",),
+    path("teacher/leave/", views.teacher_check_leave, name="teacher_check_leave"),
+    path("student/leave/", views.student_check_leave, name="student_check_leave"),
     path('view/timetable/', views.view_timetable, name='view_timetable'),
+    path('check/testimonial/', views.testimonial, name='testimonial'),
+    path('add/home/', views.about_home, name='about_home'),
+    path('manage/home/', views.manage_home_page, name='manage_home_page'),
+    path('edit/home/<int:pk>',views.edit_home, name='edit_home'),
+    path('delete/home/<int:pk>',views.delete_home, name='delete_home'),
+    path('manage/about/', views.manage_about_page, name='manage_about_page'),
+    path('add/about/', views.aboutpage_home, name='aboutpage_home'),
+    path('edit/about/<int:pk>',views.edit_about, name='edit_about'),
+    path('delete/about/<int:pk>',views.delete_about, name='delete_about'),
+    
+    path('add/bod/', views.bod_page, name='bod_page'),
+    path('manage/bod/', views.manage_bod_page, name='manage_bod_page'),
+    path('edit/bod/<int:pk>',views.edit_bod_page, name='edit_bod_page'),
+    path('delete/bod/<int:pk>',views.delete_bod, name='delete_bod_page'),
+
+    
+    
     
 ]

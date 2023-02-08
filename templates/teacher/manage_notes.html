@@ -125,27 +125,27 @@
       
 </style>
 
-{% if level %}
+{% if subject %}
     <div class="slide-container swiper">
-        {% for levels in level %}
+        {% for subjects in subject %}
             <div class="col-md-4 mb-4">
                <div class="slide-content">
                     <div class="card-wrapper">
                         <div class="card">
                             <div class="image-content">
                                 <span class="overlay">
-                                    {% url 'view_notes' levels.id  as view_notes %}
+                                    {% url 'view_notes' subjects.id  as view_notes %}
                                     <a href="{{view_notes}}" class="nav-link {% if view_notes == request.path %} active {% endif %}">
-                                    <h2 class="name">{{levels.level}}</h2>
+                                    <h2 class="name">{{subjects.subject_name}}</h2>
                                     
                                     </a>
                                 </span>
                                 
                             </div>
                             <div class="card-content">
-                                <h5 class="sub-name">Subject: {{levels.subject_name}}</h5>
+                                <h5 class="sub-name">Subject: {{subjects.level}}</h5>
                                 <br> 
-                                <h3 class="description">Here are the notes of the {{levels.level}}
+                                <h3 class="description">Here are the notes of the {{subjects.level}}
                                 <br><br>                        
                             </div>
                         </div>

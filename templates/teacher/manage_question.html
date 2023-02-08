@@ -89,7 +89,7 @@
     top: 0;
     height: 100%;
     width: 100%;
-    background-color: #4070F4;
+    background-color:#823589;
     border-radius: 25px 25px 0 25px;
   }
   .overlay::before,
@@ -100,7 +100,7 @@
     bottom: -40px;
     height: 40px;
     width: 40px;
-    background-color: #4070F4;
+    background-color: #823589;
   }
   .overlay::after{
     border-radius: 0 25px 0 0;
@@ -127,6 +127,7 @@
     color: #333;
     margin-top:8px;
     text-align:center;
+    color:white;
   }
   .sub-name{
     font-size: 14px;
@@ -165,14 +166,14 @@
                                 <span class="overlay">
                                     {% url 'view_questions' subjects.id  as view_questions %}
                                     <a href="{{view_questions}}" class="nav-link {% if view_questions == request.path %} active {% endif %}">
-                                    <h2 class="name">{{subjects.level}}</h2>
+                                    <h2 class="name">{{subjects.subject_name}}</h2>
                                     
                                     </a>
                                 </span>
                                 
                             </div>
                             <div class="card-content">
-                                <h5 class="sub-name">Subject: {{subjects.subject_name}}</h5>
+                                <h5 class="sub-name">Subject: {{subjects.level}}</h5>
                                 <br> 
                                 <h3 class="description">Here are the questions of the {{subjects.level}}
                                 <br><br>                        

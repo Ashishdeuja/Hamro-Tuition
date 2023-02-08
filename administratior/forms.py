@@ -1,6 +1,8 @@
 from django import forms
 from django.forms.widgets import DateInput, TextInput
 
+from student.models import Testimonial
+
 from .models import *
 
 
@@ -78,7 +80,7 @@ class SectionForm(FormSettings):
         super(SectionForm, self).__init__(*args, **kwargs)
     
     class Meta:
-        fields=['section']
+        fields=['section','level']
         model=Section    
     
 class SubjectForm(FormSettings):
@@ -139,3 +141,29 @@ class NewsAndEventsForm(forms.ModelForm):
         self.fields['title'].widget.attrs.update({'class': 'form-control'})
         self.fields['summary'].widget.attrs.update({'class': 'form-control'})
         self.fields['posted_as'].widget.attrs.update({'class': 'form-control'})
+        
+        
+        
+class AboutForm(FormSettings):
+    def __init__(self, *args, **kwargs):
+        super(AboutForm, self).__init__(*args, **kwargs)
+        
+    class Meta:
+        model = About
+        fields = ['name', 'logo', 'home_image']    
+        
+class AboutPageForm(FormSettings):
+    def __init__(self, *args, **kwargs):
+        super(AboutPageForm, self).__init__(*args, **kwargs)
+        
+    class Meta:
+        model = AboutPage
+        fields = ['about_image', 'description'] 
+        
+class BODForm(FormSettings):
+    def __init__(self, *args, **kwargs):
+        super(BODForm, self).__init__(*args, **kwargs)
+        
+    class Meta:
+        model = BOD
+        fields = ['image','name','facebook_link','twiter_link','instagram_link','linkedin_link']    

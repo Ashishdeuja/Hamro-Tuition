@@ -5,8 +5,8 @@ from django.dispatch import receiver
 from django.db.models.signals import post_save
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-
-
+from ckeditor.fields import RichTextField
+from djsingleton.models import SingletonModel
 
 
 class CustomUserManager(UserManager):
@@ -69,7 +69,7 @@ class Level(models.Model):
     
 class Section(models.Model):
     section=models.CharField(max_length=22)
-    # level=models.ForeignKey(Level, on_delete=models.CASCADE)
+    level=models.ForeignKey(Level, on_delete=models.CASCADE,null=True,blank=True)
     
     def __str__(self):
         return self.section
@@ -169,6 +169,26 @@ class TimeTable(models.Model):
     end_time = models.TimeField()
     class_name = models.CharField(max_length=50)
     teacher = models.CharField(max_length=50)
+
+
+class About(SingletonModel):
+    name = models.CharField(max_length=100)
+    logo=models.ImageField(upload_to='homecontent/')
+    home_image=models.ImageField(upload_to='homecontent/')
+
+
+class AboutPage(SingletonModel):
+    about_image=models.ImageField(upload_to='homecontent/')
+    description=RichTextField()
+
+
+class BOD(models.Model):
+    image=models.ImageField(upload_to='bod/')
+    name=models.CharField(max_length=200)
+    facebook_link=models.URLField(max_length=200, blank=True)
+    twiter_link=models.URLField(max_length=200, blank=True)
+    instagram_link=models.URLField(max_length=200, blank=True)
+    linkedin_link=models.URLField(max_length=200, blank=True)
 
 
 @receiver(post_save, sender=CustomUser)

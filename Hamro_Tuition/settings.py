@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'tinymce',
     'crispy_forms',
     'student',
+    'djsingleton',
 ]
 
 MIDDLEWARE = [

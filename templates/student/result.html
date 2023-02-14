@@ -35,11 +35,12 @@
         text-align: left;
         font-size: 18px;
     }
+    
 </style>
 {% comment %} <button onclick="myfun('pt')" class="btn btn-primary mt-3"style="float:right">Print Result</button> {% endcomment %}
 <div id='pt'class="container ">
     
-    {% comment %} <a href="{% url 'mock_test_result_pdf' subject_id %}" class="btn btn-info">Download Result</a>  {% endcomment %}
+    
     {% comment %} <div class="card-columns" style="padding: 10px; margin: 20px;"> {% endcomment %}
         <div class="card" align="centre">
             {% comment %} <img class="card-img-top" src="http://kmit.in/emagazine/wp-content/uploads/2018/02/karnataka-results.jpg" alt="Card image cap"> {% endcomment %}
@@ -72,6 +73,7 @@
                         </tr>
                 
                     </table>
+                    <a href="#" class="btn btn-info">Download Result</a> 
                 {% comment %} <h5 class="card-title">Score: {{score}}</h5>
  
                 <p class="card-text">Percentage: {{percentage}}%</p>

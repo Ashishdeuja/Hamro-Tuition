@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block page_title %}{{page_title}}{% endblock page_title %}
+
+{% block content %}
+
+<style>
+  .attend{
+    float:right;
+    margin-right:100px;
+    margin-bottom:40px;
+  }
+</style>
+
+
+
+<div class='attend'>
+  <a href="{% url 'admin_view_all_attendance' section_id %}" class='btn btn-primary'>View</a>
+  <div class="btn-group" role="group" style='margin-left:10px;'>
+    <button id="btnGroupDrop1" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      Reports
+    </button>
+    <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+      <a href="{% url 'daily_all_attendance' section_id %}" class="dropdown-item">Daily Report</a>
+      <a href="{% url 'weekly_all_attendance' section_id %}" class="dropdown-item">Weekly Report</a>
+      <a href="{% url 'admin_download_all_attendance' section_id %}" class="dropdown-item">Monthly Report</a>
+      <a href="{% url 'yearly_all_attendance' section_id %}" class="dropdown-item">Yearly Report</a>
+    </div>
+  </div>
+</div>
+<section class="content">
+    <div class="container-fluid">
+        <table class='table'>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Report</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for students in student %}
+                <tr>
+                  <td>{{ forloop.counter }}</td>
+                  <td>{{ students.admin.first_name }} {{ students.admin.last_name }}</td>
+                  <td>{{ students.admin.email }}</td>
+                  <td>
+                    <a href="{% url 'admin_attendance_view' students.id %}" class="btn btn-primary">view</a> - 
+                    
+                    
+            
+                      <div class="btn-group" role="group">
+                        <button id="btnGroupDrop1" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          Reports
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                          <a href="{% url 'view_daily_attendance_pdf' students.id %}" class="dropdown-item">Daily Report</a>
+                          <a href="{% url 'view_weekly_attendance_pdf' students.id %}" class="dropdown-item">Weekly Report</a>
+                          <a href="{% url 'attendance_pdf' students.id %}" class="dropdown-item">Monthly Report</a>
+                          <a href="{% url 'view_yearly_attendance_pdf' students.id %}" class="dropdown-item">Yearly Report</a>
+                        </div>
+                      </div>
+      
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+    </div>
+</section>
+{% endblock content %}
+
+{% block custom_js%}
+<script>
+  const btnGroups = document.querySelectorAll('.btn-group');
+
+  btnGroups.forEach(function(btnGroup) {
+    const dropdownToggle = btnGroup.querySelector('.dropdown-toggle');
+    const dropdownMenu = btnGroup.querySelector('.dropdown-menu');
+
+    dropdownToggle.addEventListener('click', function() {
+      dropdownMenu.classList.toggle('show');
+    });
+
+    window.addEventListener('click', function(event) {
+      if (!dropdownToggle.contains(event.target) && !dropdownMenu.contains(event.target)) {
+        dropdownMenu.classList.remove('show');
+      }
+    });
+  });
+</script>
+{% endblock custom_js %}

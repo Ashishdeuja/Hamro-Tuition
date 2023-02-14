@@ -258,6 +258,15 @@
             </a>
          </li>
          <li>
+            {% url 'admin_view_attendance' as admin_view_attendance %}
+            <a href="{{admin_view_attendance}}" class="nav-link {% if sadmin_view_attendance == request.path %} active {% endif %}">
+                <span class="icon">
+                    <ion-icon name="today-sharp"></ion-icon>
+                </span>
+                <span class="title">Attendance</span>
+            </a>
+        </li>
+         <li>
             {% url 'teacher_check_leave' as teacher_check_leave %}
             <a href="{{teacher_check_leave}}" class="nav-link {% if teacher_check_leave == request.path %} active {% endif %}">
                 <span class="icon">
@@ -456,8 +465,8 @@
             </ul>
         </li>
         <li>
-            {% url 'manage_attendance' as manage_attendance %}
-            <a href="{{manage_attendance}}" class="nav-link {% if manage_attendance == request.path %} active {% endif %}">
+            {% url 'manage_attendance_class' as manage_attendance_class %}
+            <a href="{{manage_attendance_class}}" class="nav-link {% if manage_attendance_class == request.path %} active {% endif %}">
                 <span class="icon">
                     <ion-icon name="today-sharp"></ion-icon>
                 </span>

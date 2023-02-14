@@ -1,0 +1,82 @@
+{% load custom_filters %}
+  <style>
+    h1 {
+      font-size: 32px;
+      font-weight: bold;
+      text-align:center;
+      color:red;
+      margin-top: 30px;
+      margin-bottom: 30px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    th, td {
+      border: 1px solid black;
+      padding: 10px;
+      text-align: center;
+    }
+    
+    thead {
+      background-color: #ddd;
+    }
+    
+    th {
+      font-weight: bold;
+    }
+    
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+    
+    tr:hover {
+      background-color: #ddd;
+    }
+  </style>
+
+
+
+
+  <h1>{{ page_title }}</h1>
+  <table>
+    <thead>
+      <tr>
+        <th rowspan='2'>Student</th>
+        {% for month in attendance_by_month.items %}
+          <th colspan='3'>{{ month|split_first }}</th>
+        {% endfor %}
+        <th rowspan='2'>Total</th>
+        <th rowspan='2'>Present</th>
+        <th rowspan='2'>Absent</th>
+        <th rowspan='2'>Percentage</th>
+      </tr>
+      <tr>
+      {% for month in attendance_by_month.items %}
+      
+        <td>Total</td>
+        <td>Total Present</td>
+        <td>Total Absent</td>
+      
+      {% endfor %}</tr>
+    </thead>
+    <tbody>
+      {% for row in table_rows %}
+        <tr>
+          <td>{{ row.student }}</td>
+          {% for month_data in row.month_data %}
+            <td>{{ month_data.total_days }}</td>
+            <td>{{ month_data.present_days }}</td>
+            <td>{{ month_data.absent_days }}</td>
+          {% endfor %}
+          <td>{{ row.total_days }}</td>
+          <td>{{ row.present_days }}</td>
+          <td>{{ row.absent_days }}</td>
+          <td>{{ row.percentage }}%</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+

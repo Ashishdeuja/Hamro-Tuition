@@ -124,6 +124,51 @@
       }
 
 
+    
+        .selection {
+          display: flex;
+          float:right;
+          align-items: center;
+          margin-bottom: 20px;
+          margin-right:280px;
+          {% comment %} margin-top:-3%; {% endcomment %}
+        }
+        
+        .selection label {
+          font-weight: bold;
+          margin-right: 10px;
+        }
+        
+        .selection select {
+          padding: 8px;
+          border: 1px solid #ccc;
+          border-radius: 4px;
+        }
+          
+        
+        select:hover{
+          cursor: pointer;
+        }
+        input,input[type="text"] {
+          width: 35%;
+          padding: 10px;
+          border: 1px solid #ccc;
+          border-radius: 5px;
+          margin-right: 10px;
+          margin-left:2%;
+        }
+        input{
+          width:12%;
+        }
+        button[type="submit"] {
+          width: 10%;
+          padding: 10px;
+          background-color: #4CAF50;
+          color: white;
+          border: 1px solid #ccc;
+          border-radius: 5px;
+          cursor: pointer;
+        }
       
       
 </style>
@@ -212,6 +257,20 @@
             </div>
           </div>
           {% endif %}
+          <form method="get">
+            {% csrf_token %}
+            <input type="text" name="q" placeholder="Search...">
+                <button type="submit">Search</button>
+            <div class="selection">
+            <label>Filter: </label>
+            <select name="status" onchange="this.form.submit()">
+                <option value="">All</option>
+                <option value="easy" {% if request.GET.status == 'easy' %}selected{% endif %}>Easy</option>
+                <option value="difficult" {% if request.GET.status == 'difficult' %}selected{% endif %}>Difficult</option>
+                
+              </select>
+            </div>
+          </form>
     
                     <div class="card-body">
                         <table id="example2" class="table table-bordered table-hover">

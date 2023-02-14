@@ -1,4 +1,4 @@
-from datetime import timezone
+from datetime import date, timezone
 from http.client import HTTPResponse
 import json
 from django.shortcuts import render,get_object_or_404,redirect,reverse
@@ -10,7 +10,9 @@ from django.core.files.storage import FileSystemStorage
 from django.contrib import messages
 from django.http import HttpResponse, JsonResponse
 from django.core.paginator import Paginator
-
+from django.template.loader import get_template
+from xhtml2pdf import pisa
+from django.db.models import Q
 # Create your views here.
 def teacher_home_page(request):
     context = {
@@ -23,12 +25,12 @@ def teacher_profile(request):
     teacher = get_object_or_404(Teacher, admin=request.user)
    
     form = TeacherForm(request.POST or None, request.FILES or None, instance=teacher)
-    # dob=admin.dob
-    # today = date.today()
-    # age = today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
+    dob=teacher.admin.dob
+    today = date.today()
+    age = today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
     context = {'form': form,
                'page_title': 'Edit Profile',
-            #    'age':age
+               'age':age
                }
     if request.method == 'POST':
         try:
@@ -137,6 +139,23 @@ def manage_question(request,level_id):
 def view_question(request,subject_id):
     question=Question.objects.filter(subject=subject_id)
     subject = Subject.objects.get(id=subject_id)
+    
+    query = request.GET.get('q')
+    if query:
+        question = question.filter(Q(question__icontains=query) |
+                                             Q(ans__icontains=query)).distinct()
+        if not question:
+            return render(request, "student/not_found.html")
+    
+    selected_status = request.GET.get('status')
+    if selected_status:
+        if selected_status == 'easy':
+            question = question.filter(select_level='Easy')
+        elif selected_status == 'difficult':
+            question = question.filter(select_level='Difficult')
+        
+    
+    
     context = {
         'question': question,
         'subject_id':subject_id,
@@ -310,22 +329,59 @@ def apply_leave(request):
 
 def teacher_view_leave(request):
     teacher = get_object_or_404(Teacher, admin_id=request.user.id)
+    leave_history= Leave.objects.filter(teacher=teacher)
+    
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+        
+    if start_date and end_date:
+            leave_history = leave_history.filter(start_date__range=[start_date, end_date])
+            
+            if not leave_history:
+                return render(request, "student/not_found.html")
+    
+    query = request.GET.get('q')
+    if query:
+        leave_history = leave_history.filter(Q(reason__icontains=query) |
+                                             Q(start_date__icontains=query) |
+                                             Q(end_date__icontains=query)).distinct()
+        if not leave_history:
+            return render(request, "student/not_found.html")
+    
+    selected_status = request.GET.get('status')
+    
+    if selected_status:
+        if selected_status == 'pending':
+            leave_history =  leave_history.filter(status=0)
+        elif selected_status == 'approved':
+            leave_history = leave_history.filter(status=1)
+        elif selected_status == 'rejected':
+            leave_history =  leave_history.filter(status=-1)
+            
     context = {
        
-        'leave_history': Leave.objects.filter(teacher=teacher),
+        'leave_history': leave_history,
         'page_title': 'Apply for Leave'
     }
     return render(request, "teacher/apply_leave.html", context)
 
-
-def manage_attendance(request):
-    level = Section.objects.all()
+def manage_attendance_class(request):
+    level= Level.objects.all()
     context = {
         'level':level,
         'page_title': 'Attendance'
     }
-    return render(request, "teacher/manage_attendance.html", context)
+    return render(request, "teacher/manage_attendance_class.html", context)
 
+def manage_attendance(request,level_id):
+    section = Section.objects.filter(level=level_id)
+    level=Level.objects.get(id=level_id)
+    context = {
+        'section':section,
+        'page_title': 'Attendance of {0}'.format(level)
+    }
+    return render(request, "teacher/manage_attendance.html", context)
+    
 
 
 def view_students_attendance(request,section_id):
@@ -360,6 +416,7 @@ def view_students_attendance(request,section_id):
 def view_attendance(request,section_id):
     students = Student.objects.filter(section=section_id)
     attendance = Attendance.objects.all().order_by('-date')
+    section = Section.objects.get(id=section_id)
     attendance_by_month = {}
     for record in attendance:
         month = record.date.strftime("%B %Y")
@@ -380,7 +437,7 @@ def view_attendance(request,section_id):
         'section_id':section_id,
         # 'attendance_id':attendance_id,
         'attendance_by_month_paginated': attendance_by_month_paginated,
-        'page_title': 'Attendance'
+        'page_title': 'Attendance of {0} Section {1}'.format(section.level,section)
     }
     
     return render(request, "attendance/view_attendance.html", context)
@@ -462,15 +519,15 @@ def create_attendance(request,section_id):
             present = request.POST.get(str(student_id), False) == 'on'
             attendance = Attendance(date=date, student=student, section=section, present=present)
             attendance.save()
-        
-        return redirect('manage_attendance')
+        messages.success(request, 'Attendance for this date has been added successfully.')
+        return redirect('view_attendance',section_id)
         
     students = Student.objects.filter(section=section_id)
-    
+    section = Section.objects.get(id=section_id)
     context = {
         'students': students,
         # 'section_id':section_id,
-        'page_title': 'Create Attendance'
+        'page_title': 'Create Attendance of {0} Section {1}'.format(section.level,section)
     }
     
     return render(request, "attendance/create_attendance.html", context)
@@ -511,4 +568,33 @@ def edit_attendance(request,section_id, attendance_id):
     return render(request, "attendance/edit_attendance.html", context)
 
 
-
+def teacher_download_all_attendance(request,section_id):
+    students = Student.objects.filter(section=section_id)
+    attendance = Attendance.objects.all().order_by('-date')
+    section = Section.objects.get(id=section_id)
+    attendance_by_month = {}
+    for record in attendance:
+        month = record.date.strftime("%B %Y")
+        if month not in attendance_by_month:
+            attendance_by_month[month] = []
+        attendance_by_month[month].append(record)
+       
+    
+    context = {
+        'students': students,
+        'attendance': attendance,
+        'section_id':section_id,
+        # 'attendance_id':attendance_id,
+        'attendance_by_month': attendance_by_month,
+        'page_title': 'Attendance of {0} Section {1}'.format(section.level,section)
+    }
+    template = get_template("attendance/download_all_attendance.html")
+    html = template.render(context)
+    response = HttpResponse(content_type='application/pdf')
+    filename = f"{section.level}_section_{section}_Attendance_Report.pdf"
+    response['Content-Disposition'] = 'attachment; filename={}'.format(filename)
+    pisaStatus = pisa.CreatePDF(html, dest=response)
+    if pisaStatus.err:
+        return HttpResponse("PDF creation error: {0}".format(pisaStatus.err))
+    else:
+        return response

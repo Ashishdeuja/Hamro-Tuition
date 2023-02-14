@@ -11,6 +11,7 @@
         margin-top: 1rem;
         float:right;
         margin-right: 1rem;
+        margin-bottom:5rem;
       }
       
       .step-links a {
@@ -34,18 +35,122 @@
         margin-right: 0.5rem;
         border-radius: 5px;
       }
-
+      .report {
+        margin-bottom: 2rem;
+        display: flex;
+        justify-content: flex-end;
+      }
+      
+      .selection {
+        display: flex;
+        float:right;
+        align-items: center;
+        margin-bottom: 90px;
+        margin-right:50px;
+        {% comment %} margin-top:-3%; {% endcomment %}
+      }
+      
+      .selection label {
+        font-weight: bold;
+        margin-right: 10px;
+      }
+      
+      .selection select {
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+        
+      
+      select:hover{
+        cursor: pointer;
+      }
+      input{
+        width: 15%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin-right: 10px;
+        margin-left:10px;
+      }
+      .aa{
+        margin-left:17%;
+      }
+      button[type="submit"] {
+        width: 10%;
+        padding: 10px;
+        background-color: #4CAF50;
+        color: white;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        margin-bottom: 2rem;
+      }
+      
+      th, td {
+        border: 1px solid #ccc;
+        padding: 0.5rem;
+      }
+      
+      th {
+        background-color: #f7f7f7;
+      }
+      
+      tbody tr:nth-child(odd) {
+        background-color: #f2f2f2;
+      }
+      
+      .content {
+        margin: 0 auto;
+        max-width: 1200px;
+      }
+      
+      {% comment %} .content{
+        margin-top:3rem;
+      } {% endcomment %}
 </style>
 
 
 
+{% if user.user_type == '3' %}
+<div class='report'>
+<a style='float:right;margin-right:2rem;' href='{% url "daily_attendance_pdf"%}' class="btn btn-primary">Daily Report</a>
+<a style='float:right;margin-right:2rem;' href='{% url "weekly_attendance_pdf"%}' class="btn btn-primary">Weekly Report</a>
+<a style='float:right;margin-right:2rem;' href='{% url "student_attendance_pdf"%}' class="btn btn-primary">Monthly Report</a>
+<a style='float:right;margin-right:2rem;' href='{% url "yearly_attendance_pdf"%}' class="btn btn-primary">Yearly Report</a>
+</div>
+{% endif %}
 
-{% comment %} <a style='float:right;margin-right:2rem;' href='{% url "edit_attendance" section_id attendance_id %}' class="btn btn-primary">Edit</a> {% endcomment %}
+<div>
+  <form method="get">
+    {% csrf_token %}
+    
+       
+
+        <input type="date" class='aa' name="start_date" id="start_date"> to
+        <input type="date" name="end_date" id="end_date">
+        <button type="submit" onclick="displaySelectedDates()">Search</button>
+    <div class="selection">
+    <label>Filter: </label>
+    <select name="status" onchange="this.form.submit()">
+        <option value="">All</option>
+        <option value="present" {% if request.GET.status == 'present' %}selected{% endif %}>Present</option>
+        <option value="absent" {% if request.GET.status == 'absent' %}selected{% endif %}>Absent</option>
+      </select>
+    </div>
+  </form>
+</div>
+
 <section class="content">
     <div class="container-fluid">
-
+      
 {% for month, records in attendance_by_month_paginated %}
-  <h3 style='text-align:center;'>Attendance of {{ request.user.first_name }} {{ request.user.last_name }} ({{ month }})</h3>
+  <h3 style='margin-right:16%;float:right;margin-top:2%;'>Attendance of {{ request.user.first_name }} {{ request.user.last_name }} ({{ month }})</h3>
   <table class='table'>
     <thead>
       <tr>
@@ -92,6 +197,16 @@
   </div>
 {% endfor %}
 </div>
-</section> 
+</section>
 
+
+
+<script>
+  function displaySelectedDates() {
+    const startDate = document.getElementById("start_date").value;
+    const endDate = document.getElementById("end_date").value;
+    const result = `Selected dates: ${startDate} to ${endDate}`;
+    alert(result); // or display result on the page using DOM manipulation
+  }
+  </script>
 {% endblock content %}

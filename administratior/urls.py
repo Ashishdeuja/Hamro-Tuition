@@ -2,9 +2,9 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path("", views.home, name='index'),
+    path("", views.home, name='homepage'),
     path("login", views.login_page, name='loginpage'),
-    path("Login/", views.Login, name='login'),
+    path("Login/", views.Login, name='user_login'),
     path("Logout/", views.Logout, name='user_logout'),
     path("admin/home/", views.admin_home_page, name='admin_home_page'),
     path("add/class/", views.add_class, name='add_class'),
@@ -61,8 +61,19 @@ urlpatterns = [
     path('manage/bod/', views.manage_bod_page, name='manage_bod_page'),
     path('edit/bod/<int:pk>',views.edit_bod_page, name='edit_bod_page'),
     path('delete/bod/<int:pk>',views.delete_bod, name='delete_bod_page'),
-
-    
+    path('admin/view/attendance', views.admin_view_attendance, name='admin_view_attendance'),
+    path('admin/manage/attendance/section/<int:level_id>', views.manage_attendance_section, name='manage_attendance_section'),
+    path('admin/attendance/view/section/<int:section_id>',views.section_view_students_attendance,name='section_view_students_attendance'),
+    path('admin/attendance/pdf/<int:student_id>',views.attendance_pdf,name='attendance_pdf'),
+    path('admin/view/all/attendance/<int:section_id>',views.admin_view_all_attendance,name='admin_view_all_attendance'),
+    path('admin/download/all/attendance/<int:section_id>',views.admin_download_all_attendance,name='admin_download_all_attendance'),
+    path('admin/daily/download/all/attendance/<int:section_id>',views.daily_all_attendance_pdf,name='daily_all_attendance'),
+    path('admin/weekly/download/all/attendance/<int:section_id>',views.weekly_all_attendance_pdf,name='weekly_all_attendance'),
+    path('admin/yearly/download/all/attendance/<int:section_id>',views.yearly_all_attendance_pdf,name='yearly_all_attendance'),
+    path('admin/view/student/attendance/<int:student_id>',views.admin_attendance_view,name='admin_attendance_view'),
+    path('admin/view/daily/attendance/pdf/<int:student_id>',views.view_daily_attendance_pdf,name='view_daily_attendance_pdf'),
+    path('admin/view/weekly/attendance/pdf/<int:student_id>',views.view_weekly_attendance_pdf,name='view_weekly_attendance_pdf'),
+    path('admin/view/yearly/attendance/pdf/<int:student_id>',views.view_yearly_attendance_pdf,name='view_yearly_attendance_pdf'),
     
     
 ]

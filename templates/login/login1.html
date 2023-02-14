@@ -10,7 +10,7 @@
         
         <link rel="stylesheet" href="{% static 'css/login.css' %}" type="text/css" />
         
-        <script type="text/javascript">
+        {% comment %} <script type="text/javascript">
             function preventBack(){
                 window.history.forward()
             };
@@ -18,7 +18,7 @@
                 window.onunload=function(){
                     null;
                 }
-        </script>
+        </script> {% endcomment %}
    
     </head>
     <body>

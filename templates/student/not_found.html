@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<style>
+    #notfound {
+        margin-top:15%;
+        position: relative;
+        height: 50vh;
+      }
+      
+      #notfound .notfound {
+        position: absolute;
+        left: 50%;
+        top: 20%;
+        -webkit-transform: translate(-50%, -50%);
+            -ms-transform: translate(-50%, -50%);
+                transform: translate(-50%, -50%);
+      }
+      h1{
+        color:red;
+      }
+      .notfound {
+        max-width: 410px;
+        width: 100%;
+        text-align: center;
+      }
+      
+      .notfound .notfound-404 {
+        height: 280px;
+        position: relative;
+        z-index: -1;
+      }
+     
+      
+      .notfound h2 {
+        font-family: 'Montserrat', sans-serif;
+        color: grey;
+        font-size: 24px;
+        font-weight: 700;
+        text-transform: uppercase;
+        margin-top: 0;
+      }
+      
+     
+    
+      
+      
+      @media only screen and (max-width: 767px) {
+          .notfound .notfound-404 {
+            height: 142px;
+          }
+          .notfound .notfound-404 h1 {
+            font-size: 112px;
+          }
+      }
+      
+</style>
+
+
+<div id="notfound">
+		<div class="notfound">
+				<h1>Oops!</h1>
+			<h2>The data you are trying to search is not found</h2>
+		</div>
+	</div>
+{% endblock %}

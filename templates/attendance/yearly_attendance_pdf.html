@@ -1,0 +1,65 @@
+
+<style>
+    h1 {
+        font-size: 2.5rem;
+        text-align: center;
+        color: #b30000;
+        margin-bottom: 1rem;
+      }
+      
+      table {
+        border-collapse: collapse;
+        width:100%;
+        margin: 0 auto;
+        font-size: 1.2rem;
+        color: #3f3f3f;
+      }
+      
+      th, td {
+        border: 1px solid #ddd;
+        padding: 0.5rem;
+      }
+      
+      th {
+        background-color: #ddd;
+        font-weight: bold;
+      }
+      
+      tbody tr:nth-child(odd) {
+        background-color: #f2f2f2;
+      }
+      
+      tfoot {
+        font-weight: bold;
+        background-color: #ddd;
+      }
+</style>
+  <h1>{{student}} (Yearly Attendance Report - {{ year }}) </h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Month</th>
+        <th>Total Days</th>
+        <th>Present Days</th>
+        <th>Absent Days</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for month, attendance in attendance_by_month.items %}
+        <tr>
+          <td>{{ month }}</td>
+          <td>{{ attendance.total_days }}</td>
+          <td>{{ attendance.present_days }}</td>
+          <td>{{ attendance.absent_days }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+    <tfoot>
+      <tr>
+        <td><strong>Total</strong></td>
+        <td><strong>{{ total_days }}</strong></td>
+        <td><strong>{{ present_days }}</strong></td>
+        <td><strong>{{ absent_days }}</strong></td>
+      </tr>
+    </tfoot>
+  </table>

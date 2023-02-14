@@ -3,6 +3,52 @@
 {% block page_title %}{{page_title}}{% endblock page_title %}
 
 {% block content %}
+<style>
+    .selection {
+        display: flex;
+        float:right;
+        align-items: center;
+        margin-bottom: 20px;
+        margin-right:50px;
+        {% comment %} margin-top:-3%; {% endcomment %}
+      }
+      
+      .selection label {
+        font-weight: bold;
+        margin-right: 10px;
+      }
+      
+      .selection select {
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+        
+      
+      select:hover{
+        cursor: pointer;
+      }
+      input,input[type="text"] {
+        width: 35%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin-right: 10px;
+        margin-left:2%;
+      }
+      input{
+        width:12%;
+      }
+      button[type="submit"] {
+        width: 10%;
+        padding: 10px;
+        background-color: #4CAF50;
+        color: white;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+</style>
 
 <section class="content">
     <div class="container-fluid">
@@ -12,6 +58,23 @@
                 <div class="card card-dark">
                     <div class="card-header">
                         <h3 class="card-title">{{page_title}}</h3>
+                        <form method="get">
+                            {% csrf_token %}
+                            <input type="text" name="q" placeholder="Search...">
+                                <button type="submit">Search</button>
+
+                                <input type="date" name="start_date" id="start_date"> to
+                                <input type="date" name="end_date" id="end_date">
+                            <div class="selection">
+                            <label>Filter: </label>
+                            <select name="status" onchange="this.form.submit()">
+                                <option value="">All</option>
+                                <option value="pending" {% if request.GET.status == 'pending' %}selected{% endif %}>Pending</option>
+                                <option value="approved" {% if request.GET.status == 'approved' %}selected{% endif %}>Approved</option>
+                                <option value="rejected" {% if request.GET.status == 'rejected' %}selected{% endif %}>Rejected</option>
+                              </select>
+                            </div>
+                          </form>
                     </div>
 
                     <div class="table">

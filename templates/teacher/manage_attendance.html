@@ -125,9 +125,9 @@
       }
       
 </style>
-{% if level %}
+{% if section %}
     <div class="slide-container swiper">
-        {% for levels in level %}
+        {% for sections in section %}
             <div class="col-md-4 mb-4">
                <div class="slide-content">
                     <div class="card-wrapper">
@@ -135,19 +135,19 @@
                             <div class="image-content">
                                 <span class="overlay">
                                    {% comment %} <a class="nav-link" href="{% url 'view_students_attendance' levels.id %}">  {% endcomment %}
-                                    <a class="nav-link" href="{% url 'view_attendance' levels.id  %}"> 
+                                    <a class="nav-link" href="{% url 'view_attendance' sections.id  %}"> 
                                     
                                   
-                                    <h2 class="name">{{levels.level}}</h2>
+                                    <h2 class="name">Section: {{sections.section}}</h2>
                                     
                                     </a>
                                 </span>
                                 
                             </div>
                             <div class="card-content">
-                                <h5 class="sub-name">Section: {{levels.section}}</h5>
+                                <h5 class="sub-name">{{sections.level}}</h5>
                                 <br> 
-                                <h3 class="description">Here are the students list for attendance of the {{levels.section}}
+                                <h3 class="description">Here are the students list for attendance of the {{sections.section}}
                                 <br><br>                        
                             </div>
                         </div>

@@ -34,14 +34,20 @@
         margin-right: 0.5rem;
         border-radius: 5px;
       }
-
+      .attend{
+        float:right;
+        margin-right:30px;
+        margin-bottom:40px;
+      }
 </style>
 
-
-
-<a style='float:right;margin-right:2rem;' href='{% url "create_attendance" section_id %}' class="btn btn-primary">Add</a>
-{% comment %} <a style='float:right;margin-right:2rem;' href='{% url "edit_attendance" section_id attendance_id %}' class="btn btn-primary">Edit</a> {% endcomment %}
-<section class="content">
+{% if request.user.user_type == '2' %}
+<div class='attend'>
+  <a href='{% url "create_attendance" section_id %}' class="btn btn-primary">Take</a>
+  <a href='{% url "teacher_download_all_attendance" section_id %}' class="btn btn-success">Report</a>
+</div>
+{% endif %}
+  <section class="content">
     <div class="container-fluid">
        {% comment %}  <table class='table'>
             <thead>
@@ -76,6 +82,7 @@
 
 
 {% for month, records in attendance_by_month_paginated %}
+
   <h3 style='text-align:center;'>Attendance of {{ month }}</h3>
   <table class='table'>
     <thead>
@@ -123,6 +130,7 @@
     </span>
   </div>
 {% endfor %}
+
 </div>
 </section> 
 

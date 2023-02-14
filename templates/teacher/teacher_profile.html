@@ -92,7 +92,6 @@ height: 100px;
                                 <div class="text-center">
                                     <h3 class="text-primary">
                                         <b>{{ user.first_name }} {{ user.last_name }}</b>
-                                        <span class="font-weight-light"> {{ age }}</span>
                                     </h3>
                                     {{ request.user.email }} <br>
                                     +977 {{ request.user.phone_number }}
@@ -164,7 +163,7 @@ height: 100px;
                         <div class="col-lg-6">
                             <div class="form-group">
                                 <label class="text-l font-weight-bold text-primary text-uppercase mb-1"for="input-age">Age</label>
-                                <input readonly type="email"id="input-email"class="form-control form-control-alternative" placeholder="{{ form.age|add_class:"form-control form-control-alternative" }}">
+                                <input readonly type="age"id="input-age"class="form-control form-control-alternative" placeholder="{{ age }}">
                             </div>
                         </div>
                     </div><br>

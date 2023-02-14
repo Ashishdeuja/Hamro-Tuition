@@ -1,0 +1,78 @@
+{% load static %}
+
+<style>
+  .container-fluid {
+    padding: 30px;
+  }
+
+  h1 {
+    font-size: 32px;
+    font-weight: bold;
+    text-align: center;
+    color: red;
+    margin-bottom: 30px;
+  }
+
+  h3 {
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+
+  table {
+    border-collapse: collapse;
+    margin-bottom: 30px;
+  }
+
+  th,
+  td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+    font_size: 15px;
+  }
+
+  th {
+    background-color: #f2f2f2;
+  }
+</style>
+
+<section class="content">
+  <div class="container-fluid">
+    <h1>{{page_title}}</h1>
+    {% if attendance_by_day %}
+    {% for day, records in attendance_by_day.items %} 
+    {% if records %}
+    <h3 style="text-align: center">Attendance of {{ day }}</h3>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Student Name</th>
+          <th>Date</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for student in students %} 
+        {% for attend in records %} 
+        {% if attend.student == student %}
+        <tr>
+          <td>{{ student.admin.first_name }} {{ student.admin.last_name }}</td>
+          <td>{{ attend.date }}</td>
+          <td>
+            {% if attend.present %} 
+            Present 
+            {% else %}
+             Absent 
+            {% endif %}</td>
+        </tr>
+        {% endif %} 
+        {% endfor %} 
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif%} 
+    {% endfor %}
+    {% endif%} 
+  </div>
+</section>

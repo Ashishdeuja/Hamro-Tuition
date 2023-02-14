@@ -99,8 +99,7 @@ height: 100px;
                                             <div class="profile-card-subtitle">
                                                 <div class="text-center">
                                                     <h3 class="text-primary">
-                                                        <b>{{ user.first_name }} {{ user.last_name }}</b><span
-                                                            class="font-weight-light"> {{ age }}</span>
+                                                        <b>{{ user.first_name }} {{ user.last_name }}</b>
                                                     </h3>
 
                                                     {{ request.user.email }} <br>
@@ -226,10 +225,10 @@ height: 100px;
                                                         <label class="text-l font-weight-bold text-primary text-uppercase mb-1"
                                                                for="input-age">Age
                                                             </label>
-                                                            <input readonly type="email"
-                                                            id="input-email"
+                                                            <input readonly type="text"
+                                                            id="input-age"
                                                             class="form-control form-control-alternative"
-                                                            placeholder="{{ form.age|add_class:"form-control form-control-alternative" }}">
+                                                            placeholder="{{ age }}">
                                                     </div>
                                                 </div>
                                             </div><br>

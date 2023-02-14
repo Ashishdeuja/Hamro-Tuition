@@ -1,3 +1,4 @@
+import calendar
 from datetime import date
 from django.shortcuts import render, redirect, reverse, get_object_or_404
 import requests
@@ -5,17 +6,21 @@ from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse
 from django.core.files.storage import FileSystemStorage
 from django.core.mail import send_mail
-from teacher.models import Leave
+from teacher.models import *
 from .forms import *
 from .EmailBackend import EmailBackend
 from django.contrib import messages
 from .models import *
+from django.template.loader import get_template
+from xhtml2pdf import pisa
+from django.core.paginator import Paginator
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 # from django.http import HttpResponse
 # from django.template.loader import render_to_string
 # import weasyprint
 from django.views import generic
+from django.db.models import Q
 # Create your views here.
 
 def login_page(request):
@@ -25,7 +30,7 @@ def login_page(request):
         elif request.user.user_type == '2':
             return redirect(reverse("teacher_home_page"))
         elif request.user.user_type == '3':
-                return redirect(reverse("teacher_home_page"))
+                return redirect(reverse("student_home_page"))
     return render(request, 'login/login1.html')
 
 def Login(request, **kwargs):
@@ -40,7 +45,7 @@ def Login(request, **kwargs):
             elif user.user_type == '2':
                 return redirect(reverse("teacher_home_page"))
             elif user.user_type == '3':
-                return redirect(reverse("teacher_home_page"))
+                return redirect(reverse("student_home_page"))
         else:   
             messages.error(request, "Enter the valid detalis")
             return redirect(reverse("loginpage"))
@@ -51,7 +56,7 @@ def Logout(request):
     if request.user != None:
         logout(request)
         # return redirect("/")
-    return redirect(reverse("index"))
+    return redirect(reverse("homepage"))
 
 def admin_home_page(request):
     context = {
@@ -507,6 +512,14 @@ def delete_teacher(request, teacher_id):
 
 def manage_book(request):
     books = Book.objects.all().order_by('-updated_date')
+    query = request.GET.get('q')
+    if query:
+        books = books.filter(Q(title__icontains=query) |
+                                             Q(author__icontains=query) |
+                                             Q(year__icontains=query) |
+                                             Q(publisher__icontains=query)).distinct()
+        if not books:
+            return render(request, "student/not_found.html")
     context = {
         'books': books,
         'page_title': 'Books'
@@ -727,16 +740,15 @@ def delete_student(request, student_id):
 
 
 def admin_profile(request):
-    admin = get_object_or_404(Admin, admin=request.user)
+    admin = get_object_or_404(Admin, admin=request.user.id)
    
-    form = AdminForm(request.POST or None, request.FILES or None,
-                     instance=admin)
-    # dob=admin.dob
-    # today = date.today()
-    # age = today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
+    form = AdminForm(request.POST or None, request.FILES or None, instance=admin)
+    dob=admin.admin.dob
+    today = date.today()
+    age = today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
     context = {'form': form,
                'page_title': 'Edit Profile',
-            #    'age':age
+               'age':age
                }
     if request.method == 'POST':
         try:
@@ -768,7 +780,7 @@ def admin_profile(request):
                 # custom_user.age=age
                 custom_user.save()
                 messages.success(request, "Profile Updated!")
-                return redirect(reverse('admin_profile'))
+                return redirect(reverse('loginpage'))
             else:
                 messages.error(request, "Invalid Data Provided")
         except Exception as e:
@@ -784,11 +796,35 @@ def notice_view(request):
         'items': items,
         'page_title': 'News and Events'
     }
+    
+    
+    teachers = Teacher.objects.all()
+    emails = [teacher.admin.email for teacher in teachers]
+    numbers = [teacher.admin.phone_number for teacher in teachers]
+    print(emails)
+    print(numbers)
+    
+    students = Student.objects.all()
+    semails = [student.admin.email for student in students]
+    snumbers = [student.admin.phone_number for student in students]
+    fnumbers = [str(student.fathers_number).replace(',', ';') for student in students if student.fathers_number]
+    mnumbers = [student.mothers_number for student in students if student.mothers_number]
+    print(semails)
+    print(snumbers) 
+    print(fnumbers)
+    print(mnumbers)
     return render(request, 'admin/notice.html', context)
 
 
 def add_notice(request):
     form = NewsAndEventsForm(request.POST or None)
+    students = Student.objects.all()
+    teachers = Teacher.objects.all()
+    first_name=request.user.first_name
+    last_name=request.user.last_name
+    student_emails = [student.admin.email for student in students]
+    teacher_emails = [teacher.admin.email for teacher in teachers]
+    
     context = {
         'form': form,
         'page_title': 'Add Notice'
@@ -804,8 +840,21 @@ def add_notice(request):
                 notice.summary=summary
                 notice.posted_as=posted_as
                 notice.save()
-                messages.success(request, (title + ' has been uploaded.'))
-                return redirect('view_notice')
+                email_from = "aasishdeuja@gmail.com"
+                email_subject = title
+                teacher_email_body="Dear Teachers,\n\n{0}.\n\nRegards,\n{1} {2}".format(summary,first_name,last_name)
+                student_email_body = "Dear Students,\n\n{0}.\n\nRegards,\n{1} {2}".format(summary,first_name,last_name)
+
+                try:
+                    if teachers:
+                        send_mail(email_subject,  teacher_email_body, email_from, teacher_emails, fail_silently=False)
+                    if students:
+                        send_mail(email_subject, student_email_body, email_from, student_emails, fail_silently=False)
+                    messages.success(request, (title + ' has been uploaded.'))
+                    return redirect('view_notice')
+                except Exception:
+                    messages.error(request, "Could not send email")
+                    return redirect('view_notice')
             except Exception as e:
                 messages.error(request, "Could Not Add " + str(e))
                 
@@ -861,6 +910,33 @@ def teacher_check_leave(request):
         teacher=Teacher.objects.all()
         # teacher = get_object_or_404(Teacher)
         allLeave = Leave.objects.all()
+        
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        
+        if start_date and end_date:
+            allLeave = allLeave.filter(start_date__range=[start_date, end_date])
+            
+            if not allLeave:
+                return render(request, "student/not_found.html")
+        
+        query = request.GET.get('q')
+        if query:
+            allLeave = allLeave.filter(Q(reason__icontains=query) |
+                                                Q(start_date__icontains=query) |
+                                                Q(end_date__icontains=query)).distinct()
+            if not allLeave:
+                return render(request, "student/not_found.html")
+            
+        selected_status = request.GET.get('status')
+        if selected_status:
+            if selected_status == 'pending':
+                 allLeave =  allLeave.filter(status=0)
+            elif selected_status == 'approved':
+                 allLeave =  allLeave.filter(status=1)
+            elif selected_status == 'rejected':
+                 allLeave =  allLeave.filter(status=-1)
+                
         context = {
             'allLeave': allLeave,
             'teacher':teacher,
@@ -905,7 +981,7 @@ def teacher_check_leave(request):
 
             try:
                 send_mail(email_subject, email_body, email_from, [email_to], fail_silently=False)
-                messages.success(request, "The leave approved application has been sent to teacher.")
+                messages.success(request, "The leave rejected application has been sent to teacher.")
             except Exception:
                     messages.error(request, "Could not send email to teacher.")
 
@@ -926,6 +1002,35 @@ def student_check_leave(request):
         student=Student.objects.all()
         # teacher = get_object_or_404(Teacher)
         allLeave = Leave.objects.all()
+        
+        
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        
+        if start_date and end_date:
+            allLeave = allLeave.filter(start_date__range=[start_date, end_date])
+            if not allLeave:
+                return render(request, "student/not_found.html")
+        
+        query = request.GET.get('q')
+        if query:
+            allLeave = allLeave.filter(Q(reason__icontains=query) |
+                                            # Q(student__icontains=query) |
+                                                Q(start_date__icontains=query) |
+                                                Q(end_date__icontains=query)).distinct()
+            if not allLeave:
+                return render(request, "student/not_found.html")
+        
+        
+        selected_status = request.GET.get('status')
+        if selected_status:
+            if selected_status == 'pending':
+                 allLeave =  allLeave.filter(status=0)
+            elif selected_status == 'approved':
+                 allLeave =  allLeave.filter(status=1)
+            elif selected_status == 'rejected':
+                 allLeave =  allLeave.filter(status=-1)
+                 
         context = {
             'allLeave': allLeave,
             'student':student,
@@ -970,9 +1075,9 @@ def student_check_leave(request):
 
             try:
                 send_mail(email_subject, email_body, email_from, [email_to], fail_silently=False)
-                messages.success(request, "The leave approved application has been sent to teacher.")
+                messages.success(request, "The leave rejected application has been sent to student.")
             except Exception:
-                    messages.error(request, "Could not send email to teacher.")
+                    messages.error(request, "Could not send email to student.")
 
                     return redirect(reverse('student_check_leave'))
         try:
@@ -1012,7 +1117,7 @@ def home(request):
         email_body = "Dear Administratior,\n\n{0}.\n\nRegards,\n{1}\n{2}".format(request.POST.get('message'),request.POST.get('name'),request.POST.get('email'))
         
         send_mail(email_subject, email_body, email_from, [email_to], fail_silently=False) 
-        return redirect(reverse('index'))
+        return redirect(reverse('homepage'))
     context = {
         'leave_history': Testimonial.objects.all(),
         'home':About.objects.all(),
@@ -1028,6 +1133,14 @@ def testimonial(request):
     if request.method != 'POST':
         # teacher = get_object_or_404(Teacher)
         testimonials = Testimonial.objects.all()
+        selected_status = request.GET.get('status')
+        if selected_status:
+            if selected_status == 'pending':
+                testimonials = testimonials.filter(status=0)
+            elif selected_status == 'approved':
+                testimonials = testimonials.filter(status=1)
+            elif selected_status == 'rejected':
+                testimonials = testimonials.filter(status=-1)
         context = {
             'testimonials': testimonials,
             # 'teacher':teacher,
@@ -1280,3 +1393,541 @@ def delete_bod(request, pk):
         messages.error(request, "The bod content couldn't be deleted !!")
     return redirect('manage_bod_page')
 
+def admin_view_attendance(request):
+    level = Level.objects.all()
+    context = {
+        'level':level,
+        'page_title': 'Attendance'
+    }
+    return render(request, "admin/manage_attendance.html", context)
+
+def manage_attendance_section(request,level_id):
+    section = Section.objects.filter(level=level_id)
+    level=Level.objects.get(id=level_id)
+    context = {
+        'section':section,
+        'page_title': 'Attendance of {0}'.format(level)
+    }
+    return render(request, "admin/manage_attendance_section.html", context)
+
+
+def section_view_students_attendance(request,section_id):
+    # student= Student.objects.all()
+    # students = Student.objects.filter(section=section_id)
+    student=Student.objects.filter(section=section_id)
+    section = Section.objects.get(id=section_id)
+    
+    context = {
+        'student':student,
+        'section_id':section_id,
+        'page_title': 'Attendance of {0}'.format(section)
+    }
+
+    return render(request, "admin/students.html", context)
+
+
+def admin_attendance_view(request,student_id):
+    student= get_object_or_404(Student, id=student_id)
+    attendance = Attendance.objects.filter(student=student).order_by('-date')
+    
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+        
+    if start_date and end_date:
+            attendance = attendance.filter(date__range=[start_date, end_date])
+            
+            if not attendance:
+                return render(request, "student/not_found.html")
+    
+    status = request.GET.get('status')
+    if status == 'present':
+        attendance = attendance.filter(present=True)
+    elif status == 'absent':
+        attendance = attendance.filter(present=False)
+    
+    attendance_by_month = {}
+    for record in attendance:
+        month = record.date.strftime("%B %Y")
+        if month not in attendance_by_month:
+            attendance_by_month[month] = []
+        attendance_by_month[month].append(record)
+
+    attendance_by_month_items = list(attendance_by_month.items())
+    paginator = Paginator(attendance_by_month_items, 1) # show 1 month per page
+    page = request.GET.get('page')
+    attendance_by_month_paginated = paginator.get_page(page)
+    context = {
+        'attendance_by_month_paginated':attendance_by_month_paginated,
+        'page_title': 'Attendance'
+    }
+    return render(request, "attendance/student_view_attendance.html", context)
+
+
+def attendance_pdf(request,student_id):
+    student= get_object_or_404(Student, id=student_id)
+    attendance = Attendance.objects.filter(student=student).order_by('-date')
+    attendance_by_month = {}
+    for record in attendance:
+        month = record.date.strftime("%B %Y")
+        if month not in attendance_by_month:
+            attendance_by_month[month] = []
+        attendance_by_month[month].append(record)
+    context = {
+        'attendance_by_month':attendance_by_month,
+        'student':student,
+        'page_title': 'Attendance'
+    }
+    template = get_template("attendance/student_view_attendance_pdf.html")
+    html = template.render(context)
+    response = HttpResponse(content_type='application/pdf')
+    filename = f"{student}_Monthly_Attendance_Report.pdf"
+    response['Content-Disposition'] = 'attachment; filename={}'.format(filename)
+    pisaStatus = pisa.CreatePDF(html, dest=response)
+
+    if pisaStatus.err:
+        return HttpResponse("PDF creation error: {0}".format(pisaStatus.err))
+    else:
+        return response
+
+def view_daily_attendance_pdf(request,student_id):
+    student = get_object_or_404(Student,id=student_id)
+    attendance = Attendance.objects.filter(student=student).order_by('-date')
+    attendance_by_day = {}
+    for record in attendance:
+        day = record.date.strftime("%Y-%m-%d")
+        if day not in attendance_by_day:
+            attendance_by_day[day] = []
+        attendance_by_day[day].append(record)
+    context = {
+        'attendance_by_day': attendance_by_day,
+        'student': student,
+        'page_title': 'Attendance'
+    }
+    
+    template = get_template("attendance/daily_attendance_pdf.html")
+    html = template.render(context)
+    response = HttpResponse(content_type='application/pdf')
+    filename = f"{student}_Daily_Attendance_Report.pdf"
+    response['Content-Disposition'] = 'attachment; filename={}'.format(filename)
+    pisaStatus = pisa.CreatePDF(html, dest=response)
+
+    if pisaStatus.err:
+        return HttpResponse("PDF creation error: {0}".format(pisaStatus.err))
+    else:
+        return response
+    # return render(request, 'attendance/daily_attendance_pdf.html', context)
+    
+def view_weekly_attendance_pdf(request,student_id):
+    student = get_object_or_404(Student, id=student_id)
+    attendance = Attendance.objects.filter(student=student).order_by('-date')
+    attendance_by_week = {}
+    for record in attendance:
+        week_start = record.date - datetime.timedelta(days=record.date.weekday()+1)
+        week_end = week_start + datetime.timedelta(days=6)
+        if record.date.weekday() == 6:
+            next_week_start = week_end + datetime.timedelta(days=1)
+            next_week_end = next_week_start + datetime.timedelta(days=6)
+            week = f"{next_week_start.strftime('%Y-%m-%d')} to {next_week_end.strftime('%Y-%m-%d')}"
+            if week not in attendance_by_week:
+                attendance_by_week[week] = []
+            attendance_by_week[week].append(record)
+        else:
+            week = f"{week_start.strftime('%Y-%m-%d')} to {week_end.strftime('%Y-%m-%d')}"
+            if week not in attendance_by_week:
+                attendance_by_week[week] = []
+            attendance_by_week[week].append(record)
+            
+    context = {
+        'attendance_by_week': attendance_by_week,
+        'student': student,
+        'page_title': 'Attendance'
+    }
+    
+    template = get_template("attendance/weekly_attendance_pdf.html")
+    html = template.render(context)
+    response = HttpResponse(content_type='application/pdf')
+    filename = f"{student}_Weekly_Attendance_Report.pdf"
+    response['Content-Disposition'] = 'attachment; filename={}'.format(filename)
+    pisaStatus = pisa.CreatePDF(html, dest=response)
+
+    if pisaStatus.err:
+        return HttpResponse("PDF creation error: {0}".format(pisaStatus.err))
+    else:
+        return response
+    # return render(request, 'attendance/weekly_attendance_pdf.html', context)
+
+def view_yearly_attendance_pdf(request,student_id):
+    student = get_object_or_404(Student, id=student_id)
+    attendance = Attendance.objects.filter(student=student).order_by('date')
+    year = datetime.datetime.now().year
+    attendance_by_month = {}
+    total_days = 0
+    present_days = 0
+    absent_days = 0
+    for record in attendance:
+        month = record.date.strftime("%B")
+        if month not in attendance_by_month:
+            attendance_by_month[month] = {
+                'total_days': 0,
+                'present_days': 0,
+                'absent_days': 0,
+            }
+        attendance_by_month[month]['total_days'] += 1
+        total_days += 1
+        if record.present==True:
+            attendance_by_month[month]['present_days'] += 1
+            present_days += 1
+        else:
+            attendance_by_month[month]['absent_days'] += 1
+            absent_days += 1
+
+    context = {
+        'year': year,
+        'attendance_by_month': attendance_by_month,
+        'student': student,
+        'total_days': total_days,
+        'present_days': present_days,
+        'absent_days': absent_days,
+        'page_title': 'Yearly Attendance Report'
+    }
+    template = get_template("attendance/yearly_attendance_pdf.html")
+    html = template.render(context)
+    response = HttpResponse(content_type='application/pdf')
+    filename = f"{student}_Yearly_Attendance_Report.pdf"
+    response['Content-Disposition'] = 'attachment; filename={}'.format(filename)
+    pisaStatus = pisa.CreatePDF(html, dest=response)
+
+    if pisaStatus.err:
+        return HttpResponse("PDF creation error: {0}".format(pisaStatus.err))
+    else:
+        return response
+    # return render(request, 'attendance/yearly_attendance_pdf.html', context)
+
+def admin_view_all_attendance(request,section_id):
+    students = Student.objects.filter(section=section_id)
+    attendance = Attendance.objects.all().order_by('-date')
+    section = Section.objects.get(id=section_id)
+    attendance_by_month = {}
+    for record in attendance:
+        month = record.date.strftime("%B %Y")
+        if month not in attendance_by_month:
+            attendance_by_month[month] = []
+        attendance_by_month[month].append(record)
+
+    attendance_by_month_items = list(attendance_by_month.items())
+    paginator = Paginator(attendance_by_month_items, 1) # show 1 month per page
+    page = request.GET.get('page')
+    attendance_by_month_paginated = paginator.get_page(page)
+    
+    
+    
+    context = {
+        'students': students,
+        'attendance': attendance,
+        'section_id':section_id,
+        # 'attendance_id':attendance_id,
+        'attendance_by_month_paginated': attendance_by_month_paginated,
+        'page_title': 'Attendance of {0} Section {1}'.format(section.level,section)
+    }
+    
+    return render(request, "attendance/view_attendance.html", context)
+
+
+
+def admin_download_all_attendance(request,section_id):
+    students = Student.objects.filter(section=section_id)
+    attendance = Attendance.objects.all().order_by('-date')
+    section = Section.objects.get(id=section_id)
+    attendance_by_month = {}
+    for record in attendance:
+        month = record.date.strftime("%B %Y")
+        if month not in attendance_by_month:
+            attendance_by_month[month] = []
+        attendance_by_month[month].append(record)
+       
+    
+    context = {
+        'students': students,
+        'attendance': attendance,
+        'section_id':section_id,
+        # 'attendance_id':attendance_id,
+        'attendance_by_month': attendance_by_month,
+        'page_title': 'Attendance of {0} Section {1}'.format(section.level,section)
+    }
+    template = get_template("attendance/download_all_attendance.html")
+    html = template.render(context)
+    response = HttpResponse(content_type='application/pdf')
+    filename = f"{section.level}_section_{section}_Attendance_Report.pdf"
+    response['Content-Disposition'] = 'attachment; filename={}'.format(filename)
+    pisaStatus = pisa.CreatePDF(html, dest=response)
+    if pisaStatus.err:
+        return HttpResponse("PDF creation error: {0}".format(pisaStatus.err))
+    else:
+        return response
+    
+    
+
+def daily_all_attendance_pdf(request,section_id):
+    students = Student.objects.filter(section=section_id)
+    attendance = Attendance.objects.all().order_by('-date')
+    section = Section.objects.get(id=section_id)
+    attendance_by_day = {}
+    for record in attendance:
+        day = record.date.strftime("%Y-%m-%d")
+        if day not in attendance_by_day:
+            attendance_by_day[day] = []
+        attendance_by_day[day].append(record)
+    context = {
+        'attendance_by_day': attendance_by_day,
+        'students': students,
+        'section_id':section_id,
+        'page_title': 'Daily Attendance of {0} Section {1}'.format(section.level,section)
+    }
+    
+    template = get_template("attendance/daily_all_attendance.html")
+    html = template.render(context)
+    response = HttpResponse(content_type='application/pdf')
+    filename = f"{section.level}_section_{section}_Daily_Attendance_Report.pdf"
+    response['Content-Disposition'] = 'attachment; filename={}'.format(filename)
+    pisaStatus = pisa.CreatePDF(html, dest=response)
+
+    if pisaStatus.err:
+        return HttpResponse("PDF creation error: {0}".format(pisaStatus.err))
+    else:
+        return response
+    # return render(request, 'attendance/daily_attendance_pdf.html', context)
+    
+def weekly_all_attendance_pdf(request,section_id):
+    students = Student.objects.filter(section=section_id)
+    attendance = Attendance.objects.all().order_by('-date')
+    section = Section.objects.get(id=section_id)
+    attendance_by_week = {}
+    for record in attendance:
+        week_start = record.date - datetime.timedelta(days=record.date.weekday()+1)
+        week_end = week_start + datetime.timedelta(days=6)
+        if record.date.weekday() == 6:
+            next_week_start = week_end + datetime.timedelta(days=1)
+            next_week_end = next_week_start + datetime.timedelta(days=6)
+            week = f"{next_week_start.strftime('%Y-%m-%d')} to {next_week_end.strftime('%Y-%m-%d')}"
+            if week not in attendance_by_week:
+                attendance_by_week[week] = []
+            attendance_by_week[week].append(record)
+        else:
+            week = f"{week_start.strftime('%Y-%m-%d')} to {week_end.strftime('%Y-%m-%d')}"
+            if week not in attendance_by_week:
+                attendance_by_week[week] = []
+            attendance_by_week[week].append(record)
+            
+    context = {
+        'attendance_by_week': attendance_by_week,
+        'students': students,
+        'page_title': 'Weekly Attendance of {0} Section {1}'.format(section.level,section)
+    }
+    
+    template = get_template("attendance/weekly_all_attendance.html")
+    html = template.render(context)
+    response = HttpResponse(content_type='application/pdf')
+    filename = f"{section.level}_section_{section}_Weekly_Attendance_Report.pdf"
+    response['Content-Disposition'] = 'attachment; filename={}'.format(filename)
+    pisaStatus = pisa.CreatePDF(html, dest=response)
+
+    if pisaStatus.err:
+        return HttpResponse("PDF creation error: {0}".format(pisaStatus.err))
+    else:
+        return response
+    # return render(request, 'attendance/weekly_attendance_pdf.html', context)
+
+# def yearly_all_attendance_pdf(request,section_id):
+    # student = Student.objects.filter(section=section_id)
+    # attendance = Attendance.objects.all().order_by('date')
+    # section = Section.objects.get(id=section_id)
+    # year = datetime.datetime.now().year
+    # attendance_by_month = {}
+    # total_days = 0
+    # present_days = 0
+    # absent_days = 0
+    # for record in attendance:
+    #     month = record.date.strftime("%B")
+    #     if month not in attendance_by_month:
+    #         attendance_by_month[month] = {
+    #             'total_days': 0,
+    #             'present_days': 0,
+    #             'absent_days': 0,
+    #         }
+    #     attendance_by_month[month]['total_days'] += 1
+    #     total_days += 1
+    #     if record.present==True:
+    #         attendance_by_month[month]['present_days'] += 1
+    #         present_days += 1
+    #     else:
+    #         attendance_by_month[month]['absent_days'] += 1
+    #         absent_days += 1
+
+    # context = {
+    #     'year': year,
+    #     'attendance_by_month': attendance_by_month,
+    #     'student': student,
+    #     'total_days': total_days,
+    #     'present_days': present_days,
+    #     'absent_days': absent_days,
+    #     'page_title': 'Yearly Attendance of {0} Section {1}'.format(section.level,section)
+    # }
+    # # template = get_template("attendance/yearly_all_attendance.html")
+    # # html = template.render(context)
+    # # response = HttpResponse(content_type='application/pdf')
+    # # filename = f"{section.level}_section_{section}_Yearly_Attendance_Report.pdf"
+    # # response['Content-Disposition'] = 'attachment; filename={}'.format(filename)
+    # # pisaStatus = pisa.CreatePDF(html, dest=response)
+
+    # # if pisaStatus.err:
+    # #     return HttpResponse("PDF creation error: {0}".format(pisaStatus.err))
+    # # else:
+    # #     return response
+    
+def yearly_all_attendance_pdf(request, section_id):
+    students = Student.objects.filter(section=section_id)
+    attendances = Attendance.objects.all()
+    section = Section.objects.get(id=section_id)
+    year = datetime.datetime.now().year
+    # attendance_by_month = {}
+    # for record in attendances:
+    #     month = record.date.strftime("%B")
+    #     if month not in attendance_by_month:
+    #         attendance_by_month[month] = {}
+    #     for student in students:
+    #         if student.id not in attendance_by_month[month]:
+    #             attendance_by_month[month][student.id] = {
+    #                 'total_days': 0,
+    #                 'present_days': 0,
+    #                 'absent_days': 0,
+    #             }
+    #         if record.student == student:
+    #             attendance_by_month[month][student.id]['total_days'] += 1
+    #             if record.present:
+    #                 attendance_by_month[month][student.id]['present_days'] += 1
+    #             else:
+    #                 attendance_by_month[month][student.id]['absent_days'] += 1
+
+    # table_rows = []
+    # for student in students:
+    #     total_days = 0
+    #     present_days = 0
+    #     absent_days = 0
+    #     month_data = []
+    #     for month, attendance in attendance_by_month.items():
+    #         month_total_days = attendance[student.id]['total_days']
+    #         month_present_days = attendance[student.id]['present_days']
+    #         month_absent_days = attendance[student.id]['absent_days']
+    #         month_data.append({
+    #             'month': month,
+    #             'total_days': month_total_days,
+    #             'present_days': month_present_days,
+    #             'absent_days': month_absent_days,
+    #         })
+    #         total_days += month_total_days
+    #         present_days += month_present_days
+    #         absent_days += month_absent_days
+
+
+    #     if total_days == 0:
+    #         attendance_percentage = 0
+    #     else:
+    #         attendance_percentage = round((present_days / total_days) * 100, 2)
+            
+       
+    #     table_rows.append({
+    #         'student': student,
+    #         'total_days': total_days,
+    #         'present_days': present_days,
+    #         'absent_days': absent_days,
+    #         'month_data': month_data,
+    #         'percentage': attendance_percentage,
+    #     })
+    
+    
+    # context = {
+    #     'year': year,
+    #     'table_rows': table_rows,
+    #     'attendance_by_month': attendance_by_month,
+    #     'page_title': 'Yearly Attendance of {0} Section {1}'.format(section.level, section),
+    # }
+    # print(table_rows)
+    
+    
+    
+    attendance_by_month = {}
+    for record in attendances:
+        month = record.date.strftime("%B")
+        if month not in attendance_by_month:
+            attendance_by_month[month] = {}
+        for student in students:
+            if student.id not in attendance_by_month[month]:
+                attendance_by_month[month][student.id] = {
+                    'total_days': 0,
+                    'present_days': 0,
+                    'absent_days': 0,
+                }
+            if record.student == student:
+                attendance_by_month[month][student.id]['total_days'] += 1
+                if record.present:
+                    attendance_by_month[month][student.id]['present_days'] += 1
+                else:
+                    attendance_by_month[month][student.id]['absent_days'] += 1
+
+    attendance_by_month_sorted = dict(sorted(attendance_by_month.items(), key=lambda x: datetime.datetime.strptime(x[0], '%B')))
+
+    table_rows = []
+    for student in students:
+        total_days = 0
+        present_days = 0
+        absent_days = 0
+        month_data = []
+        for month, attendance in attendance_by_month_sorted.items():
+            month_total_days = attendance[student.id]['total_days']
+            month_present_days = attendance[student.id]['present_days']
+            month_absent_days = attendance[student.id]['absent_days']
+            month_data.append({
+                'month': month,
+                'total_days': month_total_days,
+                'present_days': month_present_days,
+                'absent_days': month_absent_days,
+            })
+            total_days += month_total_days
+            present_days += month_present_days
+            absent_days += month_absent_days
+
+
+        if total_days == 0:
+            attendance_percentage = 0
+        else:
+            attendance_percentage = round((present_days / total_days) * 100, 2)
+
+
+        table_rows.append({
+            'student': student,
+            'total_days': total_days,
+            'present_days': present_days,
+            'absent_days': absent_days,
+            'month_data': month_data,
+            'percentage': attendance_percentage,
+        })
+    context = {
+        'year': year,
+        'table_rows': table_rows,
+        'attendance_by_month': attendance_by_month_sorted,
+        'page_title': 'Yearly Attendance of {0} Section {1}'.format(section.level, section),
+    }
+    
+    
+    template = get_template("attendance/yearly_all_attendance.html")
+    html = template.render(context)
+    response = HttpResponse(content_type='application/pdf')
+    filename = f"{section.level}_section_{section}_Yearly_Attendance_Report.pdf"
+    response['Content-Disposition'] = 'attachment; filename={}'.format(filename)
+    pisaStatus = pisa.CreatePDF(html, dest=response)
+
+    if pisaStatus.err:
+        return HttpResponse("PDF creation error: {0}".format(pisaStatus.err))
+    else:
+        return response
+    # return render(request, 'attendance/yearly_all_attendance.html', context)

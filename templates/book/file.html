@@ -115,9 +115,29 @@
       .button:hover{
         background: #265DF2;
       }
-      
-</style>
+      .search{
+        margin-top:-40px;
+    }
 
+    input[type="text"] {
+        width: 35%;
+        height:45px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin-left:30%;
+      }
+.btn{
+    height:45px;
+}
+</style>
+<div class='search'>
+  <form method="get">
+      {% csrf_token %}
+      <input type="text" name="q" placeholder="Search...">
+      <button type="submit" class='btn btn-success'>Search</button>
+    </form>
+  </div>
 {% if books %}
     <div class="slide-container swiper">
         {% for book in books %}

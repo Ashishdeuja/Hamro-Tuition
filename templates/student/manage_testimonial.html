@@ -3,7 +3,31 @@
 {% block page_title %}{{page_title}}{% endblock page_title %}
 
 {% block content %}
-
+<style>
+    .selection {
+        display: flex;
+        float:right;
+        align-items: center;
+        margin-bottom: 20px;
+        margin-right:50px;
+      }
+      
+      .selection label {
+        font-weight: bold;
+        margin-right: 10px;
+      }
+      
+      .selection select {
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+        
+      
+      select:hover{
+        cursor: pointer;
+      }
+</style>
 <section class="content">
     <div class="container-fluid">
         {% comment %} <div class="row">
@@ -29,7 +53,20 @@
         </div>
       </div>
     <div class="card-header"><h3 class="card-title"><b>Testimonials</b></h3>
-
+        
+            <form method="get">
+                {% csrf_token %}
+                <div class="selection">
+                <label>Filter: </label>
+                <select name="status" onchange="this.form.submit()">
+                    <option value="">All</option>
+                    <option value="pending" {% if request.GET.status == 'pending' %}selected{% endif %}>Pending</option>
+                    <option value="approved" {% if request.GET.status == 'approved' %}selected{% endif %}>Approved</option>
+                    <option value="rejected" {% if request.GET.status == 'rejected' %}selected{% endif %}>Rejected</option>
+                  </select>
+                </div>
+              </form>
+            
 
        <table class="table">
            <thead>

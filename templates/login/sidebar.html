@@ -218,6 +218,39 @@
         <li>
             <a href="#">
                 <span class="icon">
+                    <ion-icon name="person-sharp"></ion-icon>
+                </span>
+                <span class="title">Assign Teacher</span>
+                <span class="icon-right">
+                    <ion-icon name="caret-forward-sharp"></ion-icon>
+                </span>
+            </a>
+
+            <ul class="side-dropdown">
+                <li>
+                    {% url 'assign_teacher' as assign_teacher %}
+                    <a href="{{assign_teacher}}" class="nav-link {% if assign_teacher == request.path %} active {% endif %}">
+                        <span class="icon">
+                            <ion-icon name="add-circle-sharp"></ion-icon>
+                        </span>
+                        <span class="sub-title">Assign Teacher</span>
+                    </a>   
+                </li>
+                <li>
+                    {% url 'manage_assign_teacher' as manage_assign_teacher %}
+                    <a href="{{manage_assign_teacher}}" class="nav-link {% if manage_assign_teacher == request.path %} active {% endif %}">
+                        <span class="icon">
+                            <ion-icon name="newspaper-sharp"></ion-icon>
+                        </span>
+                        <span class="sub-title">Assigned Teacher</span>
+                    </a>   
+                </li>
+                
+            </ul>
+        </li>
+        <li>
+            <a href="#">
+                <span class="icon">
                     <ion-icon name="book-sharp"></ion-icon>
                 </span>
                 <span class="title">Book</span>
@@ -591,6 +624,15 @@
                 <span class="title">Attendance</span>
             </a>
         </li>
+        <li>
+            {% url 'student_profile' as student_profile %}
+            <a href="{{student_profile}}" class="nav-link {% if student_profile == request.path %} active {% endif %}">
+                <span class="icon">
+                    <ion-icon name="settings-sharp"></ion-icon>
+                </span>
+                <span class="title">Setting</span>
+            </a>
+         </li>
     </ul>
     <!-- /.content -->
     {% block content %}

@@ -47,9 +47,10 @@
             <img src="{% static 'images/logo.png' %}" style='height:100px;width:500px' alt="">
             <h1 class='title'>Report Card</h1>
             <div class="card-body">
-                <h3 class="title">{{class}}<h3>
-                <h3 class="title">Subject: {{subject}}<h3><br>
-                <h5 class="name">Student Name: {{student_name}}<h3>
+                <h3 class="title">{{class}}</h3>
+                <h3 class="title">Subject: {{subject}}</h3>
+                <h4 class="title" style='color:grey;'>Test Level: {{select_level}}</h4><br>
+                <h5 class="name">Student Name: {{student_name}}</h3>
                     <table>
                         <tr>
                             <td>Total Question</td>
@@ -73,7 +74,7 @@
                         </tr>
                 
                     </table>
-                    <a href="#" class="btn btn-info">Download Result</a> 
+                    <a href="{% url 'mock_test_result_pdf' subject_id %}" class="btn btn-info">Download Result</a> 
                 {% comment %} <h5 class="card-title">Score: {{score}}</h5>
  
                 <p class="card-text">Percentage: {{percentage}}%</p>

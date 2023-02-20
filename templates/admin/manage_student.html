@@ -3,7 +3,41 @@
 {% block page_title %}{{page_title}}{% endblock page_title %}
 
 {% block content %}
-
+<style>
+    .selection{
+        display: flex;
+        flex-direction: row;
+        justify-content: right;
+        align-items: right;
+        margin-right:2rem;
+        margin-top:-2rem;
+    }
+    label {
+        margin-left:5rem;
+        font-weight: bold;
+        margin-right: 3px;
+        margin-top:0.5rem;
+      }
+    input[type="text"],select {
+        width: 35%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin-right: 10px;
+        margin-left:2%;
+      }
+      select {
+        width: 15%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+        
+      
+      select:hover{
+        cursor: pointer;
+      }
+</style>
 <section class="content">
     <div class="container-fluid">
         <div class="row">
@@ -11,6 +45,21 @@
                 <div class="card">
                     <div class="card-header">
                         <h3 class="card-title">{{page_title}}</h3>
+                        <form method="get">
+                            {% csrf_token %}
+                            <div class="selection">
+                            
+                                <input type="text" name="q" placeholder="Search...">
+                                <input class='btn btn-success' type="submit" value='Search'/>
+                                
+                                    <label>Filter: </label>
+                                <select name="status" onchange="this.form.submit()">
+                                    <option value="">All</option>
+                                    <option value="male" {% if request.GET.status == 'male' %}selected{% endif %}>Male</option>
+                                    <option value="female" {% if request.GET.status == 'female' %}selected{% endif %}>Female</option>
+                                 </select>
+                            </div>
+                          </form>
                     </div>
                     <!-- /.card-header -->
                     <div class="card-body">

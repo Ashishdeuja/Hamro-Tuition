@@ -3,7 +3,7 @@ from datetime import date
 from django.shortcuts import render, redirect, reverse, get_object_or_404
 import requests
 from django.contrib.auth import authenticate, login, logout
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.core.files.storage import FileSystemStorage
 from django.core.mail import send_mail
 from teacher.models import *
@@ -89,6 +89,13 @@ def add_class(request):
 
 def manage_class(request):
     level = Level.objects.all()
+    
+    query = request.GET.get('q')
+    if query:
+        level = level.filter(Q(level__icontains=query)).distinct()
+        if not level:
+            return render(request, "student/not_found.html")
+    
     context = {
         'level': level,
         'page_title': 'Manage Class'
@@ -125,8 +132,7 @@ def delete_class(request, level_id):
         level.delete()
         messages.success(request, "The class has been deleted successfully!")
     except Exception:
-        messages.error(
-            request, "The class couldn't be deleted !! ")
+        messages.error(request, "The class couldn't be deleted because some data may be assocated with it !! ")
     return redirect(reverse('manage_class'))
 
 
@@ -156,6 +162,14 @@ def add_section(request):
 
 def manage_section(request):
     section = Section.objects.all()
+    
+    query = request.GET.get('q')
+    if query:
+        section = section.filter(Q(section__icontains=query)|
+                            Q(level__level__icontains=query)).distinct()
+        if not section:
+            return render(request, "student/not_found.html")
+        
     context = {
         'section': section,
         'page_title': 'Manage Section'
@@ -325,6 +339,13 @@ def edit_subject(request, subject_id):
 
 def manage_subject(request):
     subject = Subject.objects.all()
+    query = request.GET.get('q')
+    if query:
+        subject = subject.filter(Q(subject_name__icontains=query)|
+                                Q(code__icontains=query)|
+                            Q(level__level__icontains=query)).distinct()
+        if not subject:
+            return render(request, "student/not_found.html")
     context = {
         'subject': subject,
         'page_title': 'Manage Subject'
@@ -377,8 +398,6 @@ def add_teacher(request):
             email = form.cleaned_data.get('email')
             gender = form.cleaned_data.get('gender')
             password = form.cleaned_data.get('password')
-            level = form.cleaned_data.get('level')
-            subject = form.cleaned_data.get('subject')
             dob=form.cleaned_data.get('dob')
             phone_number=form.cleaned_data.get('phone_number')
             salary=form.cleaned_data.get('salary')
@@ -404,8 +423,7 @@ def add_teacher(request):
                 # a=Level.objects.filter(level=level)[0]
                 # tech=Teacher.objects.create(admin=user,level=a)
                 # tech.save()
-                user.teacher.level= level
-                user.teacher.subject= subject
+                
                 user.save()
                 messages.success(request, "Successfully Added")
                 return redirect(reverse('add_teacher'))
@@ -434,8 +452,6 @@ def edit_teacher(request,teacher_id):
             email = form.cleaned_data.get('email')
             gender = form.cleaned_data.get('gender')
             password = form.cleaned_data.get('password') or None
-            level = form.cleaned_data.get('level')
-            subject = form.cleaned_data.get('subject')
             dob=form.cleaned_data.get('dob')
             phone_number=form.cleaned_data.get('phone_number')
             salary=form.cleaned_data.get('salary')
@@ -462,8 +478,6 @@ def edit_teacher(request,teacher_id):
                 user.dob=dob
                 user.phone_number=phone_number
                 teacher.salary=salary
-                teacher.level= level
-                teacher.subject= subject
                 user.save()
                 teacher.save()
                 messages.success(request, "Successfully Added")
@@ -482,6 +496,23 @@ def edit_teacher(request,teacher_id):
 
 def manage_teacher(request):
     teacher = CustomUser.objects.filter(user_type=2)
+    query = request.GET.get('q')
+    if query:
+        teacher = teacher.filter(Q(first_name__icontains=query)|
+                                Q(first_name__icontains=query)|
+                                Q(email__icontains=query)|
+                                Q(address__icontains=query)|
+                            Q(phone_number__icontains=query)).distinct()
+        if not teacher:
+            return render(request, "student/not_found.html")
+        
+    selected_status = request.GET.get('status')
+    if selected_status:
+        if selected_status == 'male':
+            teacher =  teacher.filter(gender='M')
+        elif selected_status == 'female':
+            teacher =  teacher.filter(gender='F') 
+    
     context = {
         'teacher': teacher,
         'page_title': 'Manage Teacher'
@@ -661,6 +692,23 @@ def add_student(request):
 
 def manage_student(request):
     student = CustomUser.objects.filter(user_type=3)
+    query = request.GET.get('q')
+    if query:
+        student = student.filter(Q(first_name__icontains=query)|
+                                Q(first_name__icontains=query)|
+                                Q(email__icontains=query)|
+                                Q(address__icontains=query)|
+                                Q(dob__icontains=query)|
+                            Q(phone_number__icontains=query)).distinct()
+        if not student:
+            return render(request, "student/not_found.html")
+        
+    selected_status = request.GET.get('status')
+    if selected_status:
+        if selected_status == 'male':
+            student =  student.filter(gender='M')
+        elif selected_status == 'female':
+            student =  student.filter(gender='F') 
     context = {
         'student': student,
         'page_title': 'Manage student'
@@ -738,6 +786,99 @@ def delete_student(request, student_id):
     return redirect(reverse('manage_student'))
 
 
+def get_subjects(request):
+    level_id = request.GET.get('level')
+    subjects = Subject.objects.filter(level_id=level_id)
+    data = [{'id': s.id, 'name': s.subject_name} for s in subjects]
+    return JsonResponse(data, safe=False)
+    
+
+def get_sections(request):
+    level_id = request.GET.get('level')
+    sections = Section.objects.filter(level_id=level_id)
+    data = [{'id': s.id, 'name': s.section} for s in sections]
+    return JsonResponse(data, safe=False)
+    
+
+def assign_teacher(request):
+    form=AssignTeacherForm(request.POST or None)
+    context = {
+        'form': form,
+        'page_title': 'Assign Teacher'
+    }
+    if request.method == 'POST':
+        if form.is_valid():
+            level=form.cleaned_data.get('level')
+            subject = form.cleaned_data.get('subject')
+            teacher = form.cleaned_data.get('teacher')
+            try:
+                assign_teacher=AssignTeacher()
+                assign_teacher.level=level
+                assign_teacher.subject=subject
+                assign_teacher.teacher=teacher
+                assign_teacher.save()
+                messages.success(request, "Successfully Added")
+                return redirect(reverse('manage_assign_teacher'))
+            except Exception as e:
+                messages.error(request, "Error in adding the notes "+str(e))
+        else:
+            messages.error(request, "Could Not Add")
+    return render(request, 'admin/assign_teacher.html', context)
+
+def edit_assign_teacher(request,assignteacher_id):
+    instance = get_object_or_404(AssignTeacher, id=assignteacher_id)
+    form=AssignTeacherForm(request.POST or None,instance=instance)
+    context = {
+        'form': form,
+        'page_title': 'Assign Teacher'
+    }
+    if request.method == 'POST':
+        if form.is_valid():
+            level=form.cleaned_data.get('level')
+            subject = form.cleaned_data.get('subject')
+            teacher = form.cleaned_data.get('teacher')
+            try:
+                assign_teacher=AssignTeacher.objects.get(id=assignteacher_id)
+                assign_teacher.level=level
+                assign_teacher.subject=subject
+                assign_teacher.teacher=teacher
+                assign_teacher.save()
+                messages.success(request, "Successfully Update")
+                return redirect(reverse('manage_assign_teacher'))
+            except Exception as e:
+                messages.error(request, "Error in adding the notes "+str(e))
+        else:
+            messages.error(request, "Could Not Add")
+    return render(request, 'admin/edit_assign_teacher.html', context)
+
+
+def manage_assign_teacher(request):
+    assign_teacher =AssignTeacher.objects.all()
+    query = request.GET.get('q')
+    if query:
+        assign_teacher = assign_teacher.filter(Q(subject__subject_name__icontains=query)|
+                                Q(teacher__admin__first_name__icontains=query)|
+                                Q(teacher__admin__last_name__icontains=query)|
+                            Q(level__level__icontains=query)).distinct()
+        if not assign_teacher:
+            return render(request, "student/not_found.html")
+    context = {
+        'assign_teacher': assign_teacher,
+        'page_title': 'Assigned Teachers'
+    }
+    return render(request, "admin/manage_assign_teacher.html", context)
+
+def delete_assign_teacher(request, assignteacher_id):
+    assign_teacher = get_object_or_404(AssignTeacher, id=assignteacher_id)
+    try:
+        assign_teacher.delete()
+        messages.success(request, (' Assigned teacher has been removed.'))
+    except Exception:
+        messages.error(request, "The assigned teacher couldn't be removed !!")
+    return redirect('manage_assign_teacher')
+
+
+
 
 def admin_profile(request):
     admin = get_object_or_404(Admin, admin=request.user.id)
@@ -745,7 +886,10 @@ def admin_profile(request):
     form = AdminForm(request.POST or None, request.FILES or None, instance=admin)
     dob=admin.admin.dob
     today = date.today()
-    age = today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
+    if dob is not None:
+        age = today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
+    else:
+        age=0;    
     context = {'form': form,
                'page_title': 'Edit Profile',
                'age':age
@@ -792,6 +936,13 @@ def admin_profile(request):
 
 def notice_view(request):
     items = NewsAndEvents.objects.all().order_by('-updated_date')
+    
+    selected_status = request.GET.get('status')
+    if selected_status:
+        if selected_status == 'news':
+            items =  items.filter(posted_as=NewsAndEvents.NEWS)
+        elif selected_status == 'events':
+            items =  items.filter(posted_as=NewsAndEvents.EVENTS) 
     context = {
         'items': items,
         'page_title': 'News and Events'
@@ -923,6 +1074,8 @@ def teacher_check_leave(request):
         query = request.GET.get('q')
         if query:
             allLeave = allLeave.filter(Q(reason__icontains=query) |
+                                       Q(teacher__admin__first_name__icontains=query) |
+                                       Q(teacher__admin__last_name__icontains=query) |
                                                 Q(start_date__icontains=query) |
                                                 Q(end_date__icontains=query)).distinct()
             if not allLeave:
@@ -1015,7 +1168,8 @@ def student_check_leave(request):
         query = request.GET.get('q')
         if query:
             allLeave = allLeave.filter(Q(reason__icontains=query) |
-                                            # Q(student__icontains=query) |
+                                             Q(student__admin__first_name__icontains=query) |
+                                            Q(student__admin__last_name__icontains=query) |
                                                 Q(start_date__icontains=query) |
                                                 Q(end_date__icontains=query)).distinct()
             if not allLeave:
@@ -1119,7 +1273,7 @@ def home(request):
         send_mail(email_subject, email_body, email_from, [email_to], fail_silently=False) 
         return redirect(reverse('homepage'))
     context = {
-        'leave_history': Testimonial.objects.all(),
+        'testimonial': Testimonial.objects.all(),
         'home':About.objects.all(),
         'about':AboutPage.objects.all(),
         'bod':BOD.objects.all(),
@@ -1131,8 +1285,24 @@ def home(request):
 @csrf_exempt
 def testimonial(request):
     if request.method != 'POST':
-        # teacher = get_object_or_404(Teacher)
         testimonials = Testimonial.objects.all()
+        
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        
+        if start_date and end_date:
+            testimonials = testimonials.filter(created_at__range=[start_date, end_date])
+            if not testimonials:
+                return render(request, "student/not_found.html")
+        
+        query = request.GET.get('q')
+        if query:
+            testimonials = testimonials.filter(Q(description__icontains=query) |
+                                             Q(student__admin__first_name__icontains=query) |
+                                            Q(student__admin__last_name__icontains=query)).distinct()
+            if not testimonials:
+                return render(request, "student/not_found.html")
+        
         selected_status = request.GET.get('status')
         if selected_status:
             if selected_status == 'pending':
@@ -1605,7 +1775,7 @@ def view_yearly_attendance_pdf(request,student_id):
 
 def admin_view_all_attendance(request,section_id):
     students = Student.objects.filter(section=section_id)
-    attendance = Attendance.objects.all().order_by('-date')
+    attendance = Attendance.objects.filter(section=section_id).order_by('-date')
     section = Section.objects.get(id=section_id)
     attendance_by_month = {}
     for record in attendance:
@@ -1636,7 +1806,7 @@ def admin_view_all_attendance(request,section_id):
 
 def admin_download_all_attendance(request,section_id):
     students = Student.objects.filter(section=section_id)
-    attendance = Attendance.objects.all().order_by('-date')
+    attendance = Attendance.objects.filter(section=section_id).order_by('-date')
     section = Section.objects.get(id=section_id)
     attendance_by_month = {}
     for record in attendance:
@@ -1669,7 +1839,7 @@ def admin_download_all_attendance(request,section_id):
 
 def daily_all_attendance_pdf(request,section_id):
     students = Student.objects.filter(section=section_id)
-    attendance = Attendance.objects.all().order_by('-date')
+    attendance = Attendance.objects.filter(section=section_id).order_by('-date')
     section = Section.objects.get(id=section_id)
     attendance_by_day = {}
     for record in attendance:
@@ -1699,7 +1869,7 @@ def daily_all_attendance_pdf(request,section_id):
     
 def weekly_all_attendance_pdf(request,section_id):
     students = Student.objects.filter(section=section_id)
-    attendance = Attendance.objects.all().order_by('-date')
+    attendance = Attendance.objects.filter(section=section_id).order_by('-date')
     section = Section.objects.get(id=section_id)
     attendance_by_week = {}
     for record in attendance:
@@ -1716,8 +1886,7 @@ def weekly_all_attendance_pdf(request,section_id):
             week = f"{week_start.strftime('%Y-%m-%d')} to {week_end.strftime('%Y-%m-%d')}"
             if week not in attendance_by_week:
                 attendance_by_week[week] = []
-            attendance_by_week[week].append(record)
-            
+            attendance_by_week[week].append(record)      
     context = {
         'attendance_by_week': attendance_by_week,
         'students': students,

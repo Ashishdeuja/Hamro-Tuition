@@ -26,7 +26,7 @@ urlpatterns = [
     path('manage/attendance/class',views.manage_attendance_class,name='manage_attendance_class'),
     path('view/attendance/<int:section_id>/',views.view_attendance,name='view_attendance'),
     path('create/attendance/<int:section_id>', views.create_attendance, name='create_attendance'),
-    path('edit/int:section_id/int:attendance_id/', views.edit_attendance, name='edit_attendance'),
+    path('edit/<int:section_id>/', views.edit_attendance, name='edit_attendance'),
     path('download/all/attendance/<int:section_id>',views.teacher_download_all_attendance,name='teacher_download_all_attendance'),
     
    

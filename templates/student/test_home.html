@@ -4,6 +4,25 @@
 
 {% block content %}
 
+<style>
+    .rb {
+        width: 20px;
+        height: 20px;
+        margin-right: 10px;
+        vertical-align: middle;
+        cursor:pointer;
+      }
+      
+      
+      label {
+        display: inline-block;
+        margin-right: 10px;
+        vertical-align: middle;
+      }
+      
+</style>
+
+
 <form method='post' action='{% url "test_question" subject_id %}'>
     {% csrf_token %}
 <div class="container">
@@ -13,7 +32,7 @@
         {% for i in  questions %}
         <table>
             <tr>
-                <td class="text-primary">{{forloop.counter}}) {{i.question}} ?</td>
+                <td class="text-primary" style='font-size:15px;font-weight:bold;'>{{forloop.counter}}) {{i.question}} ?</td>
             </tr>
             <tr>
                 <td><input type = "radio" class="rb" name = "{{i.id}}__answer" id="Option1" value="{{i.op1}}">  {{i.op1}}</td>

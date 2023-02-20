@@ -149,18 +149,18 @@
 
       <div class="swiper-wrapper">
 
-         {% for leave in leave_history %}
-        {% if leave.status == 1 %}
+         {% for testimonials in testimonial %}
+        {% if testimonials.status == 1 %}
          <div class="swiper-slide slide">
             
             <div class="user">
-               <img src="{{leave.image.url}}" alt="">
+               <img src="{{testimonials.image.url}}" alt="">
                <div class="user-info">
-                  <h3>Ashish Deuja</h3>
+                  <h3>{{testimonials.student}}</h3>
                   
                </div>
             </div>
-            <p>{{leave.description|safe}}</p>
+            <p>{{testimonials.description|safe}}</p>
          </div>
          {% endif %}
          {% endfor %}

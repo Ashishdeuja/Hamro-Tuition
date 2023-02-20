@@ -15,6 +15,17 @@
         </li>
     </ul>
 </main>
+<form method="get">
+    {% csrf_token %}
+    <div class='selection'>
+        <label>Filter: </label>
+        <select name="status" onchange="this.form.submit()">
+            <option value="">All</option>
+            <option value="news" {% if request.GET.status == 'news' %}selected{% endif %}>News</option>
+            <option value="events" {% if request.GET.status == 'events' %}selected{% endif %}>Events</option>
+         </select>
+    </div>
+  </form>
 <div class="container">
     {% comment %} <div id="input-nav" class="p-2">Home</div> {% endcomment %}
 
@@ -26,6 +37,33 @@
 
 
     <style>
+        .selection{
+            display: flex;
+            flex-direction: row;
+            justify-content: right;
+            align-items: right;
+            margin-right:2rem;
+            margin-top:-2rem;
+            margin-bottom:3rem;
+        }
+        label {
+            margin-left:5rem;
+            font-weight: bold;
+            margin-right: 3px;
+            margin-top:0.5rem;
+          }
+          select {
+            width: 15%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-right: 10px;
+            margin-left:2%;
+          }
+          
+          select:hover{
+            cursor: pointer;
+          }
         .color-indicator {
             display: inline-block;
             width: 10px;
@@ -36,12 +74,7 @@
         .bg-purple {
             background-color: #6f42c1;
         }
-    </style>
 
-    {% comment %} <div class="title">News & Events</div> {% endcomment %}
-
-    
-    <style>
         .card-header-ne {
             position: relative;
             display: flex;
@@ -57,6 +90,8 @@
         .row {
             display: flex;
             flex-wrap: wrap;
+            margin-left:1rem;
+            margin-right:1rem;
             }
             
             {% comment %} .col-md-4 {
@@ -158,11 +193,8 @@
             }
             }
 
-
-
-
-
     </style>
+
     {% if items %}
     <div class="row">
         {% for item in items %}

@@ -30,12 +30,12 @@
         cursor: pointer;
       }
       button[type="submit"] {
-        width: 10%;
-        padding: 10px;
-        background-color: #4CAF50;
-        color: white;
-        border: 1px solid #ccc;
-        border-radius: 5px;
+        color: #fff;
+        background-color: #28a745;
+        border-color: #28a745;
+        font-weight: bold;
+        padding: 0.5rem 1rem;
+        border-radius: 0.25rem;
         cursor: pointer;
       }
       label {
@@ -61,10 +61,7 @@
                         <form method="get">
                             {% csrf_token %}
                             <div class="selection">
-                                
-                                
-                            
-                            
+
                                 <input type="text" name="q" placeholder="Search...">
                                 <button type="submit">Search</button>
 
@@ -129,7 +126,7 @@
                                     <form method="post" action="#" id="myForm">
                                         <input type="hidden" name="id" value="{{ leave.id }}">
                                         <button type="submit" name="status" value="1" id="approve-button">Approve</button>
-                                        <button type="submit" name="status" value="-1" id="reject-button">Reject</button>
+                                        <button type="submit" name="status" value="-1" id="reject-button" style='background-color:red;'>Reject</button>
                                     </form>
                                     {% endif %}
                                      </td>

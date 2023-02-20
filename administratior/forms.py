@@ -111,7 +111,16 @@ class TeacherForm(CustomUserForm):
     class Meta(CustomUserForm.Meta):
         model = Teacher
         fields = CustomUserForm.Meta.fields + \
-            ['salary','level','subject' ]
+            ['salary' ]
+            
+            
+class AssignTeacherForm(FormSettings):
+    def __init__(self, *args, **kwargs):
+        super(AssignTeacherForm, self).__init__(*args, **kwargs)
+
+    class Meta(CustomUserForm.Meta):
+        model = AssignTeacher
+        fields = ['level','subject','teacher']
 
 class StudentForm(CustomUserForm):
     def __init__(self, *args, **kwargs):

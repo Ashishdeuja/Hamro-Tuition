@@ -10,7 +10,7 @@
         align-items: center;
         margin-bottom: 20px;
         margin-right:50px;
-        margin-top:-3%;
+        {% comment %} margin-top:-3%; {% endcomment %}
       }
       
       .selection label {
@@ -28,6 +28,26 @@
       select:hover{
         cursor: pointer;
       }
+      input,input[type="text"] {
+        width: 35%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin-right: 10px;
+        margin-left:2%;
+      }
+      input{
+        width:12%;
+      }
+      button[type="submit"] {
+        color: #fff;
+        background-color: #28a745;
+        border-color: #28a745;
+        font-weight: bold;
+        padding: 0.5rem 1rem;
+        border-radius: 0.25rem;
+        cursor: pointer;
+      }
 </style>
 <section class="content">
     <div class="container-fluid">
@@ -39,7 +59,13 @@
                         <h3 class="card-title">{{page_title}}</h3>
                         <form method="get">
                             {% csrf_token %}
-                            <div class="selection">
+                            
+                                <input type="text" name="q" placeholder="Search...">
+                                <button type="submit">Search</button>
+
+                                <input type="date" name="start_date" id="start_date"> to
+                                <input type="date" name="end_date" id="end_date">
+                                <div class="selection">
                             <label>Filter: </label>
                             <select name="status" onchange="this.form.submit()">
                                 <option value="">All</option>

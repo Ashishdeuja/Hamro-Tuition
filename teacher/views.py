@@ -13,6 +13,8 @@ from django.core.paginator import Paginator
 from django.template.loader import get_template
 from xhtml2pdf import pisa
 from django.db.models import Q
+import re
+from django.contrib.auth.hashers import check_password
 # Create your views here.
 def teacher_home_page(request):
     context = {
@@ -20,6 +22,16 @@ def teacher_home_page(request):
         
     }
     return render(request, 'teacher/teacher_home_page.html', context)
+
+def validate_password(password):
+    if len(password) < 8:
+        raise forms.ValidationError("Password must be at least 8 characters long.")
+    if not re.search(r'[A-Z]', password):
+        raise forms.ValidationError("Password must contain at least one uppercase letter.")
+    if not re.search(r'[a-z]', password):
+        raise forms.ValidationError("Password must contain at least one lowercase letter.")
+    if not re.search(r'\d', password):
+        raise forms.ValidationError("Password must contain at least one digit.")
 
 def teacher_profile(request):
     teacher = get_object_or_404(Teacher, admin=request.user)
@@ -41,13 +53,26 @@ def teacher_profile(request):
                 phone_number=form.cleaned_data.get('phone_number')
                 address = form.cleaned_data.get('address')
                 gender = form.cleaned_data.get('gender')
+                salary = form.cleaned_data.get('salary')
                 # today = date.today()
                 # age = today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
                 password = form.cleaned_data.get('password') or None
                 passport = request.FILES.get('profile_pic') or None
+                
+                # if password != None:
+                #     try:
+                #         validate_password(password)
+                #     except forms.ValidationError as e:
+                #         form.add_error('password', e)
+                #         raise forms.ValidationError("Invalid Password")
+
                 custom_user = teacher.admin
                 if password != None:
-                    custom_user.set_password(password)
+                    if check_password(password, custom_user.password):
+                        messages.error(request, "New password should be different from current password")
+                        return redirect(reverse('teacher_profile'))
+                    else:
+                        custom_user.set_password(password)
                 if passport != None:
                     fs = FileSystemStorage()
                     filename = fs.save(passport.name, passport)
@@ -59,6 +84,7 @@ def teacher_profile(request):
                 custom_user.phone_number=phone_number
                 custom_user.address=address
                 custom_user.gender=gender
+                custom_user.teacher.salary=salary
                 # custom_user.age=age
                 custom_user.save()
                 messages.success(request, "Profile Updated!")
@@ -66,8 +92,7 @@ def teacher_profile(request):
             else:
                 messages.error(request, "Invalid Data Provided")
         except Exception as e:
-            messages.error(
-                request, "Error Occured While Updating Profile " + str(e))
+            messages.error(request, "Error Occured While Updating Profile " + str(e))
     return render(request, "teacher/teacher_profile.html", context)
 
 
@@ -119,7 +144,8 @@ def add_question(request,subject_id):
 #     return render(request, "teacher/manage_question.html", context)
 
 def manage_question_class(request):
-    level= Level.objects.all()
+    teacher=get_object_or_404(Teacher,admin=request.user)
+    level= Level.objects.filter(assignteacher__teacher=teacher).distinct()
     context = {
         'level':level,
         'page_title': 'Questions'
@@ -128,7 +154,8 @@ def manage_question_class(request):
 
 
 def manage_question(request,level_id):
-    subject= Subject.objects.filter(level=level_id)
+    teacher=get_object_or_404(Teacher,admin=request.user)
+    subject= Subject.objects.filter(level=level_id,assignteacher__teacher=teacher)
     level= Level.objects.get(id=level_id)
     context = {
         'subject':subject,
@@ -249,7 +276,8 @@ def add_notes(request,subject_id):
 
 
 def manage_notes_class(request):
-    level= Level.objects.all()
+    teacher=get_object_or_404(Teacher,admin=request.user)
+    level= Level.objects.filter(assignteacher__teacher=teacher).distinct()
     context = {
         'level':level,
         'page_title': 'Notes'
@@ -258,7 +286,8 @@ def manage_notes_class(request):
 
 
 def manage_notes(request,level_id):
-    subject= Subject.objects.filter(level=level_id)
+    teacher=get_object_or_404(Teacher,admin=request.user)
+    subject= Subject.objects.filter(level=level_id,assignteacher__teacher=teacher)
     level= Level.objects.get(id=level_id)
     context = {
         'subject':subject,
@@ -366,7 +395,8 @@ def teacher_view_leave(request):
     return render(request, "teacher/apply_leave.html", context)
 
 def manage_attendance_class(request):
-    level= Level.objects.all()
+    teacher = get_object_or_404(Teacher, admin=request.user)
+    level= Level.objects.filter(assignteacher__teacher=teacher)
     context = {
         'level':level,
         'page_title': 'Attendance'
@@ -435,7 +465,7 @@ def view_attendance(request,section_id):
         'students': students,
         'attendance': attendance,
         'section_id':section_id,
-        # 'attendance_id':attendance_id,
+        # 'attendance':attendance,
         'attendance_by_month_paginated': attendance_by_month_paginated,
         'page_title': 'Attendance of {0} Section {1}'.format(section.level,section)
     }
@@ -535,37 +565,70 @@ def create_attendance(request,section_id):
 
 
 
-def edit_attendance(request,section_id, attendance_id):
-    attendance = Attendance.objects.get(id=attendance_id)
-    if request.method == 'POST':
-        date = request.POST['date']
-        students = Student.objects.filter(section=section_id)
-        section = Section.objects.get(id=section_id)
-        # if Attendance.objects.filter(date=date,section=section_id).exclude(id=attendance_id).exists():
-        #     messages.error(request, 'Attendance for this date has already been recorded')
-        #     return redirect('edit_attendance',section_id=section_id, attendance_id=attendance_id)
-        for student in students:
-            student_id = student.id
-            present = request.POST.get(str(student_id), False) == 'on'
-            attendance.date = date
-            attendance.student = student
-            attendance.section = section
-            attendance.present = present
-            attendance.save()
+# def edit_attendance(request,section_id, attendance_id):
+#     attendance = Attendance.objects.get(id=attendance_id)
+#     if request.method == 'POST':
+#         date = request.POST['date']
+#         students = Student.objects.filter(section=section_id)
+#         section = Section.objects.get(id=section_id)
+#         # if Attendance.objects.filter(date=date,section=section_id).exclude(id=attendance_id).exists():
+#         #     messages.error(request, 'Attendance for this date has already been recorded')
+#         #     return redirect('edit_attendance',section_id=section_id, attendance_id=attendance_id)
+#         for student in students:
+#             student_id = student.id
+#             present = request.POST.get(str(student_id), False) == 'on'
+#             attendance.date = date
+#             attendance.student = student
+#             attendance.section = section
+#             attendance.present = present
+#             attendance.save()
             
-        messages.error(request, 'Attendance for this date has been updated successfully.')
-        return redirect('manage_attendance')
+#         messages.error(request, 'Attendance for this date has been updated successfully.')
+#         return redirect('manage_attendance')
     
-    students = Student.objects.filter(section=section_id)
+#     students = Student.objects.filter(section=section_id)
 
-    context = {
-        'attendance': attendance,
-        'students': students,
-        # 'section_id':section_id,
-        'page_title': 'Edit Attendance'
-    }
+#     context = {
+#         'attendance': attendance,
+#         'students': students,
+#         # 'section_id':section_id,
+#         'page_title': 'Edit Attendance'
+#     }
 
-    return render(request, "attendance/edit_attendance.html", context)
+#     return render(request, "attendance/edit_attendance.html", context)
+
+
+def edit_attendance(request,section_id):
+    date = request.GET.get('date')
+    attendance_list = Attendance.objects.filter(date=date,section=section_id)
+    section = Section.objects.get(id=section_id)
+    
+    try:
+        
+        if request.method == 'POST':
+            # Loop through all the attendance records for this date and update the present status
+            for attendance in attendance_list:
+                present = request.POST.get(str(attendance.student.id))
+                if present == 'on':
+                    attendance.present = True
+                else:
+                    attendance.present = False
+                attendance.save()
+                
+            messages.success(request, 'Attendance for this date has been updated successfully.')
+            return redirect('view_attendance',section_id)   
+    except Exception:
+        messages.error(request, 'Error in updating the attendance !!')
+        return redirect('view_attendance',section_id) 
+        
+    context={
+        'date': date, 
+        'section_id':section_id,
+        'attendance_list': attendance_list,
+        'page_title': 'Edit Attendance of {0} Section {1}'.format(section.level,section)
+        }
+         
+    return render(request, 'attendance/edit_attendance.html', context)
 
 
 def teacher_download_all_attendance(request,section_id):

@@ -1,4 +1,5 @@
 import calendar
+from datetime import date
 from http.client import HTTPResponse
 import random
 from django.shortcuts import render,get_object_or_404,redirect,reverse
@@ -16,6 +17,8 @@ from django.core.paginator import Paginator
 from django.template.loader import get_template
 from xhtml2pdf import pisa
 from django.db.models import Q
+import re
+from django.contrib.auth.hashers import check_password
 # from django.conf import settings
 # from django.http import HttpResponse
 # from django.template.loader import render_to_string
@@ -28,6 +31,88 @@ def student_home_page(request):
         
     }
     return render(request, 'student/student_home_page.html', context)
+
+
+def validate_password(password):
+    if len(password) < 8:
+        raise forms.ValidationError("Password must be at least 8 characters long.")
+    if not re.search(r'[A-Z]', password):
+        raise forms.ValidationError("Password must contain at least one uppercase letter.")
+    if not re.search(r'[a-z]', password):
+        raise forms.ValidationError("Password must contain at least one lowercase letter.")
+    if not re.search(r'\d', password):
+        raise forms.ValidationError("Password must contain at least one digit.")
+
+def student_profile(request):
+    student = get_object_or_404(Student, admin=request.user)
+   
+    form = StudentForm(request.POST or None, request.FILES or None, instance=student)
+    dob=student.admin.dob
+    today = date.today()
+    age = today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
+    
+    context = {'form': form,
+               'page_title': 'Edit Profile',
+               'age':age
+               }
+    if request.method == 'POST':
+        try:
+            if form.is_valid():
+                first_name = form.cleaned_data.get('first_name')
+                last_name = form.cleaned_data.get('last_name')
+                dob=form.cleaned_data.get('dob')
+                password = form.cleaned_data.get('password') or None
+                address = form.cleaned_data.get('address')
+                gender = form.cleaned_data.get('gender')
+                passport = request.FILES.get('profile_pic') or None
+                level = form.cleaned_data.get('level')
+                section = form.cleaned_data.get('section')
+                session = form.cleaned_data.get('session')
+                phone_number=form.cleaned_data.get('phone_number')
+                fathers_name=form.cleaned_data.get('fathers_name')
+                fathers_number=form.cleaned_data.get('fathers_number')
+                mothers_name=form.cleaned_data.get('mothers_name')
+                mothers_number=form.cleaned_data.get('mothers_number')
+                # if password != None:
+                #     try:
+                #         validate_password(password)
+                #     except forms.ValidationError as e:
+                #         form.add_error('password', e)
+                #         raise forms.ValidationError("Invalid Password")
+                admin = student.admin
+                if password != None:
+                    if check_password(password,admin.password):
+                        messages.error(request, "New password should be different from current password")
+                        return redirect(reverse('student_profile'))
+                    else:
+                        admin.set_password(password)
+                if passport != None:
+                    fs = FileSystemStorage()
+                    filename = fs.save(passport.name, passport)
+                    passport_url = fs.url(filename)
+                    admin.profile_pic = passport_url
+                admin.first_name = first_name
+                admin.last_name = last_name
+                admin.address = address
+                admin.gender = gender
+                admin.dob=dob
+                admin.phone_number=phone_number
+                admin.student.fathers_name=fathers_name
+                admin.student.mothers_name=mothers_name
+                admin.student.fathers_number=fathers_number
+                admin.student.mothers_number=mothers_number
+                admin.student.session = session
+                admin.student.level = level
+                admin.student.section = section
+                admin.save()
+                messages.success(request, "Profile Updated!")
+                return redirect(reverse('student_profile'))
+            else:
+                messages.error(request, "Invalid Data Provided")
+        except Exception as e:
+            messages.error(request, "Error Occured While Updating Profile " + str(e))
+    return render(request, "student/student_profile.html", context)
+
 
 def view_notes(request):
     student= get_object_or_404(Student, admin=request.user)
@@ -42,7 +127,6 @@ def view_notes(request):
         'subject':subject,
         'page_title': 'Manage Note'
     }
-
     return render(request, "student/student_view_notes.html", context)
 
 def view_subject_notes(request,subject_id):
@@ -95,26 +179,47 @@ def test_home(request,subject_id):
             _actual_questions=Question.objects.filter(id__in = q.keys())
             print(_actual_questions)
             score = 0
-            total=0
+            correct=0
             
             for question in _actual_questions:
                 if question.ans == q[str(question.id)]:
                     score+=10
-                    total+=1
+                    correct+=1
             
             print(score)
+            print(question.select_level)
             print(request.POST.keys())
+            total=len(_actual_questions)
+            incorrect=len(_actual_questions)-correct
+            percentage=(correct/len(_actual_questions))*100
+            test_level=question.select_level
+            subject_name=Subject.objects.get(id=subject_id)
+            student_name= get_object_or_404(Student, admin_id=request.user.id)
+            test_result = Test_Resut(
+                subject=subject_name, 
+                student=student_name, 
+                total_question=total, 
+                correct_ans=correct,
+                incorrect_ans=incorrect,
+                percentage=percentage,
+                score=score,
+                test_level=test_level
+            )
+            test_result.save()
+            
+            
             context = {
                 'questions': questions, 
                 'score': score,
-                'total':len(_actual_questions),
-                'correct':total,
-                'incorrect':len(_actual_questions)-total,
-                'percentage':(total/len(_actual_questions))*100,
+                'total':total,
+                'correct':correct,
+                'incorrect':incorrect,
+                'percentage':percentage,
                 'subject_id':subject_id,
                 'student_name':request.user.first_name + ' '+ request.user.last_name, 
                 'subject':question.subject.subject_name,
-                'class': question.subject.level   
+                'class':question.subject.level,
+                'select_level':test_level 
                 }
             return render(request, 'student/result.html', context)
         except ValueError as e:
@@ -163,26 +268,20 @@ def start_test(request,subject_id):
         return redirect('test_level_selection', subject_id)
     
 
-# def mock_test_result_pdf(request, subject_id):
-#     questions = Question.objects.filter(subject=subject_id)
-#     q={}
-#     for key,value in request.POST.items():
-#         if '__answer' in key:
-#             q[key.replace('__answer','')]=value
-#     # print(q)
+def mock_test_result_pdf(request, subject_id):
     
-#     _actual_questions=Question.objects.filter(id__in = q.keys())
-#     # print(_actual_questions)
-#     score = 0
-#     total=0
-            
-#     for question in _actual_questions:
-#         if question.ans == q[str(question.id)]:
-#             score+=10
-#             total+=1
-            
-#     print(score)
-#     print(request.POST.keys())
+    student = get_object_or_404(Student, admin_id=request.user.id)
+    subject = get_object_or_404(Subject, id=subject_id)
+    test_results = Test_Resut.objects.filter(student=student, subject=subject)
+    
+    
+    
+    context = {
+                'test_results':  test_results, 
+                
+                
+                }
+    return render(request,'student/result_pdf.html',context)
 #     html = render_to_string('student/mock_test_result_pdf.html',{
 #                 'questions': questions, 
 #                 'score': score,

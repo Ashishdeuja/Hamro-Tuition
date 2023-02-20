@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block page_title %}{{page_title}}{% endblock page_title %}
+
+{% block content %}
+<style>
+    .selection{
+        display: flex;
+        flex-direction: row;
+        justify-content: right;
+        align-items: right;
+        margin-right:2rem;
+        margin-top:-2rem;
+    }
+    input[type="text"] {
+        width: 35%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin-right: 10px;
+        margin-left:2%;
+      }
+</style>
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card card-dark">
+                        <div class="card-header">
+                            <h3 class="card-title">{{page_title}}</h3>
+                            <form method="get">
+                                {% csrf_token %}
+                                <div class="selection">
+                                
+                                    <input type="text" name="q" placeholder="Search...">
+                                    <input class='btn btn-success' type="submit" value='Search'/>
+                                </div>
+                              </form>
+                        </div>
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body">
+                        <table id="example2" class="table table-bordered table-hover">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th>S.N.</th>
+                                    <th>Class</th>
+                                    <th>Subject Name</th>
+                                    <th>Teacher Name</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for assign_teachers in assign_teacher %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{assign_teachers.level}}</td>
+                                    <td>{{assign_teachers.subject}}</td>
+                                    <td>{{assign_teachers.teacher}}</td>
+
+                                    <td>
+                                        <a href="{% url 'edit_assign_teacher' assign_teachers.id %}" class="btn btn-info">Edit</a> -
+                                        <a href="{% url 'delete_assign_teacher' assign_teachers.id %}" onclick="return confirm('Are you sure you want to remove the assgned teacher ?')" class="btn btn-danger">Delete</a> 
+                                    </td>
+                                </tr>
+                                {% endfor %}
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock content %}
+
+

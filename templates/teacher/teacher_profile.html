@@ -134,9 +134,11 @@ height: 100px;
                             </div>
                             <div class="col-lg-6">
                                 <div class="form-group">
-                                    <label class="text-l font-weight-bold text-primary text-uppercase mb-1" for="input-date">Password</label>
+                                    <label class="text-l font-weight-bold text-primary text-uppercase mb-1" for="input-password">Password</label>
+                                    <input type="password" id="password" class="form-control form-control-alternative"
                                     {{ form.password|add_class:"form-control form-control-alternative" }}
                                     {{ form.password.errors }}
+                                    <div id="password-message"></div>
                                 </div>
                             </div>
                         </div>
@@ -189,9 +191,15 @@ height: 100px;
                             {{ form.profile_pic|add_class:"form-control form-control-alternative" }}
                         </div>
                     </div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <input readonly type="hidden" id="input-salary" class="form-control form-control-alternative"
+                            {{ form.salary|add_class:"form-control form-control-alternative" }}
+                        </div>
+                    </div>
                 </div><br>
                 <div class="form-group text-center">
-                    <button class="btn btn-primary" type="submit">Update Profile</button>
+                    <button id="update-btn" class="btn btn-primary" type="submit" onclick="return confirm('After a successful profile update:\n\nYour session would be terminated\nYou would be required to login again')">Update Profile</button>
                 </div>
             </form><br><br>
         </div>   
@@ -208,14 +216,45 @@ height: 100px;
 
 {% block custom_js %}
   <script>
-      $(document).ready(function(){
-            var ifNotfied = false;
-          $("#id_password").on("change", function(){
-              if (!ifNotfied){
-                ifNotfied = true;
-                alert("After a successful profile update:\n\nYour session would be terminated\nYou would be required to login again")
-              }
-          })
-      })
+    const passwordInput = document.querySelector('#password');
+    const passwordMessage = document.querySelector('#password-message');
+
+    passwordInput.addEventListener('input', () => {
+        const password = passwordInput.value;
+        const containsUppercase = /[A-Z]/.test(password);
+        const containsLowercase = /[a-z]/.test(password);
+        const containsDigit = /\d/.test(password);
+        const containsSpecialCharacter = /[-!@#$%^&*()_+|~=`{}\[\]:";'<>?,.\/]/.test(password);
+        
+        if (password === '') {
+        passwordMessage.textContent = '';
+        passwordInput.style.borderColor = '';
+        } else if (password.length < 8) {
+        passwordMessage.textContent = 'Password should be at least 8 characters';
+        passwordMessage.style.color = 'red';
+        passwordInput.style.borderColor = 'red';
+        } else if (!containsUppercase) {
+        passwordMessage.textContent = 'Password should contain at least one uppercase letter';
+        passwordMessage.style.color = 'red';
+        passwordInput.style.borderColor = 'red';
+        } else if (!containsLowercase) {
+        passwordMessage.textContent = 'Password should contain at least one lowercase letter';
+        passwordMessage.style.color = 'red';
+        passwordInput.style.borderColor = 'red';
+        } else if (!containsDigit) {
+        passwordMessage.textContent = 'Password should contain at least one digit';
+        passwordMessage.style.color = 'red';
+        passwordInput.style.borderColor = 'red';
+        } else if (!containsSpecialCharacter) {
+        passwordMessage.textContent = 'Password should contain at least one special character';
+        passwordMessage.style.color = 'red';
+        passwordInput.style.borderColor = 'red';
+        } else {
+        passwordMessage.textContent = 'Password is valid';
+        passwordMessage.style.color = 'green';
+        passwordInput.style.borderColor = 'green';
+        }
+    });
   </script>
+    
 {% endblock custom_js %}

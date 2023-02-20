@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-8g_!_o_b3$29-@0w25@mby1)$(ix2noa6yt%960#@(k@bkb@2f
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["127.0.0.1", "192.168.1.103", "localhost"]
 
 
 # Application definition
@@ -56,6 +56,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # 'django.middleware.static.StaticFilesMiddleware',
     # 'administratior.middleware.LoginCheckMiddleWare',
 ]
 
@@ -87,7 +88,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         # 'NAME': 'Hamro_Tuition.db',
-        'NAME': 'tuition_hamro.db',
+        'NAME': 'hamro_tuition.db',
         'USER': 'postgres',
         'PASSWORD': '12345',
         'HOST': 'localhost',

@@ -1,3 +1,12 @@
+<style>
+    label {
+        margin-bottom: 3px;
+    }
+    input,textarea,select{
+        margin-bottom: 10px;
+    }
+</style>
+
 <form role="form" method="POST" enctype="multipart/form-data">
     {% csrf_token %}
     {{form.media}}
@@ -6,9 +15,14 @@
 
         {% for field in form  %}
         <div class="form-group">
-            {{field.errors}}
-            {{field.label_tag}}
+            {% if field.field.required %}
+            <label for="{{ field.id_for_label }}">{{ field.label_tag }} <span class="text-danger">*</span></label>
+            {% else %}
+            {{ field.label_tag }}
+            {% endif %}
+            {% comment %} {{field.label_tag}} {% endcomment %}
             {{field}}
+            {{field.errors}}
             
 
         </div>

@@ -20,6 +20,16 @@ class Question(models.Model):
     
     def __str__(self):
         return self.question
+    
+class Test_Resut(models.Model):
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE,null=True, blank=False)
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    total_question=models.CharField(max_length=30)
+    correct_ans=models.CharField(max_length=30)
+    incorrect_ans=models.CharField(max_length=30)
+    percentage=models.CharField(max_length=30)
+    score=models.CharField(max_length=30)
+    test_level=models.CharField(max_length=50)
 
 class NoteRoom(models.Model):
     code = models.CharField(max_length = 10,default='0000000')

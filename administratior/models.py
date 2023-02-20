@@ -69,7 +69,7 @@ class Level(models.Model):
     
 class Section(models.Model):
     section=models.CharField(max_length=22)
-    level=models.ForeignKey(Level, on_delete=models.CASCADE,null=True,blank=True)
+    level=models.ForeignKey(Level, on_delete=models.CASCADE)
     
     def __str__(self):
         return self.section
@@ -93,23 +93,27 @@ class Subject(models.Model):
 
 class Teacher(models.Model):
     admin = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-    # admin=None
     salary=models.IntegerField(null=True)
-    level=models.ForeignKey(Level,on_delete=models.DO_NOTHING, null=True, blank=False)
-    subject=models.ForeignKey(Subject,on_delete=models.DO_NOTHING, null=True)
+
     
     def __str__(self):
         return self.admin.first_name + " " + self.admin.last_name
-    
+
+
+class AssignTeacher(models.Model):
+    teacher=models.ForeignKey(Teacher,on_delete=models.CASCADE)
+    level=models.ForeignKey(Level,on_delete=models.CASCADE)
+    subject=models.ForeignKey(Subject,on_delete=models.CASCADE)
+   
 class Student(models.Model):
     admin = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
     fathers_name=models.CharField(max_length=100)
     fathers_number = models.BigIntegerField(null=True)
     mothers_name = models.CharField(max_length=100)
     mothers_number = models.BigIntegerField(null=True)
-    level=models.ForeignKey(Level, on_delete=models.CASCADE, null=True, blank=False)
-    section=models.ForeignKey(Section, on_delete=models.CASCADE, null=True)
-    session = models.ForeignKey(Session, on_delete=models.DO_NOTHING, null=True)
+    level=models.ForeignKey(Level, on_delete=models.RESTRICT, null=True, blank=False)
+    section=models.ForeignKey(Section, on_delete=models.RESTRICT, null=True, blank=False)
+    session = models.ForeignKey(Session, on_delete=models.DO_NOTHING, null=True, blank=False)
     
     def __str__(self):
         return self.admin.first_name + " " + self.admin.last_name

@@ -2,18 +2,38 @@
 {% load static %}
 {% block page_title %}{{page_title}}{% endblock page_title %}
 
+
+{% block custom_css %}
+<style>
+    .wrapper{
+        max-width: 925px;
+        width: 100%;
+        background: #eff5f5;
+        margin: 20px auto;
+        box-shadow: 1px 1px 2px rgba(0,0,0,0.125);
+        padding: 30px;
+      }
+      .card-title{
+        text-align:center;
+      }
+      
+</style>
+
+{% endblock custom_css %}
 {% block content %}
 
+
+
 <section class="content">
-    <div class="container-fluid">
-        <div class="row">
+    <div class="wrapper">
+        <div class="inputfield">
             <div class="col-md-12">
                 <div class="card card-dark">
                     <div class="card-header">
                         <h3 class="card-title">{{page_title}}</h3>
                     </div>
 
-                    {% include "login/form.html" with messages=messages  form=form button_text="Add"%}
+                    {% include "login/form.html" with messages=messages  form=form button_text="Add About"%}
                 </div>
 
             </div>

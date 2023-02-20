@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block page_title %}{{page_title}}{% endblock page_title %}
+
+
+{% block custom_css %}
+<style>
+    .wrapper{
+        max-width: 925px;
+        width: 100%;
+        background: #eff5f5;
+        margin: 20px auto;
+        box-shadow: 1px 1px 2px rgba(0,0,0,0.125);
+        padding: 30px;
+      }
+      .card-title{
+        text-align:center;
+      }
+      
+</style>
+
+{% endblock custom_css %}
+{% block content %}
+
+
+
+<section class="content">
+    <div class="wrapper">
+        <div class="inputfield">
+            <div class="col-md-12">
+                <div class="card card-dark">
+                    <div class="card-header">
+                        <h3 class="card-title">{{page_title}}</h3>
+                    </div>
+
+                    {% include "login/form.html" with messages=messages  form=form button_text="Update"%}
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<script>
+    const subjectSelect = document.getElementById('id_subject');
+        const levelSelect = document.getElementById('id_level');
+    
+        levelSelect.addEventListener('change', () => {
+          const levelId = levelSelect.value;
+          fetch(`/get_subjects?level=${levelId}`)
+            .then(response => response.json())
+            .then(data => {
+              subjectSelect.innerHTML = '';
+              const option = document.createElement('option');
+              option.text = '---------';
+              subjectSelect.add(option);
+              data.forEach(subject => {
+                const option = document.createElement('option');
+                option.value = subject.id;
+                option.text = subject.name;
+                subjectSelect.add(option);
+              });
+            })
+            .catch(error => console.log(error));
+        });
+
+    </script>
+
+
+{% endblock content %}

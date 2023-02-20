@@ -1,24 +1,119 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block page_title %}{{page_title}}{% endblock page_title %}
+
+{% block content %}
+
+<style>
+  form {
+    padding: 1rem;
+    {% comment %} background-color: #e1e1e1; {% endcomment %}
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  label {
+    margin-top: 1rem;
+    font-weight: bold;
+    font-size: 1.2rem;
+  }
+  
+  input[type="date"] {
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    font-size: 1.2rem;
+    border-radius: 5px;
+    border: 1px solid #333;
+  }
+  
+  table {
+    margin-top: 1rem;
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+  }
+  
+  th, td {
+    padding: 0.5rem;
+    border: 1px solid #333;
+  }
+  
+  th {
+    background-color: #333;
+    color: #fff;
+    font-weight: bold;
+  }
+  
+  button[type="submit"] {
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+    background-color: #336600;
+    color: #fff;
+    border-radius: 5px;
+    border: 1px solid #333;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+
+
+  
+  
+  input[type="checkbox"] {
+    display: inline-block;
+    width: 60px;
+    height: 30px;
+    background-color: #ccc;
+    border-radius: 15px;
+    line-height: 30px;
+    text-align: center;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  
+  
+  
+  
+</style>
+
+<form id="attendance-form" method="get" action="{% url 'edit_attendance' section_id %}">
+  <div class="form-group">
+    <label for="date">Enter date:</label>&nbsp&nbsp
+    <input type="date" id="date" name="date" required>&nbsp&nbsp&nbsp
+    <button type="submit">Fetch</button>
+  </div>
+</form>
+
+{% if attendance_list %}
+<div class='container-fluid'>
 <form method="post">
-    {% csrf_token %}
-    <label for="date">Date:</label>
-    <input type="text" name="date" value="{{ attendance.date }}">
-    <table>
-      <thead>
-        <tr>
-          <th>Student</th>
-          <th>Present</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for student in students %}
-          <tr>
-            <td>{{ student.admin.first_name }} {{ student.admin.last_name }}</td>
-            <td>
-              <input type="checkbox" name="{{ student.admin.id }}" {% if attendance.present %}checked{% endif %}>
-            </td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-    <input type="submit" value="Save">
-  </form>
+  <h1>Attendance for {{ date }}</h1>
+  {% csrf_token %}
+  <table>
+    <thead>
+      <tr>
+        <th>S.N.</th>
+        <th>Name</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for attendance in attendance_list %}
+      <tr>
+        <td>{{forloop.counter}}</td>
+        <td>{{ attendance.student }}</td>
+        <td><input type="checkbox" name="{{ attendance.student.id }}" {% if attendance.present %}checked{% endif %}></td>
+        
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <button type="submit">Save</button>
+</form>
+</div>
+{% endif %}
+
+
+{% endblock content %}

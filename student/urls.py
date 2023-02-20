@@ -3,6 +3,7 @@ from . import views
 
 urlpatterns = [
     path("dashboard/", views.student_home_page, name='student_home_page'),
+    path("student/profile/", views.student_profile, name='student_profile'),
     path('view/notes',views.view_notes,name='view_notes'),
     path('subject/view/notes/<int:subject_id>',views.view_subject_notes,name='subject_view_notes'),
     path('view/question',views.view_question,name='student_view_question'),
@@ -10,7 +11,7 @@ urlpatterns = [
     path('start/test/<int:subject_id>/',views.start_test,name='start_test'),
     # path('test/question/<int:subject_id>',views.test_home,name='test_question'),
     path('test/question/<int:subject_id>/', views.test_home, name='test_question'),
-    # path('test/result/pdf/<int:subject_id>/',views.mock_test_result_pdf,name='mock_test_result_pdf'),
+    path('test/result/pdf/<int:subject_id>/',views.mock_test_result_pdf,name='mock_test_result_pdf'),
     path('bookmarked/books/',views.bookmarked_book,name='bookmark_book'),
     path('create/bookmark/<int:book_id>/',views.create_bookmark, name='create_bookmark'),
     path('delete/bookmark/<int:bookmark_id>/', views.delete_bookmark, name='delete_bookmark'),

@@ -26,6 +26,17 @@ urlpatterns = [
     path("subject/details/<int:subject_id>", views.subject_details, name='subject_details'),
     # path('subject_details/<int:subject_id>/pdf/', views.subject_details_pdf, name='subject_details_pdf'),
     path("add/teacher", views.add_teacher, name='add_teacher'),
+    
+    
+    path('get_subjects/', views.get_subjects, name='get_subjects'),
+    
+    path('get_sections/', views.get_sections, name='get_sections'),
+   
+   
+    path("assign/teacher/",views.assign_teacher,name='assign_teacher'),
+    path("manage/assigned/teacher/", views.manage_assign_teacher, name='manage_assign_teacher'),
+    path("edit/assign/teacher/<int:assignteacher_id>", views.edit_assign_teacher, name='edit_assign_teacher'),
+    path("delete/assign/teacher/<int:assignteacher_id>", views.delete_assign_teacher, name='delete_assign_teacher'),
    
     path("add/student", views.add_student,name="add_student"),
     path("student/edit/<int:student_id>",views.edit_student, name='edit_student'),

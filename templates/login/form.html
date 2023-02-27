@@ -22,7 +22,9 @@
             {% endif %}
             {% comment %} {{field.label_tag}} {% endcomment %}
             {{field}}
-            {{field.errors}}
+            {% if field.errors %}
+                <div class="text-danger">{{ field.label_tag }} {{ field.errors }}</div>
+            {% endif %}
             
 
         </div>

@@ -446,7 +446,7 @@
             </a>
          </li>
          <li>
-            {% url 'manage_notes' as manage_notes %}
+            {% url 'manage_notes_batch' as manage_notes %}
             <a href="{{manage_notes}}" class="nav-link {% if manage_notes == request.path %} active {% endif %}">
                 <span class="icon">
                     <ion-icon name="create-sharp"></ion-icon>
@@ -622,6 +622,16 @@
                     <ion-icon name="today-sharp"></ion-icon>
                 </span>
                 <span class="title">Attendance</span>
+            </a>
+        </li>
+
+        <li>
+            {% url 'khalti_int' as khalti_int %}
+            <a href="{{khalti_int}}" class="nav-link {% if khalti_int == request.path %} active {% endif %}">
+                <span class="icon">
+                    <ion-icon name="wallet-sharp"></ion-icon>
+                </span>
+                <span class="title">Payment</span>
             </a>
         </li>
         <li>

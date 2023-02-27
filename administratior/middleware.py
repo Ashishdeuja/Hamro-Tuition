@@ -8,8 +8,6 @@ class LoginCheckMiddleWare(MiddlewareMixin):
         modulename = view_func.__module__
         user = request.user 
         if user.is_authenticated:
-            if request.path == "/":
-                return redirect(reverse("admin_home_page"))
             if user.user_type == "1":
                 if modulename == "administratior.views":
                     pass
@@ -29,9 +27,11 @@ class LoginCheckMiddleWare(MiddlewareMixin):
                     pass
                 else:
                     return redirect(reverse("student_home_page"))
+            else:
+                return redirect(reverse("loginpage"))
     
         else:
-            return
-        # else:
-        #     if request.path is not "/" or request.path is not "/login":
-        #         return redirect(reverse('homepage'))
+            if request.path == reverse('loginpage') or  request.path == reverse('user_login'): 
+                pass
+            else:
+                return redirect(reverse('homepage'))

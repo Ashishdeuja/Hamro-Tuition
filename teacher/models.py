@@ -50,6 +50,7 @@ class Notes(models.Model):
     # images = models.ManyToManyField(Image)
     file = models.FileField(upload_to='notes/pdfs/', null=True, blank=True) 
     subject = models.ForeignKey(Subject,on_delete=models.CASCADE,null=True,blank=True)
+    session = models.ForeignKey(Session,on_delete=models.CASCADE,null=True,blank=True)
     updated_date = models.DateTimeField(auto_now=True, auto_now_add=False, null=True)
     upload_time = models.DateTimeField(auto_now=False, auto_now_add=True, null=True)
     

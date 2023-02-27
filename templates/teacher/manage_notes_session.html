@@ -154,18 +154,18 @@
   }
   
 </style>
-{% if level %}
+{% if session %}
     <div class="slide-container swiper">
-        {% for levels in level %}
+        {% for sessions in session %}
             <div class="col-md-4 mb-4">
                <div class="slide-content">
                     <div class="card-wrapper">
                         <div class="card">
                             <div class="image-content">
                                 <span class="overlay">
-                                    {% url 'manage_notes_subject' session_id levels.id as view_notes %}
+                                    {% url 'manage_notes' sessions.id as view_notes %}
                                     <a href="{{view_notes}}" class="nav-link {% if view_notes == request.path %} active {% endif %}">
-                                    <h2 class="name">{{levels.level}}</h2>
+                                    <h2 class="name">{{sessions.year}}</h2>
                                     
                                     </a>
                                 </span>
@@ -174,7 +174,7 @@
                             <div class="card-content">
                                 
                                 <br> 
-                                <h3 class="description">Here are the subjects of the {{levels.level}} to add and view notes</h3>
+                                <h3 class="description">Here are the classes of the {{sessions.year}} to add and view notes</h3>
                                 <br><br>                        
                             </div>
                         </div>

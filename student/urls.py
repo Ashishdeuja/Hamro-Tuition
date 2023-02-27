@@ -25,4 +25,7 @@ urlpatterns = [
     path('view/weekly/attendance/pdf',views.weekly_attendance_pdf,name='weekly_attendance_pdf'),
     path('view/yearly/attendance/pdf',views.yearly_attendance_pdf,name='yearly_attendance_pdf'),
     # path('view/test/result/<int:subject_id>/', views.mock_test_result_pdf, name='test_result'),
+    path("khalti/",views.khaltipayment,name='khalti_int'),
+ 
+
 ]

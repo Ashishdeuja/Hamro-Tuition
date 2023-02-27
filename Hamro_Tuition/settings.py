@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     'crispy_forms',
     'student',
     'djsingleton',
+    'rest_framework',
+    'khalti',
     
 ]
 
@@ -159,3 +161,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [
    os.path.join(BASE_DIR, 'static')
 ]
+
+
+KHALTI_SECRET_KEY = "9cf26609a75a447ba55db50b47b544f1"
+KHALTI_VERIFY_URL = "https://khalti.com/api/v2/payment/verify/"

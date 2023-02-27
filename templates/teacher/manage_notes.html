@@ -134,7 +134,7 @@
                         <div class="card">
                             <div class="image-content">
                                 <span class="overlay">
-                                    {% url 'view_notes' subjects.id  as view_notes %}
+                                    {% url 'view_notes' session_id subjects.level.id subjects.id  as view_notes %}
                                     <a href="{{view_notes}}" class="nav-link {% if view_notes == request.path %} active {% endif %}">
                                     <h2 class="name">{{subjects.subject_name}}</h2>
                                     

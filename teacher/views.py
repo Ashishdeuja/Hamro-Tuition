@@ -256,7 +256,9 @@ def add_notes(request,subject_id):
             try:
                 note =Notes()
                 s=Subject(pk=subject_id)
+                # session=Session(pk=session_id)
                 note.subject=s
+                # note.subject=session
                 note.title=title
                 note.description=description
                 note.images=images
@@ -275,33 +277,45 @@ def add_notes(request,subject_id):
     return render(request, 'teacher/add_notes.html', context)
 
 
-def manage_notes_class(request):
+def manage_notes_batch(request):
+    session=Session.objects.all()
+    context = {
+        'session':session,
+        'page_title': 'Batch'
+    }
+    return render(request, "teacher/manage_notes_session.html", context)
+
+def manage_notes_class(request,session_id):
     teacher=get_object_or_404(Teacher,admin=request.user)
     level= Level.objects.filter(assignteacher__teacher=teacher).distinct()
     context = {
         'level':level,
-        'page_title': 'Notes'
+        'page_title': 'Notes',
+        'session_id':session_id
     }
     return render(request, "teacher/manage_notes_class.html", context)
 
 
-def manage_notes(request,level_id):
+def manage_notes(request,session_id,level_id):
     teacher=get_object_or_404(Teacher,admin=request.user)
     subject= Subject.objects.filter(level=level_id,assignteacher__teacher=teacher)
     level= Level.objects.get(id=level_id)
     context = {
         'subject':subject,
-        'page_title': 'Select Subject to Add/View Notes for {0}'.format(level.level)
+        'page_title': 'Select Subject to Add/View Notes for {0}'.format(level.level),
+        'session_id':session_id,
     }
     return render(request, "teacher/manage_notes.html", context)
 
-def view_notes(request,subject_id):
+def view_notes(request,session_id,level_id,subject_id):
     note=Notes.objects.filter(subject=subject_id).order_by('-updated_date')
     subject = Subject.objects.get(id=subject_id)
     context = {
         'note': note,
         'subject_id':subject_id,
-        'page_title': '{0} Note'.format(subject.subject_name)
+        'page_title': '{0} Note'.format(subject.subject_name),
+        'session_id':session_id,
+        'level_id':level_id
     }
     return render(request, "teacher/view_notes.html", context)
 
@@ -396,7 +410,7 @@ def teacher_view_leave(request):
 
 def manage_attendance_class(request):
     teacher = get_object_or_404(Teacher, admin=request.user)
-    level= Level.objects.filter(assignteacher__teacher=teacher)
+    level= Level.objects.filter(assignteacher__teacher=teacher).distinct()
     context = {
         'level':level,
         'page_title': 'Attendance'

@@ -11,12 +11,13 @@ urlpatterns = [
     path('manage/question/<int:level_id>',views.manage_question,name='manage_question_subject'),
     
     path('view/questions/<int:subject_id>',views.view_question,name='view_questions'),
-    path('add/notes/<int:subject_id>',views.add_notes,name='add_notes'),
-    path('manage/notes/class',views.manage_notes_class,name='manage_notes'),
-    path('manage/notes/<int:level_id>',views.manage_notes,name='manage_notes_subject'),
+    path('add/notes/<int:subject_id>/',views.add_notes,name='add_notes'),
+    path('manage/notes/<int:session_id>/class',views.manage_notes_class,name='manage_notes'),
+     path('manage/notes/session',views.manage_notes_batch,name='manage_notes_batch'),
+    path('manage/notes/<int:session_id>/<int:level_id>',views.manage_notes,name='manage_notes_subject'),
     
     
-    path('view/notes/<int:subject_id>',views.view_notes,name='view_notes'),
+    path('view/notes/<int:session_id>/<int:level_id>/<int:subject_id>/',views.view_notes,name='view_notes'),
     path('edit/question/<int:question_id>/', views.edit_question, name='edit_question'),
     path('delete/question/<int:question_id>/', views.delete_question, name='delete_question'),
     path("apply/leave/", views.apply_leave,name='apply_leave'),

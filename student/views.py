@@ -1,9 +1,11 @@
 import calendar
 from datetime import date
 from http.client import HTTPResponse
+import json
 import random
 from django.shortcuts import render,get_object_or_404,redirect,reverse
-from django.http import HttpResponse, FileResponse
+from django.http import HttpResponse, FileResponse, JsonResponse
+import requests
 from teacher.forms import LeaveForm
 from .models import *
 from teacher.models import *
@@ -673,3 +675,47 @@ def yearly_attendance_pdf(request):
     else:
         return response
     # return render(request, 'attendance/yearly_attendance_pdf.html', context)
+    
+    
+def khaltipayment(request):
+    if request.method == 'POST':
+        amount = request.POST.get('amount')
+        
+        if amount == "":
+            messages.error(request, 'Enter the certain amount to pay')
+            return redirect(reverse('khalti_int'))
+        
+        if not amount.isdigit():
+            messages.error(request, 'Amount should be a number')
+            return redirect(reverse('khalti_int'))
+        amount = int(amount) * 100
+        
+        if amount < 1000: 
+           messages.error(request,'Amount should be at least 10')
+           return redirect(reverse('khalti_int'))
+        payload = {
+            'amount': amount,
+            'purchase_order_id': 'Test2',
+            'purchase_order_name': 'Test',
+            'return_url': 'https://test-pay.khalti.com/{pidx}',
+            'website_url': 'http://localhost:8000/',
+            "customer_info": {
+                "name": "Hamro Tuition",
+                "email": "hamrotuition@gmail.com",
+                "phone": "9811496763"
+            },             
+        }
+        url = 'https://a.khalti.com/api/v2/epayment/initiate/'
+        headers = {
+            'Authorization': 'Key 9cf26609a75a447ba55db50b47b544f1'
+        }
+        response = requests.post(url, headers=headers, json=payload)
+        response.raise_for_status()
+        data = response.json()
+        payment_url = data['payment_url']
+        return redirect(payment_url)
+
+    return render(request, 'student/khalti.html')
+
+
+# 094dffbae929426ea8020b8e9f76df6e

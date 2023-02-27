@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+ {% load static %}
+ {% block page_title %}{{page_title}}{% endblock page_title %}
+ 
+ {% block content %}
+
+<style>    
+.custome-box{
+	max-width: 700px;
+	background-color: #0daed6;
+	margin:40px auto;
+	padding: 30px;
+	border-radius: 10px;
+	animation: fadeInRight 1s ease;
+}
+
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight:bold;
+  }
+
+  input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-right: 10px;
+    margin-bottom:20px;
+  }
+</style>
+
+    <form action="#" method="post">
+        {% csrf_token %}
+        <div class="custome-box">
+            <h3 align="center">Enter the amount you want to pay</h3>
+            <hr class="my-1">	<br>       
+            <label>Amount</label>
+            <input type='text' name='amount'/></br>
+            <input type="submit" class='btn btn-success' value='Pay with Khalti'/>
+        </div>
+    </form>
+{% endblock content %}
+
+

@@ -15,16 +15,16 @@
 
 
 <div class='attend'>
-  <a href="{% url 'admin_view_all_attendance' section_id %}" class='btn btn-primary'>View</a>
+  <a href="{% url 'admin_view_all_attendance' session_id section_id %}" class='btn btn-primary'>View</a>
   <div class="btn-group" role="group" style='margin-left:10px;'>
     <button id="btnGroupDrop1" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
       Reports
     </button>
     <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-      <a href="{% url 'daily_all_attendance' section_id %}" class="dropdown-item">Daily Report</a>
-      <a href="{% url 'weekly_all_attendance' section_id %}" class="dropdown-item">Weekly Report</a>
-      <a href="{% url 'admin_download_all_attendance' section_id %}" class="dropdown-item">Monthly Report</a>
-      <a href="{% url 'yearly_all_attendance' section_id %}" class="dropdown-item">Yearly Report</a>
+      <a href="{% url 'daily_all_attendance' session_id section_id %}" class="dropdown-item">Daily Report</a>
+      <a href="{% url 'weekly_all_attendance' session_id section_id %}" class="dropdown-item">Weekly Report</a>
+      <a href="{% url 'admin_download_all_attendance' session_id section_id %}" class="dropdown-item">Monthly Report</a>
+      <a href="{% url 'yearly_all_attendance' session_id section_id %}" class="dropdown-item">Yearly Report</a>
     </div>
   </div>
 </div>
@@ -46,7 +46,7 @@
                   <td>{{ students.admin.first_name }} {{ students.admin.last_name }}</td>
                   <td>{{ students.admin.email }}</td>
                   <td>
-                    <a href="{% url 'admin_attendance_view' students.id %}" class="btn btn-primary">view</a> - 
+                    <a href="{% url 'admin_attendance_view' session_id students.id %}" class="btn btn-primary">view</a> - 
                     
                     
             
@@ -55,10 +55,10 @@
                           Reports
                         </button>
                         <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                          <a href="{% url 'view_daily_attendance_pdf' students.id %}" class="dropdown-item">Daily Report</a>
-                          <a href="{% url 'view_weekly_attendance_pdf' students.id %}" class="dropdown-item">Weekly Report</a>
-                          <a href="{% url 'attendance_pdf' students.id %}" class="dropdown-item">Monthly Report</a>
-                          <a href="{% url 'view_yearly_attendance_pdf' students.id %}" class="dropdown-item">Yearly Report</a>
+                          <a href="{% url 'view_daily_attendance_pdf' session_id students.id %}" class="dropdown-item">Daily Report</a>
+                          <a href="{% url 'view_weekly_attendance_pdf' session_id students.id %}" class="dropdown-item">Weekly Report</a>
+                          <a href="{% url 'attendance_pdf' session_id students.id %}" class="dropdown-item">Monthly Report</a>
+                          <a href="{% url 'view_yearly_attendance_pdf' session_id students.id %}" class="dropdown-item">Yearly Report</a>
                         </div>
                       </div>
       

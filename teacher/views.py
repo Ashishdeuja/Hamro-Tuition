@@ -96,10 +96,10 @@ def teacher_profile(request):
     return render(request, "teacher/teacher_profile.html", context)
 
 
-def add_question(request,subject_id):
+def add_question(request,session_id,subject_id):
     form = QuestionForm(request.POST or None)
     # teacher = get_object_or_404(Teacher, admin=request.user)
-    # subjects = Subject.objects.filter(teacher=teacher)
+    subjects = Subject.objects.get(id=subject_id)
     context = {
         'form': form,
         # 'subjects': subjects,
@@ -117,7 +117,9 @@ def add_question(request,subject_id):
             try:
                 questions =Question()
                 subject=Subject(pk=subject_id)
+                session=Session(pk=session_id)
                 questions.subject=subject
+                questions.session=session
                 questions.select_level=select_level
                 questions.question=question
                 questions.op1=opt1
@@ -127,7 +129,7 @@ def add_question(request,subject_id):
                 questions.ans=ans 
                 questions.save()
                 messages.success(request, "Successfully Added")
-                return redirect(reverse('view_questions', args=[subject_id]))
+                return redirect('view_questions',session_id, subjects.level.id, subject_id)
             except Exception as e:
                 messages.error(request, "Error in adding the question "+str(e))
         else:
@@ -135,36 +137,39 @@ def add_question(request,subject_id):
     return render(request, 'teacher/add_question.html', context)
 
         
-# def manage_question(request):
-#     questions = Question.objects.all()
-#     context = {
-#         'questions': questions,
-#         'page_title': 'Manage Question'
-#     }
-#     return render(request, "teacher/manage_question.html", context)
 
-def manage_question_class(request):
+def manage_question_batch(request):
+    session=Session.objects.all().order_by('-year')
+    context = {
+        'session':session,
+        'page_title': 'Batch'
+    }
+    return render(request, "teacher/manage_question_session.html", context)
+
+def manage_question_class(request,session_id):
     teacher=get_object_or_404(Teacher,admin=request.user)
     level= Level.objects.filter(assignteacher__teacher=teacher).distinct()
     context = {
         'level':level,
+        'session_id':session_id,
         'page_title': 'Questions'
     }
     return render(request, "teacher/manage_question_class.html", context)
 
 
-def manage_question(request,level_id):
+def manage_question(request,session_id,level_id):
     teacher=get_object_or_404(Teacher,admin=request.user)
     subject= Subject.objects.filter(level=level_id,assignteacher__teacher=teacher)
     level= Level.objects.get(id=level_id)
     context = {
         'subject':subject,
+        'session_id':session_id,
         'page_title': 'Select Subject to Add Questions for {0}'.format(level.level)
     }
     return render(request, "teacher/manage_question.html", context)
 
-def view_question(request,subject_id):
-    question=Question.objects.filter(subject=subject_id)
+def view_question(request,session_id,level_id,subject_id):
+    question=Question.objects.filter(subject=subject_id,session=session_id)
     subject = Subject.objects.get(id=subject_id)
     
     query = request.GET.get('q')
@@ -185,6 +190,8 @@ def view_question(request,subject_id):
     
     context = {
         'question': question,
+        'session_id':session_id,
+        'level_id':level_id,
         'subject_id':subject_id,
         'page_title': '{0} Question'.format(subject.subject_name)
     }
@@ -221,7 +228,7 @@ def edit_question(request, question_id):
                 question.ans=ans 
                 question.save()
                 messages.success(request, "Successfully Edited")
-                return redirect(reverse('view_questions', args=[question.subject.id]))
+                return redirect('view_questions',question.session.id, question.subject.level.id,question.subject.id)
             except Exception as e:
                 messages.error(request, "Could Not update " + str(e))
         else:
@@ -236,12 +243,13 @@ def delete_question(request, question_id):
     except Exception:
         messages.error(
             request, "The question couldn't be deleted !! ")
-    return redirect(reverse('view_questions', args=[question.subject.id]))
+    return redirect('view_questions',question.session.id, question.subject.level.id,question.subject.id)
 
 
 
-def add_notes(request,subject_id):
+def add_notes(request,session_id,subject_id):
     form=NoteForm(request.POST or None, request.FILES or None)
+    subjects = Subject.objects.get(id=subject_id)
     context = {
         'form': form,
         'page_title': 'Add Notes'
@@ -256,9 +264,9 @@ def add_notes(request,subject_id):
             try:
                 note =Notes()
                 s=Subject(pk=subject_id)
-                # session=Session(pk=session_id)
+                session=Session(pk=session_id)
                 note.subject=s
-                # note.subject=session
+                note.session=session
                 note.title=title
                 note.description=description
                 note.images=images
@@ -269,7 +277,7 @@ def add_notes(request,subject_id):
                 #     note.file.create(file=file)
                 note.save()
                 messages.success(request, "Successfully Added")
-                return redirect(reverse('manage_notes'))
+                return redirect('view_notes',session_id,subjects.level.id,subject_id)
             except Exception as e:
                 messages.error(request, "Error in adding the notes "+str(e))
         else:
@@ -278,7 +286,7 @@ def add_notes(request,subject_id):
 
 
 def manage_notes_batch(request):
-    session=Session.objects.all()
+    session=Session.objects.all().order_by('-year')
     context = {
         'session':session,
         'page_title': 'Batch'
@@ -308,7 +316,7 @@ def manage_notes(request,session_id,level_id):
     return render(request, "teacher/manage_notes.html", context)
 
 def view_notes(request,session_id,level_id,subject_id):
-    note=Notes.objects.filter(subject=subject_id).order_by('-updated_date')
+    note=Notes.objects.filter(subject=subject_id,session=session_id).order_by('-updated_date')
     subject = Subject.objects.get(id=subject_id)
     context = {
         'note': note,
@@ -319,6 +327,48 @@ def view_notes(request,session_id,level_id,subject_id):
     }
     return render(request, "teacher/view_notes.html", context)
 
+def edit_note(request, note_id):
+    instance = get_object_or_404(Notes, id=note_id)
+    form = NoteForm(request.POST or None, request.FILES or None, instance=instance)
+    context = {
+    'form': form,
+    'note_id': note_id,
+    'page_title': 'Edit Note'
+    }
+    if request.method == 'POST':
+        if form.is_valid():
+            title = form.cleaned_data.get('title')
+            description=form.cleaned_data.get('description')
+            images=request.FILES.get('images')
+            file=request.FILES.get('file')
+            try:
+                note =Notes.objects.get(id=note_id)
+                note.title=title
+                note.description=description
+                note.images=images
+                note.file=file
+                # for image in images:
+                #     note.images.create(image=image)
+                # for file in file:
+                #     note.file.create(file=file)
+                note.save()
+                messages.success(request, "Successfully updated")
+                return redirect('view_notes',note.session.id,note.subject.level.id,note.subject.id)
+            except Exception as e:
+                messages.error(request, "Error in updating the notes "+str(e))
+        else:
+            messages.error(request, "Could Not Add")
+    return render(request, 'teacher/edit_notes.html', context)        
+
+def delete_notes(request, note_id):
+    note = get_object_or_404(Notes, id=note_id)
+    try:
+        note.delete()
+        messages.success(request, "The note has been deleted successfully!")
+    except Exception:
+        messages.error(
+            request, "The note couldn't be deleted !! ")
+    return redirect('view_notes',note.session.id, note.subject.level.id,note.subject.id)
 
 # def view_aa(request):
 #     student= get_object_or_404(Student, admin=request.user)
@@ -408,34 +458,48 @@ def teacher_view_leave(request):
     }
     return render(request, "teacher/apply_leave.html", context)
 
-def manage_attendance_class(request):
+
+def manage_attendance_batch(request):
+    session=Session.objects.all().order_by('-year')
+    context = {
+        'session':session,
+        'page_title': 'Batch'
+    }
+    return render(request, "teacher/manage_attendance_session.html", context)
+
+def manage_attendance_class(request,session_id):
     teacher = get_object_or_404(Teacher, admin=request.user)
     level= Level.objects.filter(assignteacher__teacher=teacher).distinct()
     context = {
         'level':level,
+        'session_id':session_id,
         'page_title': 'Attendance'
     }
     return render(request, "teacher/manage_attendance_class.html", context)
 
-def manage_attendance(request,level_id):
+def manage_attendance(request,session_id,level_id):
     section = Section.objects.filter(level=level_id)
     level=Level.objects.get(id=level_id)
     context = {
         'section':section,
+        'session_id':session_id,
+        'level_id':level_id,
         'page_title': 'Attendance of {0}'.format(level)
     }
     return render(request, "teacher/manage_attendance.html", context)
     
 
 
-def view_students_attendance(request,section_id):
+def view_students_attendance(request,session_id,level_id,section_id):
     student= Student.objects.all()
     # students = Student.objects.filter(section=section_id)
-    section=Student.objects.filter(section=section_id)
+    section=Student.objects.filter(section=section_id,session=session_id)
 
 
     context = {
         'section':section,
+        'session_id':session_id,
+        'level_id':level_id,
         'page_title': 'Manage Attendance'
     }
 
@@ -457,8 +521,8 @@ def view_students_attendance(request,section_id):
 #     return render(request, "attendance/view_attendance.html", context)
 
 
-def view_attendance(request,section_id):
-    students = Student.objects.filter(section=section_id)
+def view_attendance(request,session_id,level_id,section_id):
+    students = Student.objects.filter(section=section_id,session=session_id)
     attendance = Attendance.objects.all().order_by('-date')
     section = Section.objects.get(id=section_id)
     attendance_by_month = {}
@@ -479,6 +543,8 @@ def view_attendance(request,section_id):
         'students': students,
         'attendance': attendance,
         'section_id':section_id,
+        'session_id':session_id,
+        'level_id':level_id,
         # 'attendance':attendance,
         'attendance_by_month_paginated': attendance_by_month_paginated,
         'page_title': 'Attendance of {0} Section {1}'.format(section.level,section)
@@ -549,25 +615,27 @@ def view_attendance(request,section_id):
 #     return render(request, "attendance/create_attendance.html", context)
 
 
-def create_attendance(request,section_id):
+def create_attendance(request,session_id,section_id):
     if request.method == 'POST':
         date = request.POST['date']
-        students = Student.objects.filter(section=section_id)
+        students = Student.objects.filter(section=section_id,session=session_id)
         section = Section.objects.get(id=section_id)
+        session=Session.objects.get(id=session_id)
         
-        if Attendance.objects.filter(date=date,section=section_id).exists():
+        if Attendance.objects.filter(date=date,session=session_id,section=section_id).exists():
             messages.error(request, 'Attendance for this date has already been recorded')
-            return redirect('create_attendance',section_id=section_id)
+            return redirect('create_attendance',session_id=session_id,section_id=section_id)
         for student in students:
             student_id = student.id
             present = request.POST.get(str(student_id), False) == 'on'
-            attendance = Attendance(date=date, student=student, section=section, present=present)
+            attendance = Attendance(date=date, student=student, section=section, session=session, present=present)
             attendance.save()
         messages.success(request, 'Attendance for this date has been added successfully.')
-        return redirect('view_attendance',section_id)
+        return redirect('view_attendance',session_id, section.level.id, section_id)
         
-    students = Student.objects.filter(section=section_id)
+    students = Student.objects.filter(section=section_id,session=session_id)
     section = Section.objects.get(id=section_id)
+    session=Session.objects.get(id=session_id)
     context = {
         'students': students,
         # 'section_id':section_id,
@@ -612,9 +680,9 @@ def create_attendance(request,section_id):
 #     return render(request, "attendance/edit_attendance.html", context)
 
 
-def edit_attendance(request,section_id):
+def edit_attendance(request,session_id,section_id):
     date = request.GET.get('date')
-    attendance_list = Attendance.objects.filter(date=date,section=section_id)
+    attendance_list = Attendance.objects.filter(date=date,session=session_id,section=section_id)
     section = Section.objects.get(id=section_id)
     
     try:
@@ -630,14 +698,15 @@ def edit_attendance(request,section_id):
                 attendance.save()
                 
             messages.success(request, 'Attendance for this date has been updated successfully.')
-            return redirect('view_attendance',section_id)   
+            return redirect('view_attendance',session_id,section.level.id,section_id)   
     except Exception:
         messages.error(request, 'Error in updating the attendance !!')
-        return redirect('view_attendance',section_id) 
+        return redirect('view_attendance',session_id,section.level.id,section_id) 
         
     context={
         'date': date, 
         'section_id':section_id,
+        'session_id':session_id,
         'attendance_list': attendance_list,
         'page_title': 'Edit Attendance of {0} Section {1}'.format(section.level,section)
         }
@@ -645,8 +714,8 @@ def edit_attendance(request,section_id):
     return render(request, 'attendance/edit_attendance.html', context)
 
 
-def teacher_download_all_attendance(request,section_id):
-    students = Student.objects.filter(section=section_id)
+def teacher_download_all_attendance(request,session_id,section_id):
+    students = Student.objects.filter(section=section_id,session=session_id)
     attendance = Attendance.objects.all().order_by('-date')
     section = Section.objects.get(id=section_id)
     attendance_by_month = {}
@@ -661,6 +730,7 @@ def teacher_download_all_attendance(request,section_id):
         'students': students,
         'attendance': attendance,
         'section_id':section_id,
+        'session_id':session_id,
         # 'attendance_id':attendance_id,
         'attendance_by_month': attendance_by_month,
         'page_title': 'Attendance of {0} Section {1}'.format(section.level,section)

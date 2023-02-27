@@ -10,6 +10,7 @@ class Question(models.Model):
     ("Difficult", "Difficult"),
 )
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE,null=True, blank=False)
+    session = models.ForeignKey(Session, on_delete=models.DO_NOTHING)
     question = models.CharField(max_length=400,null=True)
     op1 = models.CharField(max_length=200,null=True)
     op2 = models.CharField(max_length=200,null=True)
@@ -77,11 +78,12 @@ class Feedback(models.Model):
     upload_time = models.DateTimeField(auto_now=False, auto_now_add=True, null=True)
 
     
-    
 class Attendance(models.Model):
     date = models.DateField()
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
-    section = models.ForeignKey(Section, on_delete=models.CASCADE)
+    student = models.ForeignKey(Student, on_delete=models.DO_NOTHING)
+    section = models.ForeignKey(Section, on_delete=models.DO_NOTHING)
+    session = models.ForeignKey(Session, on_delete=models.DO_NOTHING)
     present = models.BooleanField(default=False)
     updated_date = models.DateTimeField(auto_now=True, auto_now_add=False, null=True)
-    upload_time = models.DateTimeField(auto_now=False, auto_now_add=True, null=True)   
+    upload_time = models.DateTimeField(auto_now=False, auto_now_add=True, null=True)     
+ 

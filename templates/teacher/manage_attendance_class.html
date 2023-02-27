@@ -164,7 +164,7 @@
                         <div class="card">
                             <div class="image-content">
                                 <span class="overlay">
-                                    {% url 'manage_attendance' levels.id as manage_attendance %}
+                                    {% url 'manage_attendance' session_id levels.id as manage_attendance %}
                                     <a href="{{manage_attendance}}" class="nav-link {% if manage_attendance == request.path %} active {% endif %}">
                                     <h2 class="name">{{levels.level}}</h2>
                                     

@@ -177,6 +177,18 @@
       .wrapper .form .inputfield:last-child{
         margin-bottom: 0;
       }
+      input[type=file] {
+        {% comment %} width: 350px; {% endcomment %}
+        width: 100%;
+        color: #444;
+        padding: 5px;
+        background: #fff;
+        border: 1px solid #d5dbd9;
+        display: inline-block;
+        font-size: 16px;
+        cursor: pointer;
+      }
+      
       
       @media (max-width:420px) {
         .wrapper .form .inputfield{
@@ -201,29 +213,29 @@
         {{form.media}}
     {% comment %} <div class="form"> {% endcomment %} 
        <div class="inputfield">
-          <label>Title</label>
+          <label>Title:</label> <span style='color:red;'>*</span>
           {{ form.title|add_class:"form-control form-control-alternative" }}
           {{ form.title.errors }}
        </div>  
         <div class="inputfield">
-          <label>Description</label>
+          <label>Description:</label> <span style='color:red;'>*</span>
           {{ form.description|add_class:"form-control form-control-alternative" }}
           {% comment %} {{form.description|safe}} {% endcomment %}
           {{ form.description.errors }}
        </div>  <br>
        <div class="inputfield">
-          <label>Images</label>
+          <label class="drop-container">Images:</label>
           <input type="file"multiple class="input"
           {{ form.images |add_class:"form-control form-control-alternative"}}
        </div>  <br>
       <div class="inputfield">
-          <label>File</label>
+          <label>File:</label>
           <input type="file" multiple class="input"
           {{ form.file|add_class:"form-control form-control-alternative"}}
        </div> <br>
       <div class="inputfield">
         <input type="submit" value="Add" class="btn btn-primary">
-        <a href="{% url 'manage_notes'  %}" style="margin-left:195px ;" class="btn btn-danger">Cancel</a>
+        {% comment %} <a href="{% url 'manage_notes'  %}" style="margin-left:195px ;" class="btn btn-danger">Cancel</a> {% endcomment %}
       </div>
     {% comment %} </div> {% endcomment %}
     </form>

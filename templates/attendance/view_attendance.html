@@ -43,9 +43,9 @@
 
 {% if request.user.user_type == '2' %}
 <div class='attend'>
-  <a href='{% url "create_attendance" section_id %}' class="btn btn-primary">Take</a>
-  <a href='{% url "edit_attendance" section_id %}' class="btn btn-primary">Edit</a>
-  <a href='{% url "teacher_download_all_attendance" section_id %}' class="btn btn-success">Report</a>
+  <a href='{% url "create_attendance" session_id section_id %}' class="btn btn-primary">Take</a>
+  <a href='{% url "edit_attendance" session_id section_id %}' class="btn btn-primary">Edit</a>
+  <a href='{% url "teacher_download_all_attendance" session_id section_id %}' class="btn btn-success">Report</a>
 </div>
 {% endif %}
   <section class="content">

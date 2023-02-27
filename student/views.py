@@ -127,12 +127,13 @@ def view_notes(request):
         'note': note,
         'level':level,
         'subject':subject,
+        'session_id':student.session.id,
         'page_title': 'Manage Note'
     }
     return render(request, "student/student_view_notes.html", context)
 
-def view_subject_notes(request,subject_id):
-    note=Notes.objects.filter(subject=subject_id).order_by('-updated_date')
+def view_subject_notes(request,session_id,subject_id):
+    note=Notes.objects.filter(subject=subject_id,session=session_id).order_by('-updated_date')
     subject = Subject.objects.get(id=subject_id)
     context = {
         'note': note,
@@ -151,27 +152,29 @@ def view_question(request):
         'note': question,
         'level':level,
         'subject':subject,
+        'session_id':student.session.id,
         'page_title': 'Question'
     }
 
     return render(request, "student/view_question.html", context)
 
-def test_level_selection(request,subject_id):
+def test_level_selection(request,session_id,subject_id):
     # if request.method == 'POST':
         # selected_level= request.POST.get('selected_level')
-    questions = Question.objects.filter(subject=subject_id)
+    questions = Question.objects.filter(subject=subject_id,session=session_id)
     context = {
         'questions': questions,
+        'session_id':session_id,
         'subject_id':subject_id
      }
     return render(request, 'student/start_test.html', context)
 
 # @csrf_exempt
-def test_home(request,subject_id):
+def test_home(request,session_id,subject_id):
     # subject=Subject.objects.filter(id=subject_id)
     if request.method == 'POST':
         try:
-            questions = Question.objects.filter(subject=subject_id)
+            questions = Question.objects.filter(subject=subject_id,session=session_id)
             q={}
             for key,value in request.POST.items():
                 if '__answer' in key:
@@ -250,24 +253,25 @@ def test_home(request,subject_id):
     # return render(request,"student/test_home.html",{"questions":questions})
     
     
-def start_test(request,subject_id):
+def start_test(request,session_id,subject_id):
     try:
         level = request.POST.get('select_level')
         if level == '':
             messages.error(request, "Please select the level to start the test.")
             return redirect('test_level_selection', subject_id)
-        question=Question.objects.filter(subject=subject_id,select_level=level)
-        random_questions = random.sample(list(question), 5)
+        question=Question.objects.filter(subject=subject_id,select_level=level,session=session_id)
+        random_questions = random.sample(list(question), 1)
                 
         context = {
             'question':question,
             'questions':random_questions,
+            'session_id':session_id,
             'subject_id':subject_id                        
         }
         return render(request,'student/test_home.html',context)   
     except ValueError as e:
         messages.error(request, "The number of questions available is insufficient to conduct the test.")
-        return redirect('test_level_selection', subject_id)
+        return redirect('test_level_selection', session_id,subject_id)
     
 
 def mock_test_result_pdf(request, subject_id):

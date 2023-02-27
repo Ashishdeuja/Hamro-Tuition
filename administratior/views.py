@@ -1563,42 +1563,56 @@ def delete_bod(request, pk):
         messages.error(request, "The bod content couldn't be deleted !!")
     return redirect('manage_bod_page')
 
-def admin_view_attendance(request):
+
+def admin_attendance_batch(request):
+    session=Session.objects.all().order_by('-year')
+    context = {
+        'session':session,
+        'page_title': 'Batch'
+    }
+    return render(request, "admin/manage_attendance_session.html", context)
+
+def admin_view_attendance(request,session_id):
     level = Level.objects.all()
     context = {
         'level':level,
+        'session_id':session_id,
         'page_title': 'Attendance'
     }
     return render(request, "admin/manage_attendance.html", context)
 
-def manage_attendance_section(request,level_id):
+def manage_attendance_section(request,session_id,level_id):
     section = Section.objects.filter(level=level_id)
     level=Level.objects.get(id=level_id)
     context = {
         'section':section,
+        'session_id':session_id,
+        'level_id':level_id,
         'page_title': 'Attendance of {0}'.format(level)
     }
     return render(request, "admin/manage_attendance_section.html", context)
 
 
-def section_view_students_attendance(request,section_id):
+def section_view_students_attendance(request,session_id,level_id,section_id):
     # student= Student.objects.all()
     # students = Student.objects.filter(section=section_id)
-    student=Student.objects.filter(section=section_id)
+    student=Student.objects.filter(section=section_id,session=session_id)
     section = Section.objects.get(id=section_id)
     
     context = {
         'student':student,
         'section_id':section_id,
+        'session_id':session_id,
+        'level_id':level_id,
         'page_title': 'Attendance of {0}'.format(section)
     }
 
     return render(request, "admin/students.html", context)
 
 
-def admin_attendance_view(request,student_id):
+def admin_attendance_view(request,session_id,student_id):
     student= get_object_or_404(Student, id=student_id)
-    attendance = Attendance.objects.filter(student=student).order_by('-date')
+    attendance = Attendance.objects.filter(student=student,session=session_id).order_by('-date')
     
     start_date = request.GET.get('start_date')
     end_date = request.GET.get('end_date')
@@ -1633,9 +1647,9 @@ def admin_attendance_view(request,student_id):
     return render(request, "attendance/student_view_attendance.html", context)
 
 
-def attendance_pdf(request,student_id):
+def attendance_pdf(request,session_id,student_id):
     student= get_object_or_404(Student, id=student_id)
-    attendance = Attendance.objects.filter(student=student).order_by('-date')
+    attendance = Attendance.objects.filter(student=student,session=session_id).order_by('-date')
     attendance_by_month = {}
     for record in attendance:
         month = record.date.strftime("%B %Y")
@@ -1659,9 +1673,9 @@ def attendance_pdf(request,student_id):
     else:
         return response
 
-def view_daily_attendance_pdf(request,student_id):
+def view_daily_attendance_pdf(request,session_id,student_id):
     student = get_object_or_404(Student,id=student_id)
-    attendance = Attendance.objects.filter(student=student).order_by('-date')
+    attendance = Attendance.objects.filter(student=student,session=session_id).order_by('-date')
     attendance_by_day = {}
     for record in attendance:
         day = record.date.strftime("%Y-%m-%d")
@@ -1687,9 +1701,9 @@ def view_daily_attendance_pdf(request,student_id):
         return response
     # return render(request, 'attendance/daily_attendance_pdf.html', context)
     
-def view_weekly_attendance_pdf(request,student_id):
+def view_weekly_attendance_pdf(request,session_id,student_id):
     student = get_object_or_404(Student, id=student_id)
-    attendance = Attendance.objects.filter(student=student).order_by('-date')
+    attendance = Attendance.objects.filter(student=student,session=session_id).order_by('-date')
     attendance_by_week = {}
     for record in attendance:
         week_start = record.date - datetime.timedelta(days=record.date.weekday()+1)
@@ -1726,9 +1740,9 @@ def view_weekly_attendance_pdf(request,student_id):
         return response
     # return render(request, 'attendance/weekly_attendance_pdf.html', context)
 
-def view_yearly_attendance_pdf(request,student_id):
+def view_yearly_attendance_pdf(request,session_id,student_id):
     student = get_object_or_404(Student, id=student_id)
-    attendance = Attendance.objects.filter(student=student).order_by('date')
+    attendance = Attendance.objects.filter(student=student,session=session_id).order_by('date')
     year = datetime.datetime.now().year
     attendance_by_month = {}
     total_days = 0
@@ -1773,9 +1787,9 @@ def view_yearly_attendance_pdf(request,student_id):
         return response
     # return render(request, 'attendance/yearly_attendance_pdf.html', context)
 
-def admin_view_all_attendance(request,section_id):
+def admin_view_all_attendance(request,session_id,section_id):
     students = Student.objects.filter(section=section_id)
-    attendance = Attendance.objects.filter(section=section_id).order_by('-date')
+    attendance = Attendance.objects.filter(section=section_id,session=session_id).order_by('-date')
     section = Section.objects.get(id=section_id)
     attendance_by_month = {}
     for record in attendance:
@@ -1804,9 +1818,9 @@ def admin_view_all_attendance(request,section_id):
 
 
 
-def admin_download_all_attendance(request,section_id):
+def admin_download_all_attendance(request,session_id,section_id):
     students = Student.objects.filter(section=section_id)
-    attendance = Attendance.objects.filter(section=section_id).order_by('-date')
+    attendance = Attendance.objects.filter(section=section_id,session=session_id).order_by('-date')
     section = Section.objects.get(id=section_id)
     attendance_by_month = {}
     for record in attendance:
@@ -1837,9 +1851,9 @@ def admin_download_all_attendance(request,section_id):
     
     
 
-def daily_all_attendance_pdf(request,section_id):
+def daily_all_attendance_pdf(request,session_id,section_id):
     students = Student.objects.filter(section=section_id)
-    attendance = Attendance.objects.filter(section=section_id).order_by('-date')
+    attendance = Attendance.objects.filter(section=section_id,session=session_id).order_by('-date')
     section = Section.objects.get(id=section_id)
     attendance_by_day = {}
     for record in attendance:
@@ -1867,9 +1881,9 @@ def daily_all_attendance_pdf(request,section_id):
         return response
     # return render(request, 'attendance/daily_attendance_pdf.html', context)
     
-def weekly_all_attendance_pdf(request,section_id):
+def weekly_all_attendance_pdf(request,session_id,section_id):
     students = Student.objects.filter(section=section_id)
-    attendance = Attendance.objects.filter(section=section_id).order_by('-date')
+    attendance = Attendance.objects.filter(section=section_id,session=session_id).order_by('-date')
     section = Section.objects.get(id=section_id)
     attendance_by_week = {}
     for record in attendance:
@@ -1953,8 +1967,8 @@ def weekly_all_attendance_pdf(request,section_id):
     # # else:
     # #     return response
     
-def yearly_all_attendance_pdf(request, section_id):
-    students = Student.objects.filter(section=section_id)
+def yearly_all_attendance_pdf(request, session_id,section_id):
+    students = Student.objects.filter(section=section_id,session=session_id)
     attendances = Attendance.objects.all()
     section = Section.objects.get(id=section_id)
     year = datetime.datetime.now().year

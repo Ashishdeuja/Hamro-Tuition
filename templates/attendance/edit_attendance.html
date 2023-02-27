@@ -78,7 +78,7 @@
   
 </style>
 
-<form id="attendance-form" method="get" action="{% url 'edit_attendance' section_id %}">
+<form id="attendance-form" method="get" action="{% url 'edit_attendance' session_id section_id %}">
   <div class="form-group">
     <label for="date">Enter date:</label>&nbsp&nbsp
     <input type="date" id="date" name="date" required>&nbsp&nbsp&nbsp

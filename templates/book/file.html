@@ -203,7 +203,26 @@
         {% endfor %}
     </div>
 {% endif %}
-                            
+<script>
+  // Get all the dropdown buttons and menus
+const dropdownButtons = document.querySelectorAll('.dropdown > button');
+const dropdownMenus = document.querySelectorAll('.dropdown > .dropdown-menu');
+
+// Add a click event listener to the document for each dropdown
+dropdownButtons.forEach((button, index) => {
+  document.addEventListener('click', (event) => {
+    // Check if the click target is inside or outside the current dropdown
+    const isInsideDropdown = button.contains(event.target) || dropdownMenus[index].contains(event.target);
+
+    // Hide the current dropdown if the click is outside the dropdown
+    if (!isInsideDropdown) {
+      dropdownMenus[index].classList.remove('show');
+    }
+  });
+});
+
+
+</script>                          
 {% endblock %}
 
 

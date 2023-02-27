@@ -124,10 +124,9 @@
   .name{
     font-size: 18px;
     font-weight: 500;
-    color: #333;
+    color: white;
     margin-top:8px;
     text-align:center;
-    color:white;
   }
   .sub-name{
     font-size: 14px;
@@ -155,18 +154,18 @@
   }
   
 </style>
-{% if level %}
+{% if session %}
     <div class="slide-container swiper">
-        {% for levels in level %}
+        {% for sessions in session %}
             <div class="col-md-4 mb-4">
                <div class="slide-content">
                     <div class="card-wrapper">
                         <div class="card">
                             <div class="image-content">
                                 <span class="overlay">
-                                    {% url 'manage_question_subject' session_id levels.id as view_questions %}
-                                    <a href="{{view_questions}}" class="nav-link {% if view_questions == request.path %} active {% endif %}">
-                                    <h2 class="name">{{levels.level}}</h2>
+                                    {% url 'manage_question' sessions.id as manage_question %}
+                                    <a href="{{manage_question}}" class="nav-link {% if manage_question == request.path %} active {% endif %}">
+                                    <h2 class="name">{{sessions.year}}</h2>
                                     
                                     </a>
                                 </span>
@@ -175,7 +174,7 @@
                             <div class="card-content">
                                 
                                 <br> 
-                                <h3 class="description">Here are the subjects of the {{levels.level}} to add and view questions</h3>
+                                <h3 class="description">Here are the classes of the {{sessions.year}} to add and view question</h3>
                                 <br><br>                        
                             </div>
                         </div>

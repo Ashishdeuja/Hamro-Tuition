@@ -291,8 +291,8 @@
             </a>
          </li>
          <li>
-            {% url 'admin_view_attendance' as admin_view_attendance %}
-            <a href="{{admin_view_attendance}}" class="nav-link {% if sadmin_view_attendance == request.path %} active {% endif %}">
+            {% url 'admin_attendance_batch' as admin_attendance_batch %}
+            <a href="{{admin_attendance_batch}}" class="nav-link {% if admin_attendance_batch == request.path %} active {% endif %}">
                 <span class="icon">
                     <ion-icon name="today-sharp"></ion-icon>
                 </span>
@@ -455,8 +455,8 @@
             </a>
          </li>
          <li>
-            {% url 'manage_question' as manage_question %}
-            <a href="{{manage_question}}" class="nav-link {% if manage_question == request.path %} active {% endif %}">
+            {% url 'manage_question_batch' as manage_question_batch %}
+            <a href="{{manage_question_batch}}" class="nav-link {% if manage_question_batch == request.path %} active {% endif %}">
                 <span class="icon">
                     <ion-icon name="help-circle-sharp"></ion-icon>
                 </span>
@@ -498,8 +498,8 @@
             </ul>
         </li>
         <li>
-            {% url 'manage_attendance_class' as manage_attendance_class %}
-            <a href="{{manage_attendance_class}}" class="nav-link {% if manage_attendance_class == request.path %} active {% endif %}">
+            {% url 'manage_attendance_batch' as manage_attendance_batch %}
+            <a href="{{manage_attendance_batch}}" class="nav-link {% if manage_attendance_batch == request.path %} active {% endif %}">
                 <span class="icon">
                     <ion-icon name="today-sharp"></ion-icon>
                 </span>

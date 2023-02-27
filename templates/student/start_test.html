@@ -55,7 +55,7 @@ label {
   }
 </style>
 
-    <form action="{% url 'start_test' subject_id %}" method="post">
+    <form action="{% url 'start_test' session_id subject_id %}" method="post">
         {% csrf_token %}
         <div class="custome-box">
             <h3 align="center">You can take the test according to the level i.e. Easy or Difficult</h3>

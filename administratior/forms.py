@@ -1,10 +1,23 @@
+from datetime import date
 from django import forms
 from django.forms.widgets import DateInput, TextInput
-
+from django.core.validators import MinValueValidator, MaxValueValidator
 from student.models import Testimonial
 
 from .models import *
+from django.core.exceptions import ValidationError
+from django.core.validators import RegexValidator
 
+PHONE_REGEX = r'^\+?[0-9]{8,16}$'
+
+phone_validator = RegexValidator(
+    regex=PHONE_REGEX,
+    message='Please enter a valid phone number'
+)
+
+
+class PhoneFormField(forms.CharField):
+    default_validators = [phone_validator]
 
 class FormSettings(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -26,7 +39,7 @@ class CustomUserForm(FormSettings):
     }
     profile_pic = forms.ImageField()
     dob=forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
-    phone_number=forms.CharField(required=True)
+    phone_number = PhoneFormField(max_length=16)
     
     def __init__(self, *args, **kwargs):
         super(CustomUserForm, self).__init__(*args, **kwargs)
@@ -95,18 +108,28 @@ class SubjectForm(FormSettings):
 class SessionForm(FormSettings):
     def __init__(self, *args, **kwargs):
         super(SessionForm, self).__init__(*args, **kwargs)
-
+        
+    year = forms.IntegerField(
+        validators=[MinValueValidator(0), MaxValueValidator(9999)]
+    )
     class Meta:
         model = Session
         fields = '__all__'
-        widgets = {
-            'year': DateInput(attrs={'type': 'date'}),
-        }
-
-
+        
 class TeacherForm(CustomUserForm):
     def __init__(self, *args, **kwargs):
         super(TeacherForm, self).__init__(*args, **kwargs)
+
+    def clean_dob(self):
+        dob = self.cleaned_data['dob']
+        today = date.today()
+        age = today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
+        
+        if dob > today:
+            raise ValidationError('Date of birth cannot be in the future')
+        elif age < 18:
+            raise ValidationError('The teacher must be at least 18 years old to get registered.')
+        return dob
 
     class Meta(CustomUserForm.Meta):
         model = Teacher
@@ -125,6 +148,12 @@ class AssignTeacherForm(FormSettings):
 class StudentForm(CustomUserForm):
     def __init__(self, *args, **kwargs):
         super(StudentForm, self).__init__(*args, **kwargs)
+        
+    def clean_dob(self):
+        dob = self.cleaned_data['dob']
+        if dob > datetime.today().date():
+            raise ValidationError('Invalid date of birth')
+        return dob
     
     class Meta(CustomUserForm.Meta):
         model=Student
@@ -175,4 +204,4 @@ class BODForm(FormSettings):
         
     class Meta:
         model = BOD
-        fields = ['image','name','facebook_link','twiter_link','instagram_link','linkedin_link']    
+        fields = ['name','image','facebook_link','twiter_link','instagram_link','linkedin_link']    

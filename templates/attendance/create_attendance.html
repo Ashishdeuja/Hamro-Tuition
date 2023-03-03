@@ -5,158 +5,109 @@
 {% block content %}
 
 <style>
-    form {
-        padding: 1rem;
-        {% comment %} background-color: #e1e1e1; {% endcomment %}
-        border-radius: 5px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
+  form {
+    padding: 1rem;
+    {% comment %} background-color: #e1e1e1; {% endcomment %}
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
 
-      label {
-        margin-top: 1rem;
-        font-weight: bold;
-        font-size: 1.2rem;
-      }
+  label {
+    margin-top: 1rem;
+    font-weight: bold;
+    font-size: 1.2rem;
+  }
       
-      input[type="date"] {
-        margin-top: 0.5rem;
-        padding: 0.5rem;
-        font-size: 1.2rem;
-        border-radius: 5px;
-        border: 1px solid #333;
-      }
+  input[type="date"] {
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    font-size: 1.2rem;
+    border-radius: 5px;
+    border: 1px solid #333;
+  }
       
-      table {
-        margin-top: 1rem;
-        width: 100%;
-        border-collapse: collapse;
-        text-align: center;
-      }
+  table {
+    margin-top: 1rem;
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+  }
       
-      th, td {
-        padding: 0.5rem;
-        border: 1px solid #333;
-      }
+  th, td {
+    padding: 0.5rem;
+    border: 1px solid #333;
+  }
       
-      th {
-        background-color: #333;
-        color: #fff;
-        font-weight: bold;
-      }
+  th {
+    background-color: #333;
+    color: #fff;
+    font-weight: bold;
+  }
       
-      button[type="submit"] {
-        margin-top: 1rem;
-        padding: 0.5rem 1rem;
-        background-color: #333;
-        color: #fff;
-        border-radius: 5px;
-        border: 1px solid #333;
-        font-weight: bold;
-        cursor: pointer;
-      }
-      input[type="checkbox"] {
-        display: inline-block;
-        width: 40px;
-        height: 20px;
-        background-color: #ccc;
-        border-radius: 15px;
-        line-height: 30px;
-        text-align: center;
-        font-size: 14px;
-        cursor: pointer;
-      }
+  button[type="submit"] {
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+    background-color: #333;
+    color: #fff;
+    border-radius: 5px;
+    border: 1px solid #333;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  input[type="checkbox"] {
+    display: inline-block;
+    width: 40px;
+    height: 20px;
+    background-color: #ccc;
+    border-radius: 15px;
+    line-height: 30px;
+    text-align: center;
+    font-size: 14px;
+    cursor: pointer;
+  }
 </style>
 
-
-
-
 <section class="content">
-    <div class="container-fluid">
-        {% comment %} <form  method="post">
-            {% csrf_token %}
-            <label for="date">Date:</label>
-            <input type="date" id="date" name="date" required>
-            <br><br>
-            <label for="student">Student:</label>
-            <select id="student" name="student" required>
-              {% for student in students %}
-                <option value="{{ student.id }}">{{ student.admin.first_name }} {{ student.admin.last_name }}</option>
-              {% endfor %}
-            </select>
-            <br><br>
-            <label for="present">Present:</label>
-            <input type="checkbox" id="present" name="present">
-            <br><br>
-            <input type="submit" value="Save">
-          </form> {% endcomment %}
-          {% comment %} <form method="post">
-            {% csrf_token %}
-          
-            <table>
-              <thead>
-                <tr>
-                  <th>Student Name</th>
-                  <th>Present</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for student in students %}
-                  <tr>
-                    <td>{{ student.admin.first_name }} {{ student.admin.last_name }}</td>
-                    <td>
-                      <input type="checkbox" name="present" value="on">
-                      <input type="hidden" name="student" value="{{ student.id }}">
-                    </td>
-                  </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          
-            <input type="date" name="date" id='date' placeholder="YYYY-MM-DD">
-            <input type="submit" value="Save">
-          </form> {% endcomment %}
-
-
-          <form method="post">
-            {% csrf_token %}
-            <div class="form-group">
-            <label for="date">Date:</label>
-            <input type="date" id="date" name="date" required>
-            </div>
-            <table>
-              <thead>
-                <tr>
-                  <th>S.N</th>
-                  <th>Student Name</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for student in students %}
-                  <tr>
-                    <td>{{forloop.counter}}</td>
-                    <td>{{ student.admin.first_name }} {{ student.admin.last_name }}</td>
-                    <td><input type="checkbox" name="{{ student.id }}"></td>
-                  </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-            
-            <button type="submit">Save Attendance</button>
-          </form>
-    </div>
+  <div class="container-fluid">
+    <form method="post">
+      {% csrf_token %}
+        <div class="form-group">
+          <label for="date">Date:</label>
+          <input type="date" id="date" name="date" required>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>S.N</th>
+              <th>Student Name</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for student in students %}
+            <tr>
+               <td>{{forloop.counter}}</td>
+                <td>{{ student.admin.first_name }} {{ student.admin.last_name }}</td>
+                <td><input type="checkbox" name="{{ student.id }}"></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>    
+        <button type="submit">Save Attendance</button>
+    </form>
+  </div>
 </section>
 
 
-  <script>
+<script>
     var today = new Date();
     var dd = String(today.getDate()).padStart(2, '0');
     var mm = String(today.getMonth() + 1).padStart(2, '0');
     var yyyy = today.getFullYear();
     today = yyyy + '-' + mm + '-' + dd;
     document.getElementById("date").value = today;
- </script>
+</script>
 
 {% endblock content %}

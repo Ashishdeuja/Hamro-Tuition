@@ -382,7 +382,7 @@ def student_apply_leave(request):
             except Exception as e:
                 messages.error(request, "Could not apply! " +str(e))
         else:
-            messages.error(request, "Form has errors!")
+            messages.error(request, "Error in submitting the leave application!")
     return render(request, "student/student_add_leave.html", context)
 
 # def student_view_leave(request):
@@ -406,10 +406,14 @@ def student_view_leave(request):
     end_date = request.GET.get('end_date')
         
     if start_date and end_date:
+        if end_date < start_date:
+            messages.error(request, "The end date cannot be greater than start date !!")
+            return redirect(reverse('student_view_leave'))
+        else:
             leave_history = leave_history.filter(start_date__range=[start_date, end_date])
             
-            if not leave_history:
-                return render(request, "student/not_found.html")
+        if not leave_history:
+            return render(request, "student/not_found.html")
             
     query = request.GET.get('q')
     if query:
@@ -497,10 +501,14 @@ def student_view_attendance(request):
     end_date = request.GET.get('end_date')
         
     if start_date and end_date:
+        if end_date < start_date:
+            messages.error(request, "The end date cannot be greater than start date !!")
+            return redirect(reverse('student_view_attendance'))
+        else:
             attendance = attendance.filter(date__range=[start_date, end_date])
             
-            if not attendance:
-                return render(request, "student/not_found.html")
+        if not attendance:
+            return render(request, "student/not_found.html")
     
     status = request.GET.get('status')
     if status == 'present':

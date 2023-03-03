@@ -59,7 +59,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     # 'django.middleware.static.StaticFilesMiddleware',
-    # 'administratior.middleware.LoginCheckMiddleWare',
+    'administratior.middleware.LoginCheckMiddleWare',
 ]
 
 ROOT_URLCONF = 'Hamro_Tuition.urls'

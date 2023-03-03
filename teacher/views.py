@@ -15,6 +15,8 @@ from xhtml2pdf import pisa
 from django.db.models import Q
 import re
 from django.contrib.auth.hashers import check_password
+from twilio.rest import Client
+
 # Create your views here.
 def teacher_home_page(request):
     context = {
@@ -417,7 +419,7 @@ def apply_leave(request):
             except Exception as e:
                 messages.error(request, "Could not apply! " +str(e))
         else:
-            messages.error(request, "Form has errors!")
+            messages.error(request, "Error in submitting the leave application!")
     return render(request, "teacher/add_leave.html", context)
 
 def teacher_view_leave(request):
@@ -428,10 +430,14 @@ def teacher_view_leave(request):
     end_date = request.GET.get('end_date')
         
     if start_date and end_date:
+        if end_date < start_date:
+            messages.error(request, "The end date cannot be greater than start date !!")
+            return redirect(reverse('teacher_view_leave'))
+        else:
             leave_history = leave_history.filter(start_date__range=[start_date, end_date])
             
-            if not leave_history:
-                return render(request, "student/not_found.html")
+        if not leave_history:
+            return render(request, "student/not_found.html")
     
     query = request.GET.get('q')
     if query:
@@ -621,6 +627,20 @@ def create_attendance(request,session_id,section_id):
         students = Student.objects.filter(section=section_id,session=session_id)
         section = Section.objects.get(id=section_id)
         session=Session.objects.get(id=session_id)
+        
+        absent_students = [student.mothers_number for student in students if request.POST.get(str(student.id), False) != 'on']
+        print(absent_students)
+        
+        account_sid = 'AC16e242ea6947b3b5838ba62e2cb17916'
+        auth_token = '6afb9fd5bb3844223afb286c2763f72a'
+        client = Client(account_sid, auth_token)
+        num=['+9779814968517','+9779812300815']
+        for recipient in num:
+            message = client.messages.create(
+                body='\nDear Parents,\nYour son/daughter is absent today\n-Hamro Tuition.',
+                from_='+19288633622',
+                to=recipient
+        )
         
         if Attendance.objects.filter(date=date,session=session_id,section=section_id).exists():
             messages.error(request, 'Attendance for this date has already been recorded')

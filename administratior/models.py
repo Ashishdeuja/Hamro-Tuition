@@ -7,6 +7,18 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from ckeditor.fields import RichTextField
 from djsingleton.models import SingletonModel
+from django.core.validators import MinValueValidator, MaxValueValidator
+from datetime import datetime
+from django.core.exceptions import ValidationError
+from django.core.validators import RegexValidator
+
+
+PHONE_REGEX = r'^\+?[0-9]{8,16}$'
+
+phone_validator = RegexValidator(
+    regex=PHONE_REGEX,
+    message='Please enter a valid phone number'
+)
 
 
 class CustomUserManager(UserManager):
@@ -42,7 +54,7 @@ class CustomUser(AbstractUser):
     profile_pic = models.ImageField()
     address = models.TextField()
     dob = models.DateField(null=True)
-    phone_number = models.CharField(max_length=25,default="")
+    phone_number = models.CharField(max_length=16, validators=[phone_validator])
     fcm_token = models.TextField(default="")  # For firebase notifications
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -76,7 +88,10 @@ class Section(models.Model):
     
 
 class Session(models.Model):
-    year = models.DateField()
+    year = models.IntegerField(
+        default=datetime.now().year,
+        validators=[MinValueValidator(0), MaxValueValidator(9999)]
+    )
 
     def __str__(self):
         return str(self.year) 
@@ -108,9 +123,9 @@ class AssignTeacher(models.Model):
 class Student(models.Model):
     admin = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
     fathers_name=models.CharField(max_length=100)
-    fathers_number = models.BigIntegerField(null=True)
+    fathers_number = models.CharField(max_length=16, validators=[phone_validator])
     mothers_name = models.CharField(max_length=100)
-    mothers_number = models.BigIntegerField(null=True)
+    mothers_number = models.CharField(max_length=16, validators=[phone_validator])
     level=models.ForeignKey(Level, on_delete=models.RESTRICT, null=True, blank=False)
     section=models.ForeignKey(Section, on_delete=models.RESTRICT, null=True, blank=False)
     session = models.ForeignKey(Session, on_delete=models.DO_NOTHING, null=True, blank=False)

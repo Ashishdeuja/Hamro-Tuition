@@ -270,7 +270,7 @@ def delete_session(request, session_id):
     try:
         session.delete()
         messages.success(request, "Session deleted successfully!")
-    except Exception:
+    except Exception as e:
         messages.error(
             request, "There are students assigned to this session. Please move them to another session.")
     return redirect(reverse('manage_session'))
@@ -455,7 +455,7 @@ def edit_teacher(request,teacher_id):
             dob=form.cleaned_data.get('dob')
             phone_number=form.cleaned_data.get('phone_number')
             salary=form.cleaned_data.get('salary')
-            passport = request.FILES.get('profile_pic') or None
+            image = request.FILES.get('profile_pic') or None
             # fs = FileSystemStorage()
             # filename = fs.save(passport.name, passport)
             # passport_url = fs.url(filename)
@@ -465,11 +465,11 @@ def edit_teacher(request,teacher_id):
                 user.email=email
                 if password != None:
                     user.set_password(password)
-                if passport != None:
+                if image != None:
                     fs = FileSystemStorage()
-                    filename = fs.save(passport.name, passport)
-                    passport_url = fs.url(filename)
-                    user.profile_pic = passport_url
+                    filename = fs.save(image.name, image)
+                    image_url = fs.url(filename)
+                    user.profile_pic = image_url
                     
                 user.first_name = first_name
                 user.last_name = last_name
@@ -481,12 +481,16 @@ def edit_teacher(request,teacher_id):
                 user.save()
                 teacher.save()
                 messages.success(request, "Successfully Added")
-                return redirect(reverse('edit_teacher',args=[teacher_id]))
+                return redirect(reverse('manage_teacher'))
 
             except Exception as e:
                 messages.error(request, "Could Not Add " + str(e))
+                context['form'] = form
+                return render(request, 'admin/edit_teacher.html', context)
         else:
             messages.error(request, "Please fulfil all requirements")
+            context['form'] = form
+            return render(request, 'admin/edit_teacher.html', context)
     else:
         # user=CustomUser.objects.get(id=teacher_id)
         # teacher=Teacher.objects.get(id=user.id)
@@ -594,7 +598,7 @@ def add_book(request):
 
 def edit_book(request, book_id):
     instance = get_object_or_404(Book, id=book_id)
-    form = BookForm(request.POST or None, request.FILES or None, instance=instance)
+    form = BookForm(request.POST or None, instance=instance)
     context = {
         'form': form,
         'book_id': book_id,
@@ -607,8 +611,8 @@ def edit_book(request, book_id):
             year = form.cleaned_data.get('year')
             publisher = form.cleaned_data.get('publisher')
             desc = form.cleaned_data.get('desc')
-            cover = request.FILES.get('cover')
-            pdf = request.FILES.get('pdf')
+            cover_photo = request.FILES.get('cover') or None
+            book_pdf = request.FILES.get('pdf') or None
             try:
                 book = Book.objects.get(id=book_id)
                 book.title=title 
@@ -616,9 +620,20 @@ def edit_book(request, book_id):
                 book.year=year
                 book.publisher=publisher
                 book.desc=desc 
-                book.cover=cover
-                book.pdf=pdf
+                if cover_photo != None:
+                    fs = FileSystemStorage()
+                    filename = fs.save(cover_photo.name, cover_photo)
+                    cover_photo_url = fs.url(filename)
+                    book.cover = cover_photo_url
+                #book.cover=cover
+                if book_pdf != None:
+                    fs = FileSystemStorage()
+                    filename = fs.save(book_pdf.name, book_pdf)
+                    book_pdf_url = fs.url(filename)
+                    book.pdf = book_pdf_url
+                # book.pdf=pdf
                 book.save()
+                print(book.cover)
                 messages.success(request, (title + ' has been updated.'))
                 return redirect('manage_book')
             except Exception as e:
@@ -682,7 +697,7 @@ def add_student(request):
                 user.student.section = section
                 user.save()
                 messages.success(request, "Successfully Added")
-                return redirect(reverse('add_student'))
+                return redirect(reverse('manage_student'))
             except Exception as e:
                 messages.error(request, "Could Not Add: " + str(e))
         else:
@@ -770,11 +785,13 @@ def edit_student(request, student_id):
                 user.save()
                 student.save()
                 messages.success(request, "Successfully Updated")
-                return redirect(reverse('edit_student', args=[student_id]))
+                return redirect(reverse('manage_student'))
             except Exception as e:
                 messages.error(request, "Could Not Update " + str(e))
         else:
             messages.error(request, "Please Fill Form Properly!")
+            context['form'] = form  # add the invalid form to the context
+            return render(request, "admin/edit_student.html", context)
     else:
         return render(request, "admin/edit_student.html", context)
 
@@ -906,15 +923,15 @@ def admin_profile(request):
                 # today = date.today()
                 # age = today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
                 password = form.cleaned_data.get('password') or None
-                passport = request.FILES.get('profile_pic') or None
+                image = request.FILES.get('profile_pic') or None
                 custom_user = admin.admin
                 if password != None:
                     custom_user.set_password(password)
-                if passport != None:
+                if image != None:
                     fs = FileSystemStorage()
-                    filename = fs.save(passport.name, passport)
-                    passport_url = fs.url(filename)
-                    custom_user.profile_pic = passport_url
+                    filename = fs.save(image.name, image)
+                    image_url = fs.url(filename)
+                    custom_user.profile_pic = image_url
                 custom_user.first_name = first_name
                 custom_user.last_name = last_name
                 custom_user.dob=dob
@@ -1066,7 +1083,12 @@ def teacher_check_leave(request):
         end_date = request.GET.get('end_date')
         
         if start_date and end_date:
-            allLeave = allLeave.filter(start_date__range=[start_date, end_date])
+            if end_date < start_date:
+                messages.error(request,'The end date cannot be greater than start date !!')
+                return redirect('teacher_check_leave')
+                
+            else:
+                allLeave = allLeave.filter(start_date__range=[start_date, end_date])
             
             if not allLeave:
                 return render(request, "student/not_found.html")
@@ -1161,7 +1183,14 @@ def student_check_leave(request):
         end_date = request.GET.get('end_date')
         
         if start_date and end_date:
-            allLeave = allLeave.filter(start_date__range=[start_date, end_date])
+            
+            if end_date < start_date:
+                messages.error(request,'The end date cannot be greater than start date !!')
+                return redirect('student_check_leave')
+                
+            else:
+                allLeave = allLeave.filter(start_date__range=[start_date, end_date])
+                
             if not allLeave:
                 return render(request, "student/not_found.html")
         
@@ -1341,19 +1370,27 @@ def about_home(request):
     if request.method == 'POST':
         if form.is_valid():
             name=form.cleaned_data.get('name')
-            logo = request.FILES.get('logo')
-            home_image = request.FILES.get('home_image')
+            home_logo = request.FILES['logo']
+            home_image = request.FILES['home_image']
+            
+            fs = FileSystemStorage()
+            filename = fs.save(home_logo.name, home_logo)
+            logo_url = fs.url(filename)
+            img=fs.save(home_image.name,home_image)
+            img_url=fs.url(img)
+            
             try:
-                home=About()
-                home.name=name
-                home.logo=logo
-                home.home_image=home_image
+                home = About.objects.create(
+                name=name,
+                logo=logo_url,
+                home_image=img_url
+                )
                 home.save()
                 messages.success(request, (name + ' has been uploaded.'))
                 return redirect('manage_home_page')
-            except Exception as e:
-                messages.error(request, "Could Not Add " + str(e))
-                
+            except Exception:
+                messages.error(request, "The home content could not be added more than once.\nIf you want to add new content please delete the old content !!")
+                return redirect('manage_home_page')
         else:
             messages.error(request, 'Please correct the error(s) below.')
     return render(request, 'admin/add_home.html',context)
@@ -1369,13 +1406,23 @@ def edit_home(request, pk):
     if request.method == 'POST':
         if form.is_valid():
             name=form.cleaned_data.get('name')
-            logo = request.FILES.get('logo')
-            home_image = request.FILES.get('home_image')
+            home_logo = request.FILES.get('logo') or None
+            image = request.FILES.get('home_image') or None
             try:
-                home=About()
+                home=About.objects.get(id=pk)
                 home.name=name
-                home.logo=logo
-                home.home_image=home_image
+                if home_logo != None:
+                    fs = FileSystemStorage()
+                    filename = fs.save(home_logo.name, home_logo)
+                    home_logo_url = fs.url(filename)
+                    home.logo = home_logo_url
+                    
+                if image != None:
+                    fs = FileSystemStorage()
+                    filename = fs.save(image.name, image)
+                    image_url = fs.url(filename)
+                    home.home_image = image_url
+
                 home.save()
                 messages.success(request, (name + ' has been uploaded.'))
                 return redirect('manage_home_page')
@@ -1415,11 +1462,16 @@ def aboutpage_home(request):
     }
     if request.method == 'POST':
         if form.is_valid():
-            about_image = request.FILES.get('about_image')
+            image = request.FILES.get('about_image')
             description = form.cleaned_data.get('description')
+            fs = FileSystemStorage()
+            filename = fs.save(image.name, image)
+            image_url = fs.url(filename)
+            
+            
             try:
                 about=AboutPage()
-                about.about_image=about_image
+                about.about_image=image_url
                 about.description=description
                 about.save()
                 messages.success(request, ('About Content has been uploaded.'))
@@ -1442,7 +1494,7 @@ def manage_about_page(request):
     return render(request, "admin/manage_about.html", context)
 
 def edit_about(request, pk):
-    instance = get_object_or_404(AboutPage, pk=pk)
+    instance = get_object_or_404(AboutPage, id=pk)
     form = AboutPageForm(request.POST or None, instance=instance)
     context = {
         'form': form,
@@ -1451,11 +1503,15 @@ def edit_about(request, pk):
     }
     if request.method == 'POST':
         if form.is_valid():
-            about_image = request.FILES.get('about_image')
+            image = request.FILES.get('about_image')
             description = form.cleaned_data.get('description')
             try:
-                about=AboutPage.objects.get(pk=pk)
-                about.about_image=about_image
+                about=AboutPage.objects.get(id=pk)
+                if image != None:
+                    fs = FileSystemStorage()
+                    filename = fs.save(image.name, image)
+                    image_url = fs.url(filename)
+                    about.about_image = image_url
                 about.description=description
                 about.save()
                 messages.success(request, ('About Content has been updated.'))
@@ -1485,15 +1541,20 @@ def bod_page(request):
     }
     if request.method == 'POST':
         if form.is_valid():
-            image = request.FILES.get('image')
+            bod_image = request.FILES.get('image')
             name=form.cleaned_data.get('name')
             facebook_link = form.cleaned_data.get('facebook_link')
             twiter_link = form.cleaned_data.get('twiter_link')
             instagram_link = form.cleaned_data.get('instagram_link')
             linkedin_link = form.cleaned_data.get('linkedin_link')
+            
+            fs = FileSystemStorage()
+            filename = fs.save(bod_image.name, bod_image)
+            image_url = fs.url(filename)
+            
             try:
                 bod=BOD()
-                bod.image=image
+                bod.image=image_url
                 bod.name=name
                 bod.facebook_link=facebook_link
                 bod.instagram_link=instagram_link
@@ -1511,10 +1572,16 @@ def bod_page(request):
 
 
 def manage_bod_page(request):
+    bod=BOD.objects.all()
+    query = request.GET.get('q')
+    if query:
+        bod = bod.filter(Q(name__icontains=query)).distinct()
+        if not bod:
+            return render(request, "student/not_found.html")
     
     context = {
        
-        'bod': BOD.objects.all(),
+        'bod': bod,
         'page_title': 'BOD Content'
     }
     return render(request, "admin/manage_bod.html", context)
@@ -1538,7 +1605,11 @@ def edit_bod_page(request,pk):
             linkedin_link = form.cleaned_data.get('linkedin_link')
             try:
                 bod=BOD.objects.get(pk=pk)
-                bod.image=image
+                if image != None:
+                    fs = FileSystemStorage()
+                    filename = fs.save(image.name, image)
+                    image_url = fs.url(filename)
+                    bod.image = image_url
                 bod.name=name
                 bod.facebook_link=facebook_link
                 bod.instagram_link=instagram_link
@@ -1618,10 +1689,15 @@ def admin_attendance_view(request,session_id,student_id):
     end_date = request.GET.get('end_date')
         
     if start_date and end_date:
+        if end_date < start_date:
+            messages.error(request,'The end date cannot be greater than start date !!')
+            return redirect('admin_attendance_view',session_id,student_id)
+                
+        else:
             attendance = attendance.filter(date__range=[start_date, end_date])
             
-            if not attendance:
-                return render(request, "student/not_found.html")
+        if not attendance:
+            return render(request, "student/not_found.html")
     
     status = request.GET.get('status')
     if status == 'present':

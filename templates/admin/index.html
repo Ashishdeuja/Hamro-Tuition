@@ -6,26 +6,19 @@
    <meta http-equiv="X-UA-Compatible" content="IE=edge">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
    <title>Hamro Tuition</title>
-
-   <!-- swiper css link  -->
    <link rel="stylesheet" href="https://unpkg.com/swiper@8/swiper-bundle.min.css" />
-
-   <!-- font awesome cdn link  -->
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
-
-   <!-- custom css file link  -->
    <link rel="stylesheet" href="{% static 'css/index.css' %}">
 
 </head>
 <body>
    
-<!-- header section starts  -->
 
 <header class="header">
 
    <section class="flex">
       {% for homecontent in home %}
-      <a href="#home" class="logo"><img src="{{homecontent.logo.url}}" alt="" style='height:50px;width:100px;'></a>
+      <a href="#home" class="logo"><img src="{{homecontent.logo}}" alt="" style='height:50px;width:100px;'></a>
 {% endfor %}
       <nav class="navbar">
          <a href="#home">Home</a>
@@ -59,22 +52,13 @@
      </div>
 
      <div class="image">
-        <img src="{{homecontent.home_image.url}}" alt="">
+        <img src="{{homecontent.home_image}}" alt="">
      </div>
 
   </div>
   {% endfor %}
 </section><br><br><br><br><br><br><br><br><br><br><br><br><br>
 
-<!-- home section ends -->
-
-<!-- couter section stars  -->
-
-
-
-<!-- couter section ends -->
-
-<!-- about section starts  -->
 
 <section class="about" id="about">
 
@@ -82,7 +66,7 @@
     {% for homecontent in about %}
       <div class="image">
          {% if homecontent.about_image %}
-         <img src="{{homecontent.about_image.url}}" alt="">
+         <img src="{{homecontent.about_image}}" alt="">
          {% endif %}
       </div>
 
@@ -96,15 +80,7 @@
 
 </section><br><br><br><br><br><br><br><br><br><br><br><br><br>
 
-<!-- about section ends -->
 
-<!-- courses section starts  -->
-
-
-
-<!-- courses section ends -->
-
-<!-- teachers section starts  -->
 
 <section class="teachers" id="teachers">
 
@@ -116,7 +92,7 @@
 
          {% for bods in bod %}
          <div class="swiper-slide slide">
-            <img src="{{bods.image.url}}" alt="">
+            <img src="{{bods.image}}" alt="">
             <div class="share">
                <a href="{{bods.facebook_link}}" class="fab fa-facebook-f"></a>
                <a href="{{bods.twiter_link}}" class="fab fa-twitter"></a>
@@ -137,9 +113,8 @@
 
 </section><br><br><br><br><br><br>
 
-<!-- teachers section ends -->
 
-<!-- reviews section starts  -->
+
 
 <section class="reviews" id="reviews">
 
@@ -154,7 +129,7 @@
          <div class="swiper-slide slide">
             
             <div class="user">
-               <img src="{{testimonials.image.url}}" alt="">
+               <img src="{{testimonials.image}}" alt="">
                <div class="user-info">
                   <h3>{{testimonials.student}}</h3>
                   
@@ -173,9 +148,7 @@
 
 </section><br><br><br><br><br><br>
 
-<!-- reviews section ends -->
 
-<!-- contact section starts  -->
 
 <section class="contact" id="contact">
 
@@ -202,9 +175,6 @@
 
 </section>
 
-<!-- contact section ends -->
-
-<!-- footer section starts  -->
 
 <footer class="footer">
 
@@ -218,7 +188,7 @@
 
 </footer>
 
-<!-- footer section ends -->
+
 
 
 

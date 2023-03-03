@@ -176,21 +176,22 @@
                                 </span>
                                 <div class="card-image">
                                   {% if book.cover %}
-                                    <img class="card-img" src="{{ book.cover.url }}" alt="" >
+                                    <img class="card-img" src="{{ book.cover }}" alt="" >
                                     {% endif %}
                                     
                                 </div>
+    
                             </div>
                             <div class="card-content">
-                                <h2 class="name">{{book.author}}</h2>
-                                <h3 class="description">{{book.desc}}</h3>
+                                <h2 class="name">{{book.title}}</h2>
+                                <h3 class="description">{{book.author}}</h3>
                                 <h5 class="description">Estd: {{book.year}}</h5>
                                 <h6 class="description">{{book.publisher}}</h6>
                                 <div class="d-flex align-items-center">
                                     {% if book.pdf %}
-                                        <a href="{{ book.pdf.url }}" class="btn btn-outline-primary mr-3" target="_blank">View PDF</a>
+                                        <a href="{{ book.pdf }}" class="btn btn-outline-primary mr-3" target="_blank">View PDF</a>
                                         <span style="width: 30px;"></span>
-                                        <a href="{{ book.pdf.url }}" download class="btn btn-outline-success">Download PDF</a>
+                                        <a href="{{ book.pdf }}" download class="btn btn-outline-success">Download PDF</a>
                                     {% else %}
                                         <span class="text-muted">No PDF</span>
                                     {% endif %}

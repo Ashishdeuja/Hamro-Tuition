@@ -1,5 +1,6 @@
 import calendar
-from datetime import date
+from datetime import date,datetime,timedelta
+import datetime
 from django.shortcuts import render, redirect, reverse, get_object_or_404
 import requests
 from django.contrib.auth import authenticate, login, logout
@@ -1782,11 +1783,11 @@ def view_weekly_attendance_pdf(request,session_id,student_id):
     attendance = Attendance.objects.filter(student=student,session=session_id).order_by('-date')
     attendance_by_week = {}
     for record in attendance:
-        week_start = record.date - datetime.timedelta(days=record.date.weekday()+1)
-        week_end = week_start + datetime.timedelta(days=6)
+        week_start = record.date - timedelta(days=record.date.weekday()+1)
+        week_end = week_start + timedelta(days=6)
         if record.date.weekday() == 6:
-            next_week_start = week_end + datetime.timedelta(days=1)
-            next_week_end = next_week_start + datetime.timedelta(days=6)
+            next_week_start = week_end + timedelta(days=1)
+            next_week_end = next_week_start + timedelta(days=6)
             week = f"{next_week_start.strftime('%Y-%m-%d')} to {next_week_end.strftime('%Y-%m-%d')}"
             if week not in attendance_by_week:
                 attendance_by_week[week] = []
@@ -1819,7 +1820,7 @@ def view_weekly_attendance_pdf(request,session_id,student_id):
 def view_yearly_attendance_pdf(request,session_id,student_id):
     student = get_object_or_404(Student, id=student_id)
     attendance = Attendance.objects.filter(student=student,session=session_id).order_by('date')
-    year = datetime.datetime.now().year
+    year = datetime.now().year
     attendance_by_month = {}
     total_days = 0
     present_days = 0
@@ -1963,11 +1964,11 @@ def weekly_all_attendance_pdf(request,session_id,section_id):
     section = Section.objects.get(id=section_id)
     attendance_by_week = {}
     for record in attendance:
-        week_start = record.date - datetime.timedelta(days=record.date.weekday()+1)
-        week_end = week_start + datetime.timedelta(days=6)
+        week_start = record.date - timedelta(days=record.date.weekday()+1)
+        week_end = week_start + timedelta(days=6)
         if record.date.weekday() == 6:
-            next_week_start = week_end + datetime.timedelta(days=1)
-            next_week_end = next_week_start + datetime.timedelta(days=6)
+            next_week_start = week_end + timedelta(days=1)
+            next_week_end = next_week_start + timedelta(days=6)
             week = f"{next_week_start.strftime('%Y-%m-%d')} to {next_week_end.strftime('%Y-%m-%d')}"
             if week not in attendance_by_week:
                 attendance_by_week[week] = []
@@ -2047,7 +2048,7 @@ def yearly_all_attendance_pdf(request, session_id,section_id):
     students = Student.objects.filter(section=section_id,session=session_id)
     attendances = Attendance.objects.all()
     section = Section.objects.get(id=section_id)
-    year = datetime.datetime.now().year
+    year = datetime.now().year
     # attendance_by_month = {}
     # for record in attendances:
     #     month = record.date.strftime("%B")
@@ -2133,7 +2134,7 @@ def yearly_all_attendance_pdf(request, session_id,section_id):
                 else:
                     attendance_by_month[month][student.id]['absent_days'] += 1
 
-    attendance_by_month_sorted = dict(sorted(attendance_by_month.items(), key=lambda x: datetime.datetime.strptime(x[0], '%B')))
+    attendance_by_month_sorted = dict(sorted(attendance_by_month.items(), key=lambda x: datetime.strptime(x[0], '%B')))
 
     table_rows = []
     for student in students:

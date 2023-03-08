@@ -225,15 +225,18 @@ height: 100px;
                                 <label class="text-l font-weight-bold text-primary text-uppercase mb-1"for="input-level">Class</label>
                                 {% comment %} <input readonly type="text" id="input-text" class="form-control form-control-alternative" value='{{ form.student.level }}'/> {% endcomment %}
                                 {% comment %} {{ form.level(class='form-control form-control-alternative', **{'readonly': 'readonly'}) }} {% endcomment %}
-
+                                {{form.level}}
 
                             </div>
                         </div>
                         <div class="col-lg-6">
                             <div class="form-group">
                                 <label class="text-l font-weight-bold text-primary text-uppercase mb-1"for="input-section">Section</label>
-                                {% comment %} <input  type="text" id="input-text" class="form-control form-control-alternative" value='{{ section }}'/> {% endcomment %}
+                                {% comment %} 
+                                <input  type="text" id="input-text" class="form-control form-control-alternative" value='{{ section }}'/> {% endcomment %}
+                             
                                 {{form.section}}
+                                
                             </div>
                         </div>
                     </div><br>

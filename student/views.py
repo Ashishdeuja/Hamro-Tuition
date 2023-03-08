@@ -1,5 +1,5 @@
 import calendar
-from datetime import date
+from datetime import date,timedelta
 from http.client import HTTPResponse
 import json
 import random
@@ -224,7 +224,8 @@ def test_home(request,session_id,subject_id):
                 'student_name':request.user.first_name + ' '+ request.user.last_name, 
                 'subject':question.subject.subject_name,
                 'class':question.subject.level,
-                'select_level':test_level 
+                'select_level':test_level,
+                'test_id':test_result.id 
                 }
             return render(request, 'student/result.html', context)
         except ValueError as e:
@@ -274,13 +275,13 @@ def start_test(request,session_id,subject_id):
         return redirect('test_level_selection', session_id,subject_id)
     
 
-def mock_test_result_pdf(request, subject_id):
+def mock_test_result_pdf(request, test_id):
     
     student = get_object_or_404(Student, admin_id=request.user.id)
-    subject = get_object_or_404(Subject, id=subject_id)
-    test_results = Test_Resut.objects.filter(student=student, subject=subject)
+    # subject = get_object_or_404(Subject, id=subject_id)
+    test_results = Test_Resut.objects.get(id=test_id)
     
-    
+
     
     context = {
                 'test_results':  test_results, 
@@ -609,11 +610,11 @@ def weekly_attendance_pdf(request):
     attendance = Attendance.objects.filter(student=student).order_by('-date')
     attendance_by_week = {}
     for record in attendance:
-        week_start = record.date - datetime.timedelta(days=record.date.weekday()+1)
-        week_end = week_start + datetime.timedelta(days=6)
+        week_start = record.date - timedelta(days=record.date.weekday()+1)
+        week_end = week_start + timedelta(days=6)
         if record.date.weekday() == 6:
-            next_week_start = week_end + datetime.timedelta(days=1)
-            next_week_end = next_week_start + datetime.timedelta(days=6)
+            next_week_start = week_end + timedelta(days=1)
+            next_week_end = next_week_start + timedelta(days=6)
             week = f"{next_week_start.strftime('%Y-%m-%d')} to {next_week_end.strftime('%Y-%m-%d')}"
             if week not in attendance_by_week:
                 attendance_by_week[week] = []
@@ -645,7 +646,7 @@ def weekly_attendance_pdf(request):
 def yearly_attendance_pdf(request):
     student = get_object_or_404(Student, admin=request.user)
     attendance = Attendance.objects.filter(student=student).order_by('date')
-    year = datetime.datetime.now().year
+    year = datetime.now().year
     attendance_by_month = {}
     total_days = 0
     present_days = 0

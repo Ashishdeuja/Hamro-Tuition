@@ -46,29 +46,29 @@
             <img src="{% static 'images/logo.png' %}" style='height:100px;width:500px' alt="">
             <h1 class='title'>Report Card</h1>
             <div class="card-body">
-                <h3 class="title">{{test_results.level}}<h3>
-                <h3 class="title">Subject: {{subject}}<h3><br>
-                <h5 class="name">Student Name: {{student_name}}<h3>
+                <h3 class="title">{{test_results.test_level}}<h3>
+                <h3 class="title">Subject: {{test_results.subject.subject_name}}<h3><br>
+                <h5 class="name">Student Name: {{test_results.student.admin.first_name}} {{test_results.student.admin.last_name}}<h3>
                     <table>
                         <tr>
                             <td>Total Question</td>
-                            <td><span class="tot-question">{{total}}</span></td>
+                            <td><span class="tot-question">{{test_results.total_question}}</span></td>
                         </tr>
                         <tr>
                             <td>Correct Answer</td>
-                            <td><span class="tot-correct">{{correct}}</span></td>
+                            <td><span class="tot-correct">{{test_results.correct_ans}}</span></td>
                         </tr>
                         <tr>
                             <td>Wrong Answer</td>
-                            <td><span class="tot-wrong">{{incorrect}}</span></td>
+                            <td><span class="tot-wrong">{{test_results.incorrect_ans}}</span></td>
                         </tr>
                         <tr>
                             <td>Percentage</td>
-                            <td><span class="tot-percentage">{{percentage}}%</span></td>
+                            <td><span class="tot-percentage">{{test_results.percentage}}%</span></td>
                         </tr>
                         <tr>
                             <td>Your Total Score</td>
-                            <td><span class="tot-score">{{score}}</span></td>
+                            <td><span class="tot-score">{{test_results.score}}</span></td>
                         </tr>
                 
                     </table>

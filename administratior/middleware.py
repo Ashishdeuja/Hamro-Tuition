@@ -9,29 +9,30 @@ class LoginCheckMiddleWare(MiddlewareMixin):
         user = request.user 
         if user.is_authenticated:
             if user.user_type == "1":
-                if modulename == "administratior.views":
+                if modulename == "administratior.views" or modulename == "django.views.static":
                     pass
                 else:
                     return redirect(reverse("admin_home_page"))
-            elif user.user_type == "2":
+            elif user.user_type == '2':
                 if modulename == "teacher.views":
                     pass
-                elif modulename == "administratior.views":
+                elif modulename == "administratior.views" or modulename == "django.views.static":
                     pass
                 else:
                     return redirect(reverse("teacher_home_page"))
-            elif user.user_type == "3":
+            elif user.user_type == '3':
                 if modulename == "student.views":
                     pass
-                elif modulename == "administratior.views":
+                elif modulename == "administratior.views" or modulename == "django.views.static":
                     pass
                 else:
                     return redirect(reverse("student_home_page"))
             else:
                 return redirect(reverse("loginpage"))
-    
-        else:
-            if request.path == reverse('loginpage') or  request.path == reverse('user_login'): 
+            
+        else:   
+            path = request.path_info.lstrip('/')
+            if any(path == p for p in ["login","", "home", "home/", "Login/"]) or modulename == "django.views.static":
                 pass
             else:
-                return redirect(reverse('homepage'))
+                return redirect(reverse("loginpage"))

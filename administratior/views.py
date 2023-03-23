@@ -1,4 +1,4 @@
-import calendar
+from calendar import month_name
 from datetime import date,datetime,timedelta
 import datetime
 from django.shortcuts import render, redirect, reverse, get_object_or_404
@@ -7,6 +7,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse, JsonResponse
 from django.core.files.storage import FileSystemStorage
 from django.core.mail import send_mail
+from student.models import Payment
 from teacher.models import *
 from .forms import *
 from .EmailBackend import EmailBackend
@@ -17,9 +18,6 @@ from xhtml2pdf import pisa
 from django.core.paginator import Paginator
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
-# from django.http import HttpResponse
-# from django.template.loader import render_to_string
-# import weasyprint
 from django.views import generic
 from django.db.models import Q
 # Create your views here.
@@ -60,9 +58,71 @@ def Logout(request):
     return redirect(reverse("homepage"))
 
 def admin_home_page(request):
-    context = {
-        'page_title': "Home"
+    students=Student.objects.all().count()
+    teachers=Teacher.objects.all().count()
+    subjects=Subject.objects.all().count()
+    books=Book.objects.all().count()
+    notice = NewsAndEvents.objects.all().order_by('-updated_date')[:2]
+    current_year = date.today().year
+    month_names = list(month_name)[1:]
+    student_leaves_per_month = []
+    teacher_leaves_per_month = []
+    for i in range(1, 13):
+        student_leaves = Leave.objects.filter(student__isnull=False, status=1, 
+                                            start_date__year=current_year, 
+                                            start_date__month=i).count()
+        teacher_leaves = Leave.objects.filter(teacher__isnull=False, status=1, 
+                                            start_date__year=current_year, 
+                                            start_date__month=i).count()
+        student_leaves_per_month.append(student_leaves)
+        teacher_leaves_per_month.append(teacher_leaves)
         
+    levels=Level.objects.all()
+    level_name=[]
+    student_count=[]
+    for level in levels:
+        studentcount=Student.objects.filter(level=level.id).count()
+        level_name.append(level.level)
+        student_count.append(studentcount)
+    
+    batch=Session.objects.all()
+    level=Level.objects.all()
+    batch_selected=request.GET.get('batch_id')
+    level_selected=request.GET.get('level_id') 
+    
+    print(batch_selected)
+    print(level_selected)
+    
+    section=Section.objects.filter(level=level_selected)
+    section_data=[]
+    attens=[]
+    absentatten=[]
+    for sectiondata in section:
+        atten=Attendance.objects.filter(student__level__id=level_selected,student__session__id=batch_selected,section=sectiondata,present=True).count()
+        absent=Attendance.objects.filter(student__level__id=level_selected,student__session__id=batch_selected,section=sectiondata,present=False).count()       
+        section_data.append(sectiondata.section)
+        attens.append(atten)
+        absentatten.append(absent)
+        
+    context = {
+        'page_title': "Home",
+        'students':students,
+        'teachers':teachers,
+        'subjects':subjects,
+        'books':books,
+        'notices':notice,
+        'current_year':current_year,
+        'month_names':month_names,
+        'student_leaves_per_month':student_leaves_per_month,
+        'teacher_leaves_per_month':teacher_leaves_per_month,
+        'level_name':level_name,
+        'student_count':student_count,
+        'batchs':batch,
+        'levels':level,
+        'section_data':section_data,
+        'attens':attens,
+        'absentatten':absentatten,
+             
     }
     return render(request, 'admin/admin_home_page.html', context)
     
@@ -1071,6 +1131,40 @@ def delete_notice(request, pk):
     except Exception:
         messages.error(request, "The notice couldn't be deleted !!")
     return redirect('view_notice')
+
+def paymentdetails(request):
+    payment=Payment.objects.all().order_by('-created_at')
+    
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+        
+    if start_date and end_date:
+        if end_date < start_date:
+            messages.error(request,'The end date cannot be greater than start date !!')
+            return redirect('paymentdetails')
+            
+        else:
+            payment = payment.filter(created_at__range=[start_date, end_date])
+        
+        if not payment:
+            return render(request, "student/not_found.html")
+        
+    query = request.GET.get('q')
+    if query:
+        payment = payment.filter(Q(amount__icontains=query) |
+                                    Q(student__admin__first_name__icontains=query) |
+                                    Q(student__admin__last_name__icontains=query) |
+                                    Q(student__admin__id__icontains=query)|
+                                    Q(student__level__level__icontains=query) |
+                                    Q(student__section__section__icontains=query)).distinct()
+        if not payment:
+            return render(request, "student/not_found.html")
+    
+    context={
+        'page_title':"Payments",
+        'payment':payment,
+    }
+    return render(request,'admin/paymentdetails.html',context)
 
 
 @csrf_exempt

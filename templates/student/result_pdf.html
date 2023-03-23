@@ -1,6 +1,4 @@
-{% extends 'base.html' %}
 {% load static %}
-{% block content %}
 <style>
 
 
@@ -39,15 +37,14 @@
 {% comment %} <button onclick="myfun('pt')" class="btn btn-primary mt-3"style="float:right">Print Result</button> {% endcomment %}
 <div id='pt'class="container ">
     
-    {% comment %} <a href="{% url 'mock_test_result_pdf' subject_id %}" class="btn btn-info">Download Result</a>  {% endcomment %}
-    {% comment %} <div class="card-columns" style="padding: 10px; margin: 20px;"> {% endcomment %}
         <div class="card" align="centre">
-            {% comment %} <img class="card-img-top" src="http://kmit.in/emagazine/wp-content/uploads/2018/02/karnataka-results.jpg" alt="Card image cap"> {% endcomment %}
-            <img src="{% static 'images/logo.png' %}" style='height:100px;width:500px' alt="">
+           
+            {% comment %} <img src="{% static 'images/logo.png' %}" style='height:100px;width:500px' alt=""> {% endcomment %}
             <h1 class='title'>Report Card</h1>
             <div class="card-body">
-                <h3 class="title">{{test_results.test_level}}<h3>
-                <h3 class="title">Subject: {{test_results.subject.subject_name}}<h3><br>
+                <h3 class="title">{{test_results.subject.level}}</h3>
+                <h3 class="title">Subject: {{test_results.subject.subject_name}}<h3>
+                <h3 class="title" style='color:grey;'>Test Level: {{test_results.test_level}}<h3><br>
                 <h5 class="name">Student Name: {{test_results.student.admin.first_name}} {{test_results.student.admin.last_name}}<h3>
                     <table>
                         <tr>
@@ -85,18 +82,3 @@
 </div><br><br>
 
 
-{% endblock %}
-
-
-{% block custom_js %}
-<script type="text/javascript">
-    function myfun(pa){
-    var bk = document.body.innerHTML;
-    var dv = document.getElementById(pa).innerHTML;
-        document.body.innerHTML = dv;
-        window.print();
-    }
-
-
-</script>
-{% endblock custom_js %}

@@ -86,6 +86,6 @@ urlpatterns = [
     path('admin/view/daily/attendance/pdf/<int:session_id>/<int:student_id>',views.view_daily_attendance_pdf,name='view_daily_attendance_pdf'),
     path('admin/view/weekly/attendance/pdf/<int:session_id>/<int:student_id>',views.view_weekly_attendance_pdf,name='view_weekly_attendance_pdf'),
     path('admin/view/yearly/attendance/pdf/<int:session_id>/<int:student_id>',views.view_yearly_attendance_pdf,name='view_yearly_attendance_pdf'),
-    
+    path('payments/',views.paymentdetails,name="paymentdetails"),
     
 ]

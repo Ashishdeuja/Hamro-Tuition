@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block page_title %}{{page_title}}{% endblock page_title %}
+
+{% block content %}
+<style>
+    .selection{
+        margin-top:-1rem;
+        margin-left:15%;
+    }
+      input,input[type="text"] {
+        width: 35%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin-right: 10px;
+        margin-left:2%;
+      }
+      input{
+        width:15%;
+      }
+      button[type="submit"] {
+        color: #fff;
+        background-color: #28a745;
+        border-color: #28a745;
+        font-weight: bold;
+        padding: 0.5rem 1rem;
+        border-radius: 0.25rem;
+        cursor: pointer;
+      }
+</style>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <!-- general form elements -->
+                <div class="card card-dark">
+                    <div class="card-header">
+                        <h3 class="card-title">{{page_title}}</h3>
+                        <div class="selection">
+                        <form method="get">
+                            {% csrf_token %}
+                            <input type="text" name="q" placeholder="Search...">
+                                <button type="submit">Search</button>
+
+                                <input type="date" name="start_date" id="start_date"> to
+                                <input type="date" name="end_date" id="end_date">
+                          </form>
+                        </div>
+                    </div>
+
+                    <div class="table">
+                        <table class="table table-bordered table-hover">
+                            <thead>
+                            <tr>
+                                <th>S.N.</th>
+                                <th>Student Name</th>
+                                <th>Class</th>
+                                <th>Section</th>
+                                <th>Amount</th>
+                                
+
+                            </tr>
+                        </thead>
+                        {% for payments in payment %}
+                            
+                              <tr>
+                                  <td>{{forloop.counter}}</td>
+                                  <td>{{payments.student}}</td>
+                                  <td>{{payments.student.level}}</td>
+                                  <td>{{payments.student.section}}</td>
+                                  <td>Rs. {{payments.amount}}</td>
+                                  
+                                  
+                       
+                              </tr>
+                            {% endfor %}
+                            
+                        </table>
+                    </div>
+                    </div>
+                <!-- /.card -->
+
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock content %}
+{% block custom_js %}
+{% comment %} <script>
+    var approveButtons = document.querySelectorAll("button[name='status'][value='1']");
+    var rejectButtons = document.querySelectorAll("button[name='status'][value='-1']");
+    approveButtons.forEach(function(button) {
+        button.addEventListener("click", function(e) {
+            e.preventDefault();
+            var form = button.closest("form");
+            var id = form.elements["id"].value;
+            alert("Leave request has been approved.");
+            //form.submit();
+            
+        });
+    });
+    rejectButtons.forEach(function(button) {
+        button.addEventListener("click", function(e) {
+            e.preventDefault();
+            var form = button.closest("form");
+            var id = form.elements["id"].value;
+            alert("Leave request has been rejected.");
+            //form.submit();
+            button.innerHTML = "Rejected";
+        });
+    });
+</script>  {% endcomment %}
+
+<script>
+    $(document).ready(function(){
+        var buttons = document.querySelectorAll("button[name='status']");
+        buttons.forEach(function(button) {
+            button.addEventListener("click", function(e) {
+                e.preventDefault();
+                var form = button.closest("form");
+                var id = form.elements["id"].value;
+                if(button.value == "1"){
+                  alert("Leave request has been approved.");
+                  //form.submit();
+                  button.innerHTML = "Approved";
+                  
+                }
+                else if(button.value == "-1"){
+                  alert("Leave request has been rejected.");
+                  //form.submit();
+                  button.innerHTML = "Rejected";
+                }
+            });
+        });
+    });
+</script>
+
+
+
+
+
+
+{% endblock custom_js %}

@@ -185,73 +185,15 @@ height: 100px;
                             </div>
                         </div>
                     </div><br>
-                    <div class="row">
-                        <div class="col-lg-6">
-                            <div class="form-group">
-                                <label class="text-l font-weight-bold text-primary text-uppercase mb-1"for="input-fathername">Father Name</label>
-                                <input readonly type="text" id="input-email" class="form-control form-control-alternative"
-                                {{ form.fathers_name|add_class:"form-control form-control-alternative" }}
-                                
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="form-group">
-                                <label class="text-l font-weight-bold text-primary text-uppercase mb-1"for="input-fathernumber">Father Number</label>
-                                <input readonly type="text" id="input-text" class="form-control form-control-alternative"
-                                {{ form.fathers_number|add_class:"form-control form-control-alternative" }} 
-                            </div>
-                        </div>
-                    </div><br>
-                    <div class="row">
-                        <div class="col-lg-6">
-                            <div class="form-group">
-                                <label class="text-l font-weight-bold text-primary text-uppercase mb-1"for="input-mothername">Mother Name</label>
-                                <input readonly type="text" id="input-text" class="form-control form-control-alternative"
-                                {{ form.mothers_name|add_class:"form-control form-control-alternative" }}
-                                
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="form-group">
-                                <label class="text-l font-weight-bold text-primary text-uppercase mb-1"for="input-mothernumber">Mother Number</label>
-                                <input readonly type="text" id="input-text" class="form-control form-control-alternative"
-                                {{ form.mothers_number|add_class:"form-control form-control-alternative" }} 
-                            </div>
-                        </div>
-                    </div><br>
-                    <div class="row">
-                        <div class="col-lg-6">
-                            <div class="form-group">
-                                <label class="text-l font-weight-bold text-primary text-uppercase mb-1"for="input-level">Class</label>
-                                {% comment %} <input readonly type="text" id="input-text" class="form-control form-control-alternative" value='{{ form.student.level }}'/> {% endcomment %}
-                                {% comment %} {{ form.level(class='form-control form-control-alternative', **{'readonly': 'readonly'}) }} {% endcomment %}
-                                {{form.level}}
-
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="form-group">
-                                <label class="text-l font-weight-bold text-primary text-uppercase mb-1"for="input-section">Section</label>
-                                {% comment %} 
-                                <input  type="text" id="input-text" class="form-control form-control-alternative" value='{{ section }}'/> {% endcomment %}
-                             
-                                {{form.section}}
-                                
-                            </div>
-                        </div>
-                    </div><br>
+                    
+                    
                     <div class="col-md-12">
                         <div class="form-group">
                             <label class="text-l font-weight-bold text-primary text-uppercase mb-1"for="input-image">Profile Picture</label>
-                            {{ form.profile_pic|add_class:"form-control form-control-alternative" }}
+                            {{ form.profile_pic}}
                         </div>
                     </div>
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            {% comment %} <input readonly type="hidden" id="input-text" class="form-control form-control-alternative" value='{{form.session}}'/> {% endcomment %}
-                            {{form.session}}
-                        </div>
-                    </div>
+                    
                 </div><br>
                 <div class="form-group text-center">
                     <button id="update-btn" class="btn btn-primary" type="submit" onclick="return confirm('After a successful profile update:\n\nYour session would be terminated\nYou would be required to login again')">Update Profile</button>

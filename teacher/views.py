@@ -16,11 +16,36 @@ from django.db.models import Q
 import re
 from django.contrib.auth.hashers import check_password
 from twilio.rest import Client
+from calendar import month_name
 
 # Create your views here.
 def teacher_home_page(request):
+    teachers=get_object_or_404(Teacher, admin=request.user)
+    subjects=AssignTeacher.objects.filter(teacher=teachers).count()
+    total_leave=Leave.objects.filter(teacher=teachers,status=1).count()
+    books=Book.objects.all().count()
+    notice = NewsAndEvents.objects.all().order_by('-updated_date')[:2]
+    current_year = date.today().year
+    month_names = list(month_name)[1:]
+    month_list = []
+    leave_list = []
+    for i in range(1, 13):
+        teacher_leaves = Leave.objects.filter(teacher=teachers, status=1, 
+                                            start_date__year=current_year, 
+                                            start_date__month=i).count()
+        if teacher_leaves > 0:
+            month_list.append(month_names[i-1])
+            leave_list.append(teacher_leaves)
+    
     context = {
-        'page_title': "Dashboard"
+        'page_title': "Dashboard",
+        'subjects':subjects,
+        'total_leave':total_leave,
+        'books':books,
+        'notices':notice,
+        'current_year':current_year,
+        'month_list':month_list,
+        'leave_list':leave_list,
         
     }
     return render(request, 'teacher/teacher_home_page.html', context)
@@ -61,12 +86,12 @@ def teacher_profile(request):
                 password = form.cleaned_data.get('password') or None
                 passport = request.FILES.get('profile_pic') or None
                 
-                # if password != None:
-                #     try:
-                #         validate_password(password)
-                #     except forms.ValidationError as e:
-                #         form.add_error('password', e)
-                #         raise forms.ValidationError("Invalid Password")
+                if password != None:
+                    try:
+                        validate_password(password)
+                    except forms.ValidationError as e:
+                        form.add_error('password', e)
+                        raise forms.ValidationError("Invalid Password")
 
                 custom_user = teacher.admin
                 if password != None:
@@ -161,7 +186,7 @@ def manage_question_class(request,session_id):
 
 def manage_question(request,session_id,level_id):
     teacher=get_object_or_404(Teacher,admin=request.user)
-    subject= Subject.objects.filter(level=level_id,assignteacher__teacher=teacher)
+    subject= Subject.objects.filter(level=level_id,assignteacher__teacher=teacher).distinct()
     level= Level.objects.get(id=level_id)
     context = {
         'subject':subject,
@@ -308,7 +333,7 @@ def manage_notes_class(request,session_id):
 
 def manage_notes(request,session_id,level_id):
     teacher=get_object_or_404(Teacher,admin=request.user)
-    subject= Subject.objects.filter(level=level_id,assignteacher__teacher=teacher)
+    subject= Subject.objects.filter(level=level_id,assignteacher__teacher=teacher).distinct()
     level= Level.objects.get(id=level_id)
     context = {
         'subject':subject,
@@ -630,7 +655,7 @@ def create_attendance(request,session_id,section_id):
         
         absent_students = [student.mothers_number for student in students if request.POST.get(str(student.id), False) != 'on']
         print(absent_students)
-        
+
         account_sid = 'AC16e242ea6947b3b5838ba62e2cb17916'
         auth_token = '6afb9fd5bb3844223afb286c2763f72a'
         client = Client(account_sid, auth_token)

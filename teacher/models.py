@@ -62,8 +62,8 @@ class Notes(models.Model):
 class Leave(models.Model):
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, null=True, blank=True)
     student = models.ForeignKey(Student, on_delete=models.CASCADE, null=True, blank=True)
-    start_date = models.CharField(max_length=60,blank=False,default='')
-    end_date = models.CharField(max_length=60)
+    start_date = models.DateField(max_length=60,blank=False,default='')
+    end_date = models.DateField(max_length=60)
     reason =models.TextField()
     status = models.SmallIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)

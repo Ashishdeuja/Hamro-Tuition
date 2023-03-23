@@ -37,17 +37,17 @@
                                         No Image
                                         {% else %}
                                         <img class="img img-fluid mb-2" height="100" width="100"
-                                            src="{{book.book.cover.url}}" alt="">
+                                            src="{{book.book.cover}}" alt="">
                                         {% endif %}
                                     </td>
                                     <td>{{book.book.title}}</td>
                                     <td>{{book.book.author}}</td>
                                     <td>
                                         {% if book.book.pdf %}
-                                        <a href="{{ book.book.pdf.url }}" class="btn btn-primary mr-3" target="_blank">
+                                        <a href="{{ book.book.pdf }}" class="btn btn-primary mr-3" target="_blank">
                                             <ion-icon name="eye-off-sharp"></ion-icon>
                                         </a> -
-                                        <a href="{{ book.book.pdf.url }}" download class="btn btn-success">
+                                        <a href="{{ book.book.pdf }}" download class="btn btn-success">
                                             <ion-icon name="download-sharp"></ion-icon>
                                         </a> -
                                         {% else %}

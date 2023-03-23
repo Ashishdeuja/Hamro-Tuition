@@ -1,4 +1,3 @@
-import calendar
 from datetime import date,timedelta
 from http.client import HTTPResponse
 import json
@@ -21,6 +20,7 @@ from xhtml2pdf import pisa
 from django.db.models import Q
 import re
 from django.contrib.auth.hashers import check_password
+from calendar import month_name
 # from django.conf import settings
 # from django.http import HttpResponse
 # from django.template.loader import render_to_string
@@ -28,8 +28,57 @@ from django.contrib.auth.hashers import check_password
 
 
 def student_home_page(request):
+    students=get_object_or_404(Student,admin=request.user)
+    total_attendance = Attendance.objects.filter(student=students).count()
+    student_present = Attendance.objects.filter(student=students, present=True).count()
+    if total_attendance == 0:
+       student_present = 0
+    else:
+        student_present = math.floor((student_present/total_attendance) * 100)
+    leave_taken=Leave.objects.filter(student=students).count()
+    bookmarked_book=Bookmark.objects.filter(student=students).count()
+    notes=Notes.objects.filter(session=students.session).count()
+    notice = NewsAndEvents.objects.all().order_by('-updated_date')[:2]
+    current_year = date.today().year
+    month_names = list(month_name)[1:]
+    month_list = []
+    leave_list = []
+    for i in range(1, 13):
+        student_leaves = Leave.objects.filter(student=students, status=1, 
+                                            start_date__year=current_year, 
+                                            start_date__month=i).count()
+        if student_leaves > 0:
+            month_list.append(month_names[i-1])
+            leave_list.append(student_leaves)
+            
+    subjects=Subject.objects.filter(level=students.level)
+    subject_list=[]
+    easy_test_count=[]
+    difficult_test_count=[]
+    for test in subjects:
+        easyresult=Test_Resut.objects.filter(student=students,subject=test,test_level="Easy").count()
+        difficultresult=Test_Resut.objects.filter(student=students,subject=test,test_level="Difficult").count()
+        subject_list.append(test.subject_name)
+        easy_test_count.append(easyresult)
+        difficult_test_count.append(difficultresult)
+    
+    studentpresent = Attendance.objects.filter(student=students, present=True).count()
+    studentabsent= Attendance.objects.filter(student=students, present=False).count()
     context = {
-        'page_title': "Dashboard"
+        'page_title': "Dashboard",
+        'present_percentage':student_present,
+        'leave_taken':leave_taken,
+        'bookmarked_book':bookmarked_book,
+        'notes':notes,
+        'notices':notice,
+        'current_year':current_year,
+        'month_list':month_list,
+        'leave_list':leave_list,
+        'subject_list':subject_list,
+        'easy_test_count':easy_test_count,
+        'difficult_test_count':difficult_test_count,
+        'studentpresent':studentpresent,
+        'studentabsent':studentabsent,
         
     }
     return render(request, 'student/student_home_page.html', context)
@@ -49,13 +98,15 @@ def student_profile(request):
     student = get_object_or_404(Student, admin=request.user)
    
     form = StudentForm(request.POST or None, request.FILES or None, instance=student)
+    
+    # print(level)
     dob=student.admin.dob
     today = date.today()
     age = today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
     
     context = {'form': form,
                'page_title': 'Edit Profile',
-               'age':age
+               'age':age,
                }
     if request.method == 'POST':
         try:
@@ -67,9 +118,6 @@ def student_profile(request):
                 address = form.cleaned_data.get('address')
                 gender = form.cleaned_data.get('gender')
                 passport = request.FILES.get('profile_pic') or None
-                level = form.cleaned_data.get('level')
-                section = form.cleaned_data.get('section')
-                session = form.cleaned_data.get('session')
                 phone_number=form.cleaned_data.get('phone_number')
                 fathers_name=form.cleaned_data.get('fathers_name')
                 fathers_number=form.cleaned_data.get('fathers_number')
@@ -103,9 +151,6 @@ def student_profile(request):
                 admin.student.mothers_name=mothers_name
                 admin.student.fathers_number=fathers_number
                 admin.student.mothers_number=mothers_number
-                admin.student.session = session
-                admin.student.level = level
-                admin.student.section = section
                 admin.save()
                 messages.success(request, "Profile Updated!")
                 return redirect(reverse('student_profile'))
@@ -153,7 +198,7 @@ def view_question(request):
         'level':level,
         'subject':subject,
         'session_id':student.session.id,
-        'page_title': 'Question'
+        'page_title': 'Select Subject to start Test'
     }
 
     return render(request, "student/view_question.html", context)
@@ -288,7 +333,7 @@ def mock_test_result_pdf(request, test_id):
                 
                 
                 }
-    return render(request,'student/result_pdf.html',context)
+    # return render(request,'student/result_pdf.html',context)
 #     html = render_to_string('student/mock_test_result_pdf.html',{
 #                 'questions': questions, 
 #                 'score': score,
@@ -300,12 +345,21 @@ def mock_test_result_pdf(request, test_id):
                 
 #                 }
 #             )
-#     response = HttpResponse(content_type='application/pdf')
-#     response['Content-Disposition'] = f'filename=result.pdf'
-#     weasyprint.HTML(string=html).write_pdf(response,
-#     stylesheets=[weasyprint.CSS(
-#     settings.STATIC_ROOT + 'css/pdf.css')])
-#     return response
+    template = get_template("student/result_pdf.html")
+    html = template.render(context)
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="Test Result.pdf"'
+    pisaStatus = pisa.CreatePDF(html, dest=response)
+
+    if pisaStatus.err:
+        return HttpResponse("PDF creation error: {0}".format(pisaStatus.err))
+    else:
+        return response
+
+
+
+
+
 
 def bookmarked_book(request):
     student = get_object_or_404(Student, admin_id=request.user.id)
@@ -690,7 +744,7 @@ def yearly_attendance_pdf(request):
     # return render(request, 'attendance/yearly_attendance_pdf.html', context)
     
     
-def khaltipayment(request):
+def khaltipayment(request, *args, **kargs):
     if request.method == 'POST':
         amount = request.POST.get('amount')
         
@@ -706,17 +760,18 @@ def khaltipayment(request):
         if amount < 1000: 
            messages.error(request,'Amount should be at least 10')
            return redirect(reverse('khalti_int'))
+        return_url = reverse('success')        
         payload = {
             'amount': amount,
             'purchase_order_id': 'Test2',
             'purchase_order_name': 'Test',
-            'return_url': 'https://test-pay.khalti.com/{pidx}',
+            'return_url': request.build_absolute_uri(return_url),
             'website_url': 'http://localhost:8000/',
             "customer_info": {
                 "name": "Hamro Tuition",
                 "email": "hamrotuition@gmail.com",
                 "phone": "9811496763"
-            },             
+            },            
         }
         url = 'https://a.khalti.com/api/v2/epayment/initiate/'
         headers = {
@@ -727,8 +782,22 @@ def khaltipayment(request):
         data = response.json()
         payment_url = data['payment_url']
         return redirect(payment_url)
+    
+    return render(request, 'student/khalti.html',{'page_title':"Payment"})
 
-    return render(request, 'student/khalti.html')
 
+def successPayment(request):
+    message = request.GET.get('message')
+    amount=request.GET.get('amount')
+    total_amount=int(amount)/100
+    student=get_object_or_404(Student,admin=request.user.id)
+    
+    if not message:
+        messages.success(request,'Payment successful!')
+        payment=Payment(student=student,amount=total_amount)
+        payment.save()
+        return redirect(reverse('khalti_int'))
+    else:
+        messages.warning(request,'Payment failed!')
+        return redirect(reverse('khalti_int'))
 
-# 094dffbae929426ea8020b8e9f76df6e

@@ -283,11 +283,12 @@
         </li>
         
          <li>
-            <a href="#">
+            {% url 'paymentdetails' as paymentdetails %}
+            <a href="{{paymentdetails}}" class="nav-link {% if paymentdetails == request.path %} active {% endif %}">
                 <span class="icon">
-                    <ion-icon name="chatbubbles-sharp"></ion-icon>
+                    <ion-icon name="logo-paypal"></ion-icon>
                 </span>
-                <span class="title">Feedback</span>
+                <span class="title">Payments</span>
             </a>
          </li>
          <li>
@@ -515,7 +516,15 @@
                 <span class="title">Notice</span>
             </a>
         </li>
-        
+        <li>
+            {% url 'chat' as chat %}
+            <a href="{{chat}}" class="nav-link {% if chat == request.path %} active {% endif %}">
+                <span class="icon">
+                    <ion-icon name="megaphone-sharp"></ion-icon>
+                </span>
+                <span class="title">Chat</span>
+            </a>
+        </li>
         <li>
             {% url 'teacher_view_leave' as teacher_view_leave %}
             <a href="{{teacher_view_leave}}" class="nav-link {% if teacher_view_leave == request.path %} active {% endif %}">
@@ -547,6 +556,16 @@
         Student Panel
     </a>
     <ul class="side-menu">
+        <li>
+            {% url 'student_home_page' as student_home_page %}
+            <a href="{{student_home_page}}" class="nav-link {% if student_home_page == request.path %} active {% endif %}">
+            {% comment %} <a href="#"> {% endcomment %}
+                <span class="icon">
+                    <ion-icon name="home-sharp"></ion-icon>
+                </span>
+                <span class="title">Home</span>
+            </a>
+         </li>
         <li>
             {% url 'view_notes' as view_notes %}
             <a href="{{view_notes}}" class="nav-link {% if view_notes == request.path %} active {% endif %}">
@@ -584,7 +603,7 @@
                 <span class="icon">
                     <ion-icon name="help-circle-sharp"></ion-icon>
                 </span>
-                <span class="title">Questions</span>
+                <span class="title">Apply Test</span>
                 
             </a>
         </li>

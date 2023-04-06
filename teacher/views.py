@@ -283,25 +283,28 @@ def add_notes(request,session_id,subject_id):
     }
     if request.method == 'POST':
         if form.is_valid():
-            subject=subject_id
             title = form.cleaned_data.get('title')
             description=form.cleaned_data.get('description')
             images=request.FILES.get('images')
-            file=request.FILES.get('file')
+            file=request.FILES.get('file') 
             try:
                 note =Notes()
-                s=Subject(pk=subject_id)
+                subject=Subject(pk=subject_id)
                 session=Session(pk=session_id)
-                note.subject=s
+                note.subject=subject
                 note.session=session
                 note.title=title
                 note.description=description
-                note.images=images
-                note.file=file
-                # for image in images:
-                #     note.images.create(image=image)
-                # for file in file:
-                #     note.file.create(file=file)
+                if images != None:
+                    fs = FileSystemStorage()
+                    filename = fs.save(images.name, images)
+                    images_url = fs.url(filename)
+                    note.images = images_url
+                if file != None:
+                    fs = FileSystemStorage()
+                    filename = fs.save(file.name, file)
+                    file_url = fs.url(filename)
+                    note.file = file_url
                 note.save()
                 messages.success(request, "Successfully Added")
                 return redirect('view_notes',session_id,subjects.level.id,subject_id)
@@ -366,18 +369,23 @@ def edit_note(request, note_id):
         if form.is_valid():
             title = form.cleaned_data.get('title')
             description=form.cleaned_data.get('description')
-            images=request.FILES.get('images')
-            file=request.FILES.get('file')
+            images=request.FILES.get('images') or None
+            file=request.FILES.get('file') or None
             try:
                 note =Notes.objects.get(id=note_id)
                 note.title=title
                 note.description=description
-                note.images=images
-                note.file=file
-                # for image in images:
-                #     note.images.create(image=image)
-                # for file in file:
-                #     note.file.create(file=file)
+                if images != None:
+                    fs = FileSystemStorage()
+                    filename = fs.save(images.name, images)
+                    images_url = fs.url(filename)
+                    note.images = images_url
+                #book.cover=cover
+                if file != None:
+                    fs = FileSystemStorage()
+                    filename = fs.save(file.name, file)
+                    file_url = fs.url(filename)
+                    note.file = file_url
                 note.save()
                 messages.success(request, "Successfully updated")
                 return redirect('view_notes',note.session.id,note.subject.level.id,note.subject.id)
@@ -428,8 +436,8 @@ def apply_leave(request):
                 obj = form.save(commit=False)
                 obj.teacher = teacher   
                 obj.save()
-                email_to = "aasishdeuja@gmail.com"
-                email_from = "aasishdeuja@gmail.com"
+                email_to = "hamrotuition13@gmail.com"
+                email_from = "hamrotuition13@gmail.com"
                 email_subject = "Leave Application - {0}".format(teacher)
                 email_body = "Dear Administrator,\n\nI am writing to inform you that I have submitted a leave application. The details of my leave application are as follows:\n\nStart Date: {0}\nEnd Date: {1}\nReason for Leave: {2}\n\nThank you for your attention to this matter.\n\nSincerely,\n{3}".format(obj.start_date, obj.end_date, obj.reason, teacher)
 
@@ -555,6 +563,32 @@ def view_students_attendance(request,session_id,level_id,section_id):
 def view_attendance(request,session_id,level_id,section_id):
     students = Student.objects.filter(section=section_id,session=session_id)
     attendance = Attendance.objects.all().order_by('-date')
+    
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+        
+    if start_date and end_date:
+        if end_date < start_date:
+            messages.error(request, "The end date cannot be greater than start date !!")
+            return redirect('view_attendance',session_id,level_id,section_id)
+        else:
+            attendance = attendance.filter(date__range=[start_date, end_date])
+            
+        if not attendance:
+            return render(request, "student/not_found.html")
+    query = request.GET.get('q')
+    if query:
+        attendance = attendance.filter(Q(student__admin__first_name__icontains=query) |
+                                       Q(student__admin__last_name__icontains=query)).distinct()
+        if not attendance:
+            return render(request, "student/not_found.html")
+    
+    status = request.GET.get('status')
+    if status == 'present':
+        attendance = attendance.filter(present=True)
+    elif status == 'absent':
+        attendance = attendance.filter(present=False)
+        
     section = Section.objects.get(id=section_id)
     attendance_by_month = {}
     for record in attendance:
@@ -648,7 +682,7 @@ def view_attendance(request,session_id,level_id,section_id):
 
 def create_attendance(request,session_id,section_id):
     if request.method == 'POST':
-        date = request.POST['date']
+        attendate = request.POST['date']
         students = Student.objects.filter(section=section_id,session=session_id)
         section = Section.objects.get(id=section_id)
         session=Session.objects.get(id=session_id)
@@ -656,24 +690,28 @@ def create_attendance(request,session_id,section_id):
         absent_students = [student.mothers_number for student in students if request.POST.get(str(student.id), False) != 'on']
         print(absent_students)
 
-        account_sid = 'AC16e242ea6947b3b5838ba62e2cb17916'
-        auth_token = '6afb9fd5bb3844223afb286c2763f72a'
-        client = Client(account_sid, auth_token)
-        num=['+9779814968517','+9779812300815']
-        for recipient in num:
-            message = client.messages.create(
-                body='\nDear Parents,\nYour son/daughter is absent today\n-Hamro Tuition.',
-                from_='+19288633622',
-                to=recipient
-        )
-        
-        if Attendance.objects.filter(date=date,session=session_id,section=section_id).exists():
+        # account_sid = 'AC16e242ea6947b3b5838ba62e2cb17916'
+        # auth_token = '6afb9fd5bb3844223afb286c2763f72a'
+        # client = Client(account_sid, auth_token)
+        # num=['+9779814968517','+9779812300815']
+        # for recipient in num:
+        #     message = client.messages.create(
+        #         body='\nDear Parents,\nYour son/daughter is absent today\n-Hamro Tuition.',
+        #         from_='+19288633622',
+        #         to=recipient
+        # )
+        currentdate=date.today()
+        if Attendance.objects.filter(date=attendate,session=session_id,section=section_id).exists():
             messages.error(request, 'Attendance for this date has already been recorded')
             return redirect('create_attendance',session_id=session_id,section_id=section_id)
+        
+        # if Attendance.objects.filter(date__gt=currentdate,session=session_id,section=section_id).exists():
+        #     messages.error(request, 'Attendance for future date cannot be done')
+        #     return redirect('create_attendance',session_id=session_id,section_id=section_id)
         for student in students:
             student_id = student.id
             present = request.POST.get(str(student_id), False) == 'on'
-            attendance = Attendance(date=date, student=student, section=section, session=session, present=present)
+            attendance = Attendance(date=attendate, student=student, section=section, session=session, present=present)
             attendance.save()
         messages.success(request, 'Attendance for this date has been added successfully.')
         return redirect('view_attendance',session_id, section.level.id, section_id)

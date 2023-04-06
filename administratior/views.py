@@ -20,6 +20,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 from django.views import generic
 from django.db.models import Q
+import re
+from django.contrib.auth.hashers import check_password
 # Create your views here.
 
 def login_page(request):
@@ -90,8 +92,6 @@ def admin_home_page(request):
     batch_selected=request.GET.get('batch_id')
     level_selected=request.GET.get('level_id') 
     
-    print(batch_selected)
-    print(level_selected)
     
     section=Section.objects.filter(level=level_selected)
     section_data=[]
@@ -541,11 +541,11 @@ def edit_teacher(request,teacher_id):
                 teacher.salary=salary
                 user.save()
                 teacher.save()
-                messages.success(request, "Successfully Added")
+                messages.success(request, "Successfully Edited")
                 return redirect(reverse('manage_teacher'))
 
             except Exception as e:
-                messages.error(request, "Could Not Add " + str(e))
+                messages.error(request, "Could Not Edit " + str(e))
                 context['form'] = form
                 return render(request, 'admin/edit_teacher.html', context)
         else:
@@ -637,6 +637,11 @@ def add_book(request):
             desc = form.cleaned_data.get('desc')
             cover = request.FILES.get('cover')
             pdf = request.FILES.get('pdf')
+            fs = FileSystemStorage()
+            covername = fs.save(cover.name, cover)
+            filename = fs.save(pdf.name, pdf)
+            pdf_url = fs.url(filename)
+            cover_url=fs.url(covername)
             try:
                 
                 book = Book()
@@ -645,8 +650,8 @@ def add_book(request):
                 book.year=year
                 book.publisher=publisher
                 book.desc=desc 
-                book.cover=cover
-                book.pdf=pdf
+                book.cover=cover_url
+                book.pdf=pdf_url
                 book.save()
                 messages.success(request, 'Book uploaded successfully')
                 return redirect('manage_book')
@@ -895,12 +900,12 @@ def assign_teacher(request):
                 assign_teacher.subject=subject
                 assign_teacher.teacher=teacher
                 assign_teacher.save()
-                messages.success(request, "Successfully Added")
+                messages.success(request, "Successfully Assigned")
                 return redirect(reverse('manage_assign_teacher'))
             except Exception as e:
-                messages.error(request, "Error in adding the notes "+str(e))
+                messages.error(request, "Error in assigning the teacher "+str(e))
         else:
-            messages.error(request, "Could Not Add")
+            messages.error(request, "Could Not Assign Teacher")
     return render(request, 'admin/assign_teacher.html', context)
 
 def edit_assign_teacher(request,assignteacher_id):
@@ -924,7 +929,7 @@ def edit_assign_teacher(request,assignteacher_id):
                 messages.success(request, "Successfully Update")
                 return redirect(reverse('manage_assign_teacher'))
             except Exception as e:
-                messages.error(request, "Error in adding the notes "+str(e))
+                messages.error(request, "Error in updating the assigned teacher details "+str(e))
         else:
             messages.error(request, "Could Not Add")
     return render(request, 'admin/edit_assign_teacher.html', context)
@@ -956,6 +961,15 @@ def delete_assign_teacher(request, assignteacher_id):
     return redirect('manage_assign_teacher')
 
 
+def validate_password(password):
+    if len(password) < 8:
+        raise forms.ValidationError("Password must be at least 8 characters long.")
+    if not re.search(r'[A-Z]', password):
+        raise forms.ValidationError("Password must contain at least one uppercase letter.")
+    if not re.search(r'[a-z]', password):
+        raise forms.ValidationError("Password must contain at least one lowercase letter.")
+    if not re.search(r'\d', password):
+        raise forms.ValidationError("Password must contain at least one digit.")
 
 
 def admin_profile(request):
@@ -985,9 +999,19 @@ def admin_profile(request):
                 # age = today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
                 password = form.cleaned_data.get('password') or None
                 image = request.FILES.get('profile_pic') or None
+                if password != None:
+                    try:
+                        validate_password(password)
+                    except forms.ValidationError as e:
+                        form.add_error('password', e)
+                        raise forms.ValidationError("Invalid Password")
                 custom_user = admin.admin
                 if password != None:
-                    custom_user.set_password(password)
+                    if check_password(password, custom_user.password):
+                        messages.error(request, "New password should be different from current password")
+                        return redirect(reverse('admin_profile'))
+                    else:
+                        custom_user.set_password(password)
                 if image != None:
                     fs = FileSystemStorage()
                     filename = fs.save(image.name, image)
@@ -1025,23 +1049,6 @@ def notice_view(request):
         'items': items,
         'page_title': 'News and Events'
     }
-    
-    
-    teachers = Teacher.objects.all()
-    emails = [teacher.admin.email for teacher in teachers]
-    numbers = [teacher.admin.phone_number for teacher in teachers]
-    print(emails)
-    print(numbers)
-    
-    students = Student.objects.all()
-    semails = [student.admin.email for student in students]
-    snumbers = [student.admin.phone_number for student in students]
-    fnumbers = [str(student.fathers_number).replace(',', ';') for student in students if student.fathers_number]
-    mnumbers = [student.mothers_number for student in students if student.mothers_number]
-    print(semails)
-    print(snumbers) 
-    print(fnumbers)
-    print(mnumbers)
     return render(request, 'admin/notice.html', context)
 
 
@@ -1069,7 +1076,7 @@ def add_notice(request):
                 notice.summary=summary
                 notice.posted_as=posted_as
                 notice.save()
-                email_from = "aasishdeuja@gmail.com"
+                email_from = "hamrotuition13@gmail.com"
                 email_subject = title
                 teacher_email_body="Dear Teachers,\n\n{0}.\n\nRegards,\n{1} {2}".format(summary,first_name,last_name)
                 student_email_body = "Dear Students,\n\n{0}.\n\nRegards,\n{1} {2}".format(summary,first_name,last_name)
@@ -1095,6 +1102,12 @@ def add_notice(request):
 def edit_notice(request, pk):
     instance = get_object_or_404(NewsAndEvents, pk=pk)
     form = NewsAndEventsForm(request.POST or None, instance=instance)
+    students = Student.objects.all()
+    teachers = Teacher.objects.all()
+    first_name=request.user.first_name
+    last_name=request.user.last_name
+    student_emails = [student.admin.email for student in students]
+    teacher_emails = [teacher.admin.email for teacher in teachers]
     context = {
         'form': form,
         'pk': pk,
@@ -1111,8 +1124,21 @@ def edit_notice(request, pk):
                 notice.summary=summary
                 notice.posted_as=posted_as
                 notice.save()
-                messages.success(request, (title + ' has been updated.'))
-                return redirect('view_notice')
+                email_from = "hamrotuition13@gmail.com"
+                email_subject = title
+                teacher_email_body="Dear Teachers,\n\n{0}.\n\nRegards,\n{1} {2}".format(summary,first_name,last_name)
+                student_email_body = "Dear Students,\n\n{0}.\n\nRegards,\n{1} {2}".format(summary,first_name,last_name)
+
+                try:
+                    if teachers:
+                        send_mail(email_subject,  teacher_email_body, email_from, teacher_emails, fail_silently=False)
+                    if students:
+                        send_mail(email_subject, student_email_body, email_from, student_emails, fail_silently=False)
+                    messages.success(request, (title + ' has been updated.'))
+                    return redirect('view_notice')
+                except Exception:
+                    messages.error(request, "Could not send email")
+                    return redirect('view_notice')
             except Exception as e:
                 messages.error(request, "Could Not update " + str(e))
                 
@@ -1231,7 +1257,7 @@ def teacher_check_leave(request):
             # print(request.user.last_name)
             
             email_to = email
-            email_from = "aasishdeuja@gmail.com"
+            email_from = "hamrotuition13@gmail.com"
             email_subject = "Approved Leave Application"
             email_body = "Dear {0},\n\nI am writing to inform you that your leave application has been approved.\n\nRegards,\n{1} {2}".format(teacher_name,first_name,last_name)
 
@@ -1245,7 +1271,7 @@ def teacher_check_leave(request):
         else:
             status = -1
             email_to = email
-            email_from = "aasishdeuja@gmail.com"
+            email_from = "hamrotuition13@gmail.com"
             email_subject = "Rejected Leave Application"
             email_body = "Dear {0},\n\nI am writing to inform you that your leave application has been rejected.\n\nRegards,\n{1} {2}".format(teacher_name,first_name,last_name)
 
@@ -1333,7 +1359,7 @@ def student_check_leave(request):
             # print(request.user.last_name)
             
             email_to = email
-            email_from = "aasishdeuja@gmail.com"
+            email_from = "hamrotuition13@gmail.com"
             email_subject = "Approved Leave Application"
             email_body = "Dear {0},\n\nI am writing to inform you that your leave application has been approved.\n\nRegards,\n{1} {2}".format(student_name,first_name,last_name)
 
@@ -1347,7 +1373,7 @@ def student_check_leave(request):
         else:
             status = -1
             email_to = email
-            email_from = "aasishdeuja@gmail.com"
+            email_from = "hamrotuition13@gmail.com"
             email_subject = "Rejected Leave Application"
             email_body = "Dear {0},\n\nI am writing to inform you that your leave application has been rejected.\n\nRegards,\n{1} {2}".format(student_name,first_name,last_name)
 
@@ -1389,8 +1415,8 @@ def check_email(request):
     
 def home(request):
     if request.method == 'POST':
-        email_to = "aasishdeuja@gmail.com"
-        email_from = "aasishdeuja@gmail.com"
+        email_to = "hamrotuition13@gmail.com"
+        email_from = "hamrotuition13@gmail.com"
         email_subject = "Enquiry by {0}".format(request.POST.get('name'))
         email_body = "Dear Administratior,\n\n{0}.\n\nRegards,\n{1}\n{2}".format(request.POST.get('message'),request.POST.get('name'),request.POST.get('email'))
         

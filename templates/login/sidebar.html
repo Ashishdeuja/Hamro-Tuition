@@ -351,16 +351,8 @@
             </ul>
         </li>
 
+        
         <li>
-            {% url 'view_timetable' as view_timetable %}
-            <a href="{{view_timetable}}" class="nav-link {% if view_timetable == request.path %} active {% endif %}">
-                <span class="icon">
-                    <ion-icon name="timer-sharp"></ion-icon>
-                </span>
-                <span class="title">Time Table</span>
-            </a>
-         </li>
-         <li>
             {% url 'testimonial' as testimonial %}
             <a href="{{testimonial}}" class="nav-link {% if testimonial == request.path %} active {% endif %}">
                 <span class="icon">
@@ -368,7 +360,7 @@
                 </span>
                 <span class="title">Testimonials</span>
             </a>
-         </li>
+        </li>
 
          <li>
             <a href="#">
@@ -516,15 +508,7 @@
                 <span class="title">Notice</span>
             </a>
         </li>
-        <li>
-            {% url 'chat' as chat %}
-            <a href="{{chat}}" class="nav-link {% if chat == request.path %} active {% endif %}">
-                <span class="icon">
-                    <ion-icon name="megaphone-sharp"></ion-icon>
-                </span>
-                <span class="title">Chat</span>
-            </a>
-        </li>
+        
         <li>
             {% url 'teacher_view_leave' as teacher_view_leave %}
             <a href="{{teacher_view_leave}}" class="nav-link {% if teacher_view_leave == request.path %} active {% endif %}">

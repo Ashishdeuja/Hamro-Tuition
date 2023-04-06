@@ -304,9 +304,9 @@ def start_test(request,session_id,subject_id):
         level = request.POST.get('select_level')
         if level == '':
             messages.error(request, "Please select the level to start the test.")
-            return redirect('test_level_selection', subject_id)
+            return redirect('test_level_selection', session_id,subject_id)
         question=Question.objects.filter(subject=subject_id,select_level=level,session=session_id)
-        random_questions = random.sample(list(question), 1)
+        random_questions = random.sample(list(question), 10)
                 
         context = {
             'question':question,
@@ -392,7 +392,7 @@ def delete_bookmark(request, bookmark_id):
     bookmark = get_object_or_404(Bookmark, pk=bookmark_id, student=student)
     try:
         bookmark.delete()
-        messages.success(request, "Bookmark removed successfully.")
+        messages.success(request, "Bookmarked book removed successfully.")
         return redirect(reverse('bookmark_book'))
     except Bookmark.DoesNotExist:
         messages.error(request, "This bookmark does not exist.")
@@ -420,9 +420,9 @@ def student_apply_leave(request):
                 obj.student = student
                 # email = request.user.email      
                 obj.save()
-                email_to = "aasishdeuja@gmail.com"
+                email_to = "hamrotuition13@gmail.com"
                 # email_to = "dipinbhandari101@gmail.com "
-                email_from = "aasishdeuja@gmail.com"
+                email_from = "hamrotuition13@gmail.com"
                 email_subject = "Leave Application - {0}".format(student)
                 email_body = "Dear Administrator,\n\nI am writing to inform you that I have submitted a leave application. The details of my leave application are as follows:\n\nStart Date: {0}\nEnd Date: {1}\nReason for Leave: {2}\n\nThank you for your attention to this matter.\n\nSincerely,\n{3}".format(obj.start_date, obj.end_date, obj.reason, student)
 
@@ -564,7 +564,7 @@ def student_view_attendance(request):
             
         if not attendance:
             return render(request, "student/not_found.html")
-    
+            
     status = request.GET.get('status')
     if status == 'present':
         attendance = attendance.filter(present=True)
@@ -759,6 +759,7 @@ def khaltipayment(request, *args, **kargs):
         
         if amount < 1000: 
            messages.error(request,'Amount should be at least 10')
+        #    return render(request,'student/khalti.html')
            return redirect(reverse('khalti_int'))
         return_url = reverse('success')        
         payload = {

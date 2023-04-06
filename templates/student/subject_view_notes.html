@@ -169,15 +169,15 @@
                                     {% comment %} {% for image in levels.images.all %}
                                         <img class='card-img' src="{{image.url}}" alt="">
                                     {% endfor %} {% endcomment %}
-                                        <img class='card-img' src="{{levels.images.url}}" alt="">
+                                        <img class='card-img' src="{{levels.images}}" alt="">
                                     
                                 </div>
                                 {% endif %}
                                 <div class="d-flex align-items-center">
                                     {% if levels.file %}
-                                        <a href="{{ levels.file.url }}" class="btn btn-outline-primary mr-3" target="_blank">View Note</a>
+                                        <a href="{{ levels.file }}" class="btn btn-outline-primary mr-3" target="_blank">View Note</a>
                                         <span style="width: 30px;"></span>
-                                        <a href="{{ levels.file.url }}" download class="btn btn-outline-success">Download Note</a>
+                                        <a href="{{ levels.file }}" download class="btn btn-outline-success">Download Note</a>
                                     {% endif %}
                                 </div>
                                 

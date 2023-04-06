@@ -183,19 +183,15 @@
                                 <h3 class="description">{{notes.description|safe}}
                                 {% if notes.images %}
                                 <div class="card-image">
-                                    
-                                    {% comment %} {% for image in notes.images.all %}
-                                        <img class='card-img' src="{{image.url}}" alt="">
-                                    {% endfor %} {% endcomment %}
-                                        <img class='card-img' src="{{notes.images.url}}" alt="">
+                                        <img class='card-img' src="{{notes.images}}" alt="">
                                     
                                 </div>
                                 {% endif %}
                                 <div class="d-flex align-items-center">
                                     {% if notes.file %}
-                                        <a href="{{ notes.file.url }}" class="btn btn-outline-primary mr-3" target="_blank">View Note</a>
+                                        <a href="{{ notes.file }}" class="btn btn-outline-primary mr-3" target="_blank">View Note</a>
                                         <span style="width: 30px;"></span>
-                                        <a href="{{ notes.file.url }}" download class="btn btn-outline-success">Download Note</a>
+                                        <a href="{{ notes.file }}" download class="btn btn-outline-success">Download Note</a>
                                     {% endif %}
                                 </div>
                                 

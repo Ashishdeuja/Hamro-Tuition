@@ -12,11 +12,8 @@
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">{{page_title}}</h3>
-                        
+                        <h3 class="card-title">{{page_title}}</h3>  
                     </div>
-                    
-                    <!-- /.card-header -->
                     <div class="card-body">
                         <table id="example2" class="table table-bordered table-hover">
                             <thead class="thead-dark">
@@ -56,7 +53,6 @@
                                         <a href="{% url 'delete_bookmark' book.id %}" class="btn btn-danger" onclick="return confirm('Are you sure about this ?')">
                                             <ion-icon name="trash-bin-sharp"></ion-icon>
                                         </a>
-                                    
                                     </td>
                                 </tr>
                                 {% endfor %}

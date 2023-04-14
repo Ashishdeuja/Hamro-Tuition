@@ -39,14 +39,8 @@
         cursor: pointer;
       }
       label {
-        {% comment %} display: flex; {% endcomment %}
-        {% comment %} float:right; {% endcomment %}
-        {% comment %} align-items: center;
-        margin-bottom: 20px; {% endcomment %}
-        {% comment %} margin-left:85%; {% endcomment %}
-        {% comment %} margin-top:-3%; {% endcomment %}
         font-weight: bold;
-        {% comment %} margin-right: 10px; {% endcomment %}
+        
       }
 </style>
 
@@ -54,20 +48,16 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-12">
-                <!-- general form elements -->
                 <div class="card card-dark">
                     <div class="card-header">
                         <h3 class="card-title">{{page_title}}</h3>
                         <form method="get">
                             {% csrf_token %}
                             <div class="selection">
-
                                 <input type="text" name="q" placeholder="Search...">
                                 <button type="submit">Search</button>
-
                                 <input type="date" name="start_date" id="start_date"> -
                                 <input type="date" name="end_date" id="end_date">
-                                {% comment %} <label>Filter: </label> {% endcomment %}
                                 <select name="status" onchange="this.form.submit()">
                                 <option value="">All</option>
                                 <option value="pending" {% if request.GET.status == 'pending' %}selected{% endif %}>Pending</option>
@@ -77,7 +67,6 @@
                             </div>
                           </form>
                     </div>
-
                     <div class="table">
                         <table class="table table-bordered table-hover">
                             <thead>
@@ -100,8 +89,6 @@
                                   <td>{{leave.student}}</td>
                                   <td>{{leave.reason}}</td>
                                   <td>From {{leave.start_date}} to {{leave.end_date}}</td>
-                                  
-
                                   <td>{{leave.created_at}}</td>
                                   <td>
                                     {% if leave.status == 1 %}
@@ -121,7 +108,6 @@
                                     {% endif %}
                                   </td>
                                   <td>
-
                                     {% if leave.status == 0 %}
                                     <form method="post" action="#" id="myForm">
                                         <input type="hidden" name="id" value="{{ leave.id }}">
@@ -129,20 +115,14 @@
                                         <button type="submit" name="status" value="-1" id="reject-button" style='background-color:red;'>Reject</button>
                                     </form>
                                     {% endif %}
-                                     </td>
-                                  
-                                      
-                                    
-                       
+                                </td>   
                               </tr>
                             {% endif %}
                             {% endfor %}
                             {% endfor %}
                         </table>
                     </div>
-                    </div>
-                <!-- /.card -->
-
+                </div>
             </div>
         </div>
     </div>
@@ -150,30 +130,7 @@
 
 {% endblock content %}
 {% block custom_js %}
-{% comment %} <script>
-    var approveButtons = document.querySelectorAll("button[name='status'][value='1']");
-    var rejectButtons = document.querySelectorAll("button[name='status'][value='-1']");
-    approveButtons.forEach(function(button) {
-        button.addEventListener("click", function(e) {
-            e.preventDefault();
-            var form = button.closest("form");
-            var id = form.elements["id"].value;
-            alert("Leave request has been approved.");
-            //form.submit();
-            
-        });
-    });
-    rejectButtons.forEach(function(button) {
-        button.addEventListener("click", function(e) {
-            e.preventDefault();
-            var form = button.closest("form");
-            var id = form.elements["id"].value;
-            alert("Leave request has been rejected.");
-            //form.submit();
-            button.innerHTML = "Rejected";
-        });
-    });
-</script>  {% endcomment %}
+
 
 <script>
     $(document).ready(function(){
@@ -185,13 +142,11 @@
                 var id = form.elements["id"].value;
                 if(button.value == "1"){
                   alert("Leave request has been approved.");
-                  //form.submit();
                   button.innerHTML = "Approved";
                   
                 }
                 else if(button.value == "-1"){
                   alert("Leave request has been rejected.");
-                  //form.submit();
                   button.innerHTML = "Rejected";
                 }
             });

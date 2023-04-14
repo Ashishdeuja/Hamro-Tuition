@@ -9,7 +9,6 @@ urlpatterns = [
     path('view/question',views.view_question,name='student_view_question'),
     path('level/selection/<int:session_id>/<int:subject_id>',views.test_level_selection,name='test_level_selection'),
     path('start/test/<int:session_id>/<int:subject_id>/',views.start_test,name='start_test'),
-    # path('test/question/<int:subject_id>',views.test_home,name='test_question'),
     path('test/question/<int:session_id>/<int:subject_id>/', views.test_home, name='test_question'),
     path('test/result/pdf/<int:test_id>/',views.mock_test_result_pdf,name='mock_test_result_pdf'),
     path('bookmarked/books/',views.bookmarked_book,name='bookmark_book'),
@@ -24,10 +23,7 @@ urlpatterns = [
     path('view/daily/attendance/pdf',views.daily_attendance_pdf,name='daily_attendance_pdf'),
     path('view/weekly/attendance/pdf',views.weekly_attendance_pdf,name='weekly_attendance_pdf'),
     path('view/yearly/attendance/pdf',views.yearly_attendance_pdf,name='yearly_attendance_pdf'),
-    # path('view/test/result/<int:subject_id>/', views.mock_test_result_pdf, name='test_result'),
     path("khalti/",views.khaltipayment,name='khalti_int'),
     path("payment/success/",views.successPayment,name='success'),
     
- 
-
 ]

@@ -10,7 +10,7 @@
     align-items: center;
     margin-bottom: 20px;
     margin-right:50px;
-    {% comment %} margin-top:-3%; {% endcomment %}
+   
   }
   
   .selection label {
@@ -53,13 +53,10 @@
 
 <div class="card card-default">
     <div class="col-md-12">
-        <!-- general form elements -->
         <div class="card card-dark"style="float:right;">
-            <div class="card-header">
-                
+            <div class="card-header"> 
               <a class="btn btn-primary" href="{% url 'student_apply_leave' %}"><i class="fas fa-plus"></i>Apply Leave</a>
             </div>
-          
         </div>
     </div>
     <div class="card-header"><h3 class="card-title"><b>Leave History</b></h3>
@@ -68,7 +65,6 @@
             {% csrf_token %}
             <input type="text" name="q" placeholder="Search...">
                 <button type="submit">Search</button>
-
                 <input type="date" name="start_date" id="start_date"> to
                 <input type="date" name="end_date" id="end_date">
             <div class="selection">
@@ -83,7 +79,6 @@
           </form>
         </div>
    <div class="table">
-
        <table class="table table-bordered table-hover">
            <thead class="thead-dark">
             <tr>
@@ -100,27 +95,24 @@
             <td>{{leave.start_date}}</td>
             <td>{{leave.end_date}}</td>
             <td>{{leave.reason|safe}}</td>
-              <td>
-                  
+              <td>                 
                   {% if leave.status == 0 %}
                   <span class="btn btn-warning">Pending</span>
                   {% elif leave.status == 1 %}
-                  <span class="btn btn-success">Accepted</span>
-                  
+                  <span class="btn btn-success">Accepted</span>                 
                     {% else %}
-                    <span class="btn btn-danger">Rejected</span>
-                    
+                    <span class="btn btn-danger">Rejected</span>             
                     {% endif %}
                     
                 </td>
-            </tr>
-            {% endfor %}
-        </table>
+        </tr>
+        {% endfor %}
+      </table>
     </div>
     </div>
-            </div>
-        </div>
-    </div>
+   </div>
+</div>
+</div>
 </section>
 
 

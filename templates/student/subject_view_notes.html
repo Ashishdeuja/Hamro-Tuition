@@ -89,7 +89,7 @@
         width: 100%;
         object-fit: cover;
         border-radius: 5%;
-        {% comment %} border: 1px solid #4070F4; {% endcomment %}
+        
       }
       .name{
         font-size: 18px;
@@ -133,7 +133,6 @@
     {% if request.user.user_type == '2' %}
     <div class="row">
       <div class="col-md-12">
-          <!-- general form elements -->
           <div class="card card-dark"style="float:right;">
               <div class="card-header">
                 <a class="btn btn-primary" href="{% url 'add_notes' subject_id %}"><i class="fas fa-plus"></i>Add Notes</a>
@@ -142,11 +141,7 @@
           </div>
         </div>
         {% endif %}
-{% comment %} {% if request.user.user_type == '2' %}
-<div class="manage-wrap" style="float:right;">
-    <a class="btn btn-primary" href="{% url 'add_notes' subject_id %}"><i class="fas fa-plus"></i>Add Notes</a>
-</div>
-{% endif %} {% endcomment %}
+
 {% if note %}
     <div class="slide-container swiper">
         {% for levels in note %}
@@ -165,11 +160,8 @@
                                 <h3 class="description">{{levels.description|safe}}
                                 {% if levels.images %}
                                 <div class="card-image">
-                                    
-                                    {% comment %} {% for image in levels.images.all %}
-                                        <img class='card-img' src="{{image.url}}" alt="">
-                                    {% endfor %} {% endcomment %}
-                                        <img class='card-img' src="{{levels.images}}" alt="">
+                                   
+                                  <img class='card-img' src="{{levels.images}}" alt="">
                                     
                                 </div>
                                 {% endif %}
@@ -180,12 +172,7 @@
                                         <a href="{{ levels.file }}" download class="btn btn-outline-success">Download Note</a>
                                     {% endif %}
                                 </div>
-                                
-                                {% comment %} <h2 class="name">{{levels.level}}</h2>
-                                
-                                <h5 class="description">Estd: {{book.year}}</h5>
-                                <h6 class="description">{{book.publisher}}</h6> {% endcomment %}
-                                
+                              
                             </div>
                         </div>
                     </div>

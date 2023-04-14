@@ -24,20 +24,13 @@ urlpatterns = [
     path("edit/subject/<int:subject_id>", views.edit_subject, name='edit_subject'),
     path("delete/subject/<int:subject_id>", views.delete_subject, name='delete_subject'),
     path("subject/details/<int:subject_id>", views.subject_details, name='subject_details'),
-    # path('subject_details/<int:subject_id>/pdf/', views.subject_details_pdf, name='subject_details_pdf'),
-    path("add/teacher", views.add_teacher, name='add_teacher'),
-    
-    
+    path("add/teacher", views.add_teacher, name='add_teacher'), 
     path('get_subjects/', views.get_subjects, name='get_subjects'),
-    
     path('get_sections/', views.get_sections, name='get_sections'),
-   
-   
     path("assign/teacher/",views.assign_teacher,name='assign_teacher'),
     path("manage/assigned/teacher/", views.manage_assign_teacher, name='manage_assign_teacher'),
     path("edit/assign/teacher/<int:assignteacher_id>", views.edit_assign_teacher, name='edit_assign_teacher'),
     path("delete/assign/teacher/<int:assignteacher_id>", views.delete_assign_teacher, name='delete_assign_teacher'),
-   
     path("add/student", views.add_student,name="add_student"),
     path("student/edit/<int:student_id>",views.edit_student, name='edit_student'),
     path("student/delete/<int:student_id>",views.delete_student, name='delete_student'),
@@ -57,7 +50,6 @@ urlpatterns = [
     path('delete/notice/<int:pk>',views.delete_notice, name='delete_notice'),
     path("teacher/leave/", views.teacher_check_leave, name="teacher_check_leave"),
     path("student/leave/", views.student_check_leave, name="student_check_leave"),
-    path('view/timetable/', views.view_timetable, name='view_timetable'),
     path('check/testimonial/', views.testimonial, name='testimonial'),
     path('add/home/', views.about_home, name='about_home'),
     path('manage/home/', views.manage_home_page, name='manage_home_page'),
@@ -66,8 +58,7 @@ urlpatterns = [
     path('manage/about/', views.manage_about_page, name='manage_about_page'),
     path('add/about/', views.aboutpage_home, name='aboutpage_home'),
     path('edit/about/<int:pk>',views.edit_about, name='edit_about'),
-    path('delete/about/<int:pk>',views.delete_about, name='delete_about'),
-    
+    path('delete/about/<int:pk>',views.delete_about, name='delete_about'), 
     path('add/bod/', views.bod_page, name='bod_page'),
     path('manage/bod/', views.manage_bod_page, name='manage_bod_page'),
     path('edit/bod/<int:pk>',views.edit_bod_page, name='edit_bod_page'),

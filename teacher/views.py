@@ -62,7 +62,6 @@ def validate_password(password):
 
 def teacher_profile(request):
     teacher = get_object_or_404(Teacher, admin=request.user)
-   
     form = TeacherForm(request.POST or None, request.FILES or None, instance=teacher)
     dob=teacher.admin.dob
     today = date.today()
@@ -81,11 +80,8 @@ def teacher_profile(request):
                 address = form.cleaned_data.get('address')
                 gender = form.cleaned_data.get('gender')
                 salary = form.cleaned_data.get('salary')
-                # today = date.today()
-                # age = today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
                 password = form.cleaned_data.get('password') or None
                 passport = request.FILES.get('profile_pic') or None
-                
                 if password != None:
                     try:
                         validate_password(password)
@@ -112,7 +108,6 @@ def teacher_profile(request):
                 custom_user.address=address
                 custom_user.gender=gender
                 custom_user.teacher.salary=salary
-                # custom_user.age=age
                 custom_user.save()
                 messages.success(request, "Profile Updated!")
                 return redirect(reverse('teacher_profile'))
@@ -125,11 +120,9 @@ def teacher_profile(request):
 
 def add_question(request,session_id,subject_id):
     form = QuestionForm(request.POST or None)
-    # teacher = get_object_or_404(Teacher, admin=request.user)
     subjects = Subject.objects.get(id=subject_id)
     context = {
         'form': form,
-        # 'subjects': subjects,
         'page_title': 'Add Question'
     }
     if request.method == 'POST':
@@ -243,9 +236,7 @@ def edit_question(request, question_id):
             opt4=form.cleaned_data.get('op4')
             ans=form.cleaned_data.get('ans')
             try:
-                # question.subject=subject
                 question =Question.objects.get(id=question_id)
-                # question.subject=subject
                 question.select_level=select_level
                 question.question=questions
                 question.op1=opt1
@@ -259,7 +250,7 @@ def edit_question(request, question_id):
             except Exception as e:
                 messages.error(request, "Could Not update " + str(e))
         else:
-            messages.error(request, "Error in editing the question " +str(e))
+            messages.error(request, "Fill the form properly ")
     return render(request, 'teacher/edit_question.html', context)
 
 def delete_question(request, question_id):
@@ -271,7 +262,6 @@ def delete_question(request, question_id):
         messages.error(
             request, "The question couldn't be deleted !! ")
     return redirect('view_questions',question.session.id, question.subject.level.id,question.subject.id)
-
 
 
 def add_notes(request,session_id,subject_id):
@@ -311,7 +301,7 @@ def add_notes(request,session_id,subject_id):
             except Exception as e:
                 messages.error(request, "Error in adding the notes "+str(e))
         else:
-            messages.error(request, "Could Not Add")
+            messages.error(request, "Could Not Add Notes")
     return render(request, 'teacher/add_notes.html', context)
 
 
@@ -380,7 +370,6 @@ def edit_note(request, note_id):
                     filename = fs.save(images.name, images)
                     images_url = fs.url(filename)
                     note.images = images_url
-                #book.cover=cover
                 if file != None:
                     fs = FileSystemStorage()
                     filename = fs.save(file.name, file)
@@ -404,22 +393,6 @@ def delete_notes(request, note_id):
         messages.error(
             request, "The note couldn't be deleted !! ")
     return redirect('view_notes',note.session.id, note.subject.level.id,note.subject.id)
-
-# def view_aa(request):
-#     student= get_object_or_404(Student, admin=request.user)
-#     note = Notes.objects.all()
-#     # subject=Subject.objects.all()
-#     subject=Subject.objects.filter(level__student=student)
-#     level = Level.objects.filter(student=student)
-#     # subject=Subject.objects.filter(level=level).select_related('level')
-#     context = {
-#         'note': note,
-#         'level':level,
-#         'subject':subject,
-#         'page_title': 'Manage Note'
-#     }
-
-#     return render(request, "student/student_view_notes.html", context)
 
 
 def apply_leave(request):
@@ -531,9 +504,7 @@ def manage_attendance(request,session_id,level_id):
 
 def view_students_attendance(request,session_id,level_id,section_id):
     student= Student.objects.all()
-    # students = Student.objects.filter(section=section_id)
     section=Student.objects.filter(section=section_id,session=session_id)
-
 
     context = {
         'section':section,
@@ -543,21 +514,6 @@ def view_students_attendance(request,session_id,level_id,section_id):
     }
 
     return render(request, "teacher/students.html", context)
-
-
-
-# def view_attendance(request,section_id):
-#     students = Student.objects.filter(section=section_id)
-#     # attendance = Attendance1.objects.all()
-#     dates = Attendance1.objects.values_list('date', flat=True).distinct().order_by('date')
-#     context = {
-#         'students': students,
-#         # 'attendance': attendance,
-#         'dates': dates,
-#         'page_title': 'Attendance'
-#     }
-    
-#     return render(request, "attendance/view_attendance.html", context)
 
 
 def view_attendance(request,session_id,level_id,section_id):
@@ -601,83 +557,18 @@ def view_attendance(request,session_id,level_id,section_id):
     paginator = Paginator(attendance_by_month_items, 1) # show 1 month per page
     page = request.GET.get('page')
     attendance_by_month_paginated = paginator.get_page(page)
-    
-    
-    
+       
     context = {
         'students': students,
         'attendance': attendance,
         'section_id':section_id,
         'session_id':session_id,
         'level_id':level_id,
-        # 'attendance':attendance,
         'attendance_by_month_paginated': attendance_by_month_paginated,
         'page_title': 'Attendance of {0} Section {1}'.format(section.level,section)
     }
     
     return render(request, "attendance/view_attendance.html", context)
-
-
-# def view_attendance(request, section_id, month=None, year=None):
-#     students = Student.objects.filter(section=section_id)
-#     attendance = Attendance1.objects.all()
-#     dates = Attendance1.objects.values_list('date', flat=True).distinct().order_by('date')
-#     filtered_dates = [date for date in dates if date.month == month and date.year == year]
-    
-#     context = {
-#         'students': students,
-#         'attendance': attendance,
-#         'dates': filtered_dates,
-#         'page_title': 'Attendance'
-#     }
-    
-#     return render(request, "attendance/view_attendance.html", context)
-
-
-
-# def create_attendance(request):
-#     if request.method == 'POST':
-#         date = request.POST['date']
-#         student_id = request.POST['student']
-#         present = request.POST['present'] == 'on'
-        
-#         student = Student.objects.get(id=student_id)
-#         attendance = Attendance1(date=date, student=student, present=present)
-#         attendance.save()
-        
-#         return redirect('view_attendance')
-        
-#     students = Student.objects.all()
-    
-#     context = {
-#         'students': students,
-#         'page_title': 'Create Attendance'
-#     }
-    
-#     return render(request, "attendance/create_attendance.html", context)
-
-# def create_attendance(request):
-#     if request.method == 'POST':
-#         date = request.POST['date']
-#         student_ids = request.POST.getlist('student')
-#         presents = request.POST.getlist('present')
-
-#         for i, student_id in enumerate(student_ids):
-#             student = Student.objects.get(id=student_id)
-#             present = presents[i] == 'on' if presents else False
-#             attendance = Attendance1(date=date, student=student, present=present)
-#             attendance.save()
-        
-#         return redirect('view_attendance')
-        
-#     students = Student.objects.all()
-    
-#     context = {
-#         'students': students,
-#         'page_title': 'Create Attendance'
-#     }
-    
-#     return render(request, "attendance/create_attendance.html", context)
 
 
 def create_attendance(request,session_id,section_id):
@@ -687,27 +578,37 @@ def create_attendance(request,session_id,section_id):
         section = Section.objects.get(id=section_id)
         session=Session.objects.get(id=session_id)
         
-        absent_students = [student.mothers_number for student in students if request.POST.get(str(student.id), False) != 'on']
-        print(absent_students)
-
-        # account_sid = 'AC16e242ea6947b3b5838ba62e2cb17916'
-        # auth_token = '6afb9fd5bb3844223afb286c2763f72a'
-        # client = Client(account_sid, auth_token)
-        # num=['+9779814968517','+9779812300815']
-        # for recipient in num:
-        #     message = client.messages.create(
-        #         body='\nDear Parents,\nYour son/daughter is absent today\n-Hamro Tuition.',
-        #         from_='+19288633622',
-        #         to=recipient
-        # )
         currentdate=date.today()
         if Attendance.objects.filter(date=attendate,session=session_id,section=section_id).exists():
             messages.error(request, 'Attendance for this date has already been recorded')
             return redirect('create_attendance',session_id=session_id,section_id=section_id)
         
+        
+        absent_students = ['+977' + student.mothers_number for student in students if request.POST.get(str(student.id), False) != 'on']
+        print(absent_students)
+        
+        account_sid = 'ACc7adfc54aa962490f8326591adae7cfb'
+        auth_token = 'eabb645591c8cdf68d1c15b71d85d9a2'
+        client = Client(account_sid, auth_token)
+        num=absent_students
+
+        for recipient in num:
+            try:
+                message = client.messages.create(
+                    body='\nDear Parents,\nYour son/daughter is absent today.\n-Hamro Tuition.',
+                    from_='+15075027373',
+                    to=recipient
+                )
+                print(f"SMS sent to {recipient} successfully!")
+            except Exception as e:
+                print(f"Failed to send SMS to {recipient}")
+            
+        
+        
         # if Attendance.objects.filter(date__gt=currentdate,session=session_id,section=section_id).exists():
         #     messages.error(request, 'Attendance for future date cannot be done')
         #     return redirect('create_attendance',session_id=session_id,section_id=section_id)
+        
         for student in students:
             student_id = student.id
             present = request.POST.get(str(student_id), False) == 'on'
@@ -721,46 +622,10 @@ def create_attendance(request,session_id,section_id):
     session=Session.objects.get(id=session_id)
     context = {
         'students': students,
-        # 'section_id':section_id,
         'page_title': 'Create Attendance of {0} Section {1}'.format(section.level,section)
     }
     
     return render(request, "attendance/create_attendance.html", context)
-
-
-
-
-# def edit_attendance(request,section_id, attendance_id):
-#     attendance = Attendance.objects.get(id=attendance_id)
-#     if request.method == 'POST':
-#         date = request.POST['date']
-#         students = Student.objects.filter(section=section_id)
-#         section = Section.objects.get(id=section_id)
-#         # if Attendance.objects.filter(date=date,section=section_id).exclude(id=attendance_id).exists():
-#         #     messages.error(request, 'Attendance for this date has already been recorded')
-#         #     return redirect('edit_attendance',section_id=section_id, attendance_id=attendance_id)
-#         for student in students:
-#             student_id = student.id
-#             present = request.POST.get(str(student_id), False) == 'on'
-#             attendance.date = date
-#             attendance.student = student
-#             attendance.section = section
-#             attendance.present = present
-#             attendance.save()
-            
-#         messages.error(request, 'Attendance for this date has been updated successfully.')
-#         return redirect('manage_attendance')
-    
-#     students = Student.objects.filter(section=section_id)
-
-#     context = {
-#         'attendance': attendance,
-#         'students': students,
-#         # 'section_id':section_id,
-#         'page_title': 'Edit Attendance'
-#     }
-
-#     return render(request, "attendance/edit_attendance.html", context)
 
 
 def edit_attendance(request,session_id,section_id):
@@ -771,7 +636,6 @@ def edit_attendance(request,session_id,section_id):
     try:
         
         if request.method == 'POST':
-            # Loop through all the attendance records for this date and update the present status
             for attendance in attendance_list:
                 present = request.POST.get(str(attendance.student.id))
                 if present == 'on':
@@ -807,14 +671,12 @@ def teacher_download_all_attendance(request,session_id,section_id):
         if month not in attendance_by_month:
             attendance_by_month[month] = []
         attendance_by_month[month].append(record)
-       
-    
+          
     context = {
         'students': students,
         'attendance': attendance,
         'section_id':section_id,
         'session_id':session_id,
-        # 'attendance_id':attendance_id,
         'attendance_by_month': attendance_by_month,
         'page_title': 'Attendance of {0} Section {1}'.format(section.level,section)
     }

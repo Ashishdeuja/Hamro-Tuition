@@ -21,6 +21,7 @@
         margin-left:2%;
       }
 </style>
+
 <section class="content">
     <div class="container-fluid">
         <div class="row">
@@ -32,14 +33,12 @@
                             <form method="get">
                                 {% csrf_token %}
                                 <div class="selection">
-                                
                                     <input type="text" name="q" placeholder="Search...">
                                     <input class='btn btn-success' type="submit" value='Search'/>
                                 </div>
                               </form>
                         </div>
                     </div>
-                    <!-- /.card-header -->
                     <div class="card-body">
                         <table id="example2" class="table table-bordered table-hover">
                             <thead class="thead-dark">
@@ -74,6 +73,7 @@
         </div>
     </div>
 </section>
+
 {% endblock content %}
 
 

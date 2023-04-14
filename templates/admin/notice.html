@@ -27,13 +27,7 @@
     </div>
   </form>
 <div class="container">
-    {% comment %} <div id="input-nav" class="p-2">Home</div> {% endcomment %}
-
-    {% comment %} {% if request.user.user_type == '1' %}
-    <div class="manage-wrap">
-        <a class="btn btn-primary" href="{% url 'add_notice' %}"><i class="fas fa-plus"></i>Add New Post</a>
-    </div>
-    {% endif %} {% endcomment %}
+    
 
 
     <style>
@@ -94,10 +88,7 @@
             margin-right:1rem;
             }
             
-            {% comment %} .col-md-4 {
-            flex: 1;
-            margin-bottom: 16px;
-            } {% endcomment %}
+            
 
             .col-md-4 {
                 width: 33.33%; /* or width: calc(100%/3); /
@@ -129,12 +120,7 @@
             border: 1px solid #ccc;
             }
             
-            {% comment %} .card-header-ne {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            } {% endcomment %}
-            
+          
             .news {
             background-color: #007bff;
             color: white;
@@ -237,31 +223,22 @@
         {% endfor %}
     </div>
 
-    {% comment %} {% else %}
-    <p>
-        <i class="far fa-frown fa-2x"></i>So empty.
-    </p> {% endcomment %}
 
     {% endif %}
 
 </div>
 <script>
- // Get all the dropdown buttons and menus
-const dropdownButtons = document.querySelectorAll('.dropdown > button');
-const dropdownMenus = document.querySelectorAll('.dropdown > .dropdown-menu');
+    const dropdownButtons = document.querySelectorAll('.dropdown > button');
+    const dropdownMenus = document.querySelectorAll('.dropdown > .dropdown-menu');
 
-// Add a click event listener to the document for each dropdown
-dropdownButtons.forEach((button, index) => {
-  document.addEventListener('click', (event) => {
-    // Check if the click target is inside or outside the current dropdown
-    const isInsideDropdown = button.contains(event.target) || dropdownMenus[index].contains(event.target);
-
-    // Hide the current dropdown if the click is outside the dropdown
-    if (!isInsideDropdown) {
-      dropdownMenus[index].classList.remove('show');
-    }
-  });
-});
+    dropdownButtons.forEach((button, index) => {
+    document.addEventListener('click', (event) => {
+        const isInsideDropdown = button.contains(event.target) || dropdownMenus[index].contains(event.target);
+        if (!isInsideDropdown) {
+        dropdownMenus[index].classList.remove('show');
+        }
+    });
+    });
 
 </script>
 {% endblock content %}

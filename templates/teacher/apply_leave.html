@@ -10,7 +10,7 @@
       align-items: center;
       margin-bottom: 20px;
       margin-right:50px;
-      {% comment %} margin-top:-3%; {% endcomment %}
+     
     }
     
     .selection label {
@@ -49,23 +49,10 @@
       cursor: pointer;
     }
   </style>
-{% comment %} <section class="content">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-md-12">
-                <!-- general form elements -->
-                <div class="card card-dark">
-                    <div class="card-header">
-                        <h3 class="card-title">{{page_title}}</h3>
-                    </div>
 
-                    {% include "login/form.html" with messages=messages  form=form button_text="Apply For Leave"%}
-                </div> {% endcomment %}
-                <!-- /.card -->
 
 <div class="card card-default">
     <div class="col-md-12">
-        <!-- general form elements -->
         <div class="card card-dark"style="float:right;">
             <div class="card-header">
               <a class="btn btn-primary" href="{% url 'apply_leave' %}"><i class="fas fa-plus"></i>Apply Leave</a>
@@ -91,8 +78,7 @@
               </select>
             </div>
           </form>
-   <div class="table">
-
+    <div class="table">
        <table class="table table-bordered table-hover">
            <thead class="thead-dark">
             <tr>
@@ -110,25 +96,21 @@
             <td>{{leave.end_date}}</td>
             <td>{{leave.reason|safe}}</td>
               <td>
-                  
                   {% if leave.status == 0 %}
                   <span class="btn btn-warning">Pending</span>
                   {% elif leave.status == 1 %}
                   <span class="btn btn-success">Accepted</span>
-                  
                     {% else %}
                     <span class="btn btn-danger">Rejected</span>
-                    
                     {% endif %}
-                    
                 </td>
             </tr>
             {% endfor %}
         </table>
+      </div>
     </div>
-    </div>
-            </div>
-        </div>
+  </div>
+</div>
     </div>
 </section>
 {% endblock content %}

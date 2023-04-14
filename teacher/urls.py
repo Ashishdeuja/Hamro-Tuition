@@ -10,7 +10,6 @@ urlpatterns = [
     path('manage/question/session',views.manage_question_batch,name='manage_question_batch'),
     path('manage/question/<int:session_id>/class',views.manage_question_class,name='manage_question'),
     path('manage/question/<int:session_id>/<int:level_id>',views.manage_question,name='manage_question_subject'),
-    
     path('view/questions/<int:session_id>/<int:level_id>/<int:subject_id>',views.view_question,name='view_questions'),
     path('add/notes/<int:session_id>/<int:subject_id>/',views.add_notes,name='add_notes'),
     path('manage/notes/<int:session_id>/class',views.manage_notes_class,name='manage_notes'),
@@ -18,8 +17,6 @@ urlpatterns = [
     path('manage/notes/<int:session_id>/<int:level_id>',views.manage_notes,name='manage_notes_subject'),
     path('edit/note/<int:note_id>/', views.edit_note, name='edit_note'),
     path('delete/note/<int:note_id>/', views.delete_notes, name='delete_note'),
-    
-    
     path('view/notes/<int:session_id>/<int:level_id>/<int:subject_id>/',views.view_notes,name='view_notes'),
     path('edit/question/<int:question_id>/', views.edit_question, name='edit_question'),
     path('delete/question/<int:question_id>/', views.delete_question, name='delete_question'),
@@ -33,7 +30,5 @@ urlpatterns = [
     path('create/attendance/<int:session_id>/<int:section_id>', views.create_attendance, name='create_attendance'),
     path('edit/attendance/<int:session_id>/<int:section_id>/', views.edit_attendance, name='edit_attendance'),
     path('download/all/attendance/<int:session_id>/<int:section_id>',views.teacher_download_all_attendance,name='teacher_download_all_attendance'),
-    
-
    
 ]

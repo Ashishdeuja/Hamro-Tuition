@@ -8,218 +8,154 @@
    <title>Hamro Tuition</title>
    <link rel="stylesheet" href="https://unpkg.com/swiper@8/swiper-bundle.min.css" />
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+   <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/alertify.min.css"/>
+   <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/default.min.css"/>
    <link rel="stylesheet" href="{% static 'css/index.css' %}">
-
 </head>
 <body>
-   
+   <header class="header">
+      <section class="flex">
+         {% for homecontent in home %}
+         <a href="#home" class="logo"><img src="{{homecontent.logo}}" alt="" style='height:50px;width:100px;'></a>
+         {% endfor %}
+         <nav class="navbar">
+            <a href="#home">Home</a>
+            <a href="#about">About</a>
+            <a href="#teachers">Founders</a>
+            <a href="#reviews">Testimonials</a>
+            <a href="#contact">Contact</a>
+            <a href="{% url 'loginpage' %}">Login</a>
+         </nav>
+         <div id="menu-btn" class="fas fa-bars"></div>
+      </section>
+   </header>
 
-<header class="header">
-
-   <section class="flex">
-      {% for homecontent in home %}
-      <a href="#home" class="logo"><img src="{{homecontent.logo}}" alt="" style='height:50px;width:100px;'></a>
-{% endfor %}
-      <nav class="navbar">
-         <a href="#home">Home</a>
-         <a href="#about">About</a>
-         <a href="#teachers">Founders</a>
-         <a href="#reviews">Testimonials</a>
-         <a href="#contact">Contact</a>
-         <a href="{% url 'loginpage' %}">Login</a>
-      </nav>
-
-      <div id="menu-btn" class="fas fa-bars"></div>
-
-   </section>
-
-</header>
-
-<!-- header section ends -->
-
-<!-- home section starts  -->
-
-
-<section class="home" id="home">
-   <br><br><br><br><br><br><br><br>
-  <div class="row">
-
-     <div class="content">
-       {% for homecontent in home %}
-        <h3>{{homecontent.name}} <span>Tuition</span></h3>
-        <a href="#contact" class="btn">contact us</a>
-       
-     </div>
-
-     <div class="image">
-        <img src="{{homecontent.home_image}}" alt="">
-     </div>
-
-  </div>
-  {% endfor %}
-</section><br><br><br><br><br><br><br><br><br><br><br><br><br>
-
-
-<section class="about" id="about">
-
-   <div class="row">
-    {% for homecontent in about %}
-      <div class="image">
-         {% if homecontent.about_image %}
-         <img src="{{homecontent.about_image}}" alt="">
-         {% endif %}
+   <section class="home" id="home">
+      <br><br><br><br><br><br><br><br>
+      <div class="row">
+         <div class="content">
+            {% for homecontent in home %}
+            <h3>{{homecontent.name}} <span>Tuition</span></h3>
+            <a href="#contact" class="btn">contact us</a>  
+         </div>
+         <div class="image">
+            <img src="{{homecontent.home_image}}" alt="">
+         </div>
       </div>
-
-      <div class="content">
-         <h3>why choose us?</h3>
-         <p>{{homecontent.description|safe}}</p>
-         <a href="#contact" class="btn">contact us</a>
-      </div>
-{% endfor %}
-   </div>
-
-</section><br><br><br><br><br><br><br><br><br><br><br><br><br>
+   {% endfor %}
+   </section><br><br><br><br><br><br><br><br><br><br><br><br><br>
 
 
-
-<section class="teachers" id="teachers">
-
-   <h1 class="heading">Founder <span>Member's</span></h1>
-
-   <div class="swiper teachers-slider">
-
-      <div class="swiper-wrapper">
-
-         {% for bods in bod %}
-         <div class="swiper-slide slide">
-            <img src="{{bods.image}}" alt="">
-            <div class="share">
-               <a href="{{bods.facebook_link}}" class="fab fa-facebook-f"></a>
-               <a href="{{bods.twiter_link}}" class="fab fa-twitter"></a>
-               <a href="{{bods.instagram_link}}" class="fab fa-instagram"></a>
-               <a href="{{bods.linkedin_link}}" class="fab fa-linkedin"></a>
-            </div>
-            <h3>{{bods.name}}</h3>
+   <section class="about" id="about">
+      <div class="row">
+         {% for homecontent in about %}
+         <div class="image">
+            {% if homecontent.about_image %}
+            <img src="{{homecontent.about_image}}" alt="">
+            {% endif %}
+         </div>
+         <div class="content">
+            <h3>why choose us?</h3>
+            <p>{{homecontent.description|safe}}</p>
+            <a href="#contact" class="btn">contact us</a>
          </div>
          {% endfor %}
-         
-         
-
       </div>
-
-      <div class="swiper-pagination"></div>
-
-   </div>
-
-</section><br><br><br><br><br><br>
+   </section><br><br><br><br><br><br><br><br><br><br><br><br><br>
 
 
 
-
-<section class="reviews" id="reviews">
-
-   <h1 class="heading"> student's <span>reviews</span></h1>
-
-   <div class="swiper reviews-slider">
-
-      <div class="swiper-wrapper">
-
-         {% for testimonials in testimonial %}
-        {% if testimonials.status == 1 %}
-         <div class="swiper-slide slide">
-            
-            <div class="user">
-               <img src="{{testimonials.image.url}}" alt="">
-               <div class="user-info">
-                  <h3>{{testimonials.student}}</h3>
-                  
+   <section class="teachers" id="teachers">
+      <h1 class="heading">Founder <span>Member's</span></h1>
+      <div class="swiper teachers-slider">
+         <div class="swiper-wrapper">
+            {% for bods in bod %}
+            <div class="swiper-slide slide">
+               <img src="{{bods.image}}" alt="">
+               <div class="share">
+                  <a href="{{bods.facebook_link}}" class="fab fa-facebook-f"></a>
+                  <a href="{{bods.twiter_link}}" class="fab fa-twitter"></a>
+                  <a href="{{bods.instagram_link}}" class="fab fa-instagram"></a>
+                  <a href="{{bods.linkedin_link}}" class="fab fa-linkedin"></a>
                </div>
+               <h3>{{bods.name}}</h3>
             </div>
-            <p>{{testimonials.description|safe}}</p>
+            {% endfor %}
          </div>
-         {% endif %}
-         {% endfor %}
-
+         <div class="swiper-pagination"></div>
       </div>
-
-      <div class="swiper-pagination"></div>
-
-   </div>
-
-</section><br><br><br><br><br><br>
+   </section><br><br><br><br><br><br>
 
 
-
-<section class="contact" id="contact">
-
-   <h1 class="heading"><span>contact</span> us</h1>
-
-   <div class="row">
-
-      <div class="image">
-         <img src="{% static 'images/contact.png' %}" alt="">
+   <section class="reviews" id="reviews">
+      <h1 class="heading"> student's <span>reviews</span></h1>
+      <div class="swiper reviews-slider">
+         <div class="swiper-wrapper">
+            {% for testimonials in testimonial %}
+             {% if testimonials.status == 1 %}
+            <div class="swiper-slide slide">  
+               <div class="user">
+                  <img src="{{testimonials.image.url}}" alt="">
+                  <div class="user-info">
+                     <h3>{{testimonials.student}}</h3>      
+                  </div>
+               </div>
+               <p>{{testimonials.description|safe}}</p>
+            </div>
+            {% endif %}
+            {% endfor %}
+         </div>
+         <div class="swiper-pagination"></div>
       </div>
+   </section><br><br><br><br><br><br>
 
-      <form action="" method="post">
-         {% csrf_token %} 
-         <span>Name</span>
-         <input type="text" required placeholder="Enter your full name" maxlength="50" name="name" class="box">
-         <span>Email</span>
-         <input type="email" required placeholder="Enter your valid email" maxlength="50" name="email" class="box">
-         <span>Message</span>
-         <textarea required rows="9" cols="50" placeholder="Enter your message" maxlength="500" class="box" name="message"></textarea>
-         <input type="submit" value="send message" class="btn" name="send">
-      </form>
-
-   </div>
-
-</section>
-
-
-<footer class="footer">
-
-   <section>
-
-      
-
-      <div class="credit">&copy; copyright @ 2022 by <span>mr. Ashish Deuja</span> | all rights reserved!</div>
-
+   <section class="contact" id="contact">
+      <h1 class="heading"><span>contact</span> us</h1>
+      <div class="row">
+         <div class="image">
+            <img src="{% static 'images/contact.png' %}" alt="">
+         </div>
+         <form action="" method="post">
+            {% csrf_token %} 
+            <span>Name</span>
+            <input type="text" required placeholder="Enter your full name" maxlength="50" name="name" class="box">
+            <span>Email</span>
+            <input type="email" required placeholder="Enter your valid email" maxlength="50" name="email" class="box">
+            <span>Message</span>
+            <textarea required rows="9" cols="50" placeholder="Enter your message" maxlength="500" class="box" name="message"></textarea>
+            <input type="submit" value="send message" class="btn" name="send">
+         </form>
+      </div>
    </section>
 
-</footer>
+   <footer class="footer">
+      <section>   
+          <div class="credit">&copy; copyright @ 2022 by <span>mr. Ashish Deuja</span> | all rights reserved!</div>
+      </section>
+   </footer>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<!-- swiper js link  -->
-<script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>
-
-<!-- custom js file link  -->
-<script src="{% static 'js/index.js' %}"></script>
-<!--Start of Tawk.to Script-->
-<script type="text/javascript">
-   var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
-   (function(){
-   var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
-   s1.async=true;
-   s1.src='https://embed.tawk.to/63da87e4474251287910ebf0/1go6q5m6s';
-   s1.charset='UTF-8';
-   s1.setAttribute('crossorigin','*');
-   s0.parentNode.insertBefore(s1,s0);
-   })();
+   <script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>
+   <script src="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
+   <script src="{% static 'js/index.js' %}"></script>
+   <script>
+      {% for message in messages %}
+      alertify.set('notifier','position', 'top-right');
+      var tickSymbol = '<span style="float: left;font-size: 36px;">&#x2705;</span>';
+      var messageText = '<span style="font-size: 24px; display: inline-block; margin-left: 25px; margin-top:-8rem;">{{message}}</span>';
+      alertify.success(tickSymbol + ' ' + messageText);    
+      {% endfor %}
    </script>
-   <!--End of Tawk.to Script-->
+   <script type="text/javascript">
+      var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+      (function(){
+      var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+      s1.async=true;
+      s1.src='https://embed.tawk.to/63da87e4474251287910ebf0/1go6q5m6s';
+      s1.charset='UTF-8';
+      s1.setAttribute('crossorigin','*');
+      s0.parentNode.insertBefore(s1,s0);
+      })();
+   </script>
 </body>
 </html>
 

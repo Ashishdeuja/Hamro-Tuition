@@ -47,7 +47,6 @@
         align-items: center;
         margin-bottom: 90px;
         margin-right:50px;
-        {% comment %} margin-top:-3%; {% endcomment %}
       }
       
       .selection label {
@@ -110,9 +109,6 @@
         max-width: 1200px;
       }
       
-      {% comment %} .content{
-        margin-top:3rem;
-      } {% endcomment %}
 </style>
 
 
@@ -129,15 +125,12 @@
 <div>
   <form method="get">
     {% csrf_token %}
-    
-       
-
-        <input type="date" class='aa' name="start_date" id="start_date"> to
-        <input type="date" name="end_date" id="end_date">
-        <button type="submit" onclick="displaySelectedDates()">Search</button>
+    <input type="date" class='aa' name="start_date" id="start_date"> to
+    <input type="date" name="end_date" id="end_date">
+    <button type="submit" onclick="displaySelectedDates()">Search</button>
     <div class="selection">
-    <label>Filter: </label>
-    <select name="status" onchange="this.form.submit()">
+      <label>Filter: </label>
+      <select name="status" onchange="this.form.submit()">
         <option value="">All</option>
         <option value="present" {% if request.GET.status == 'present' %}selected{% endif %}>Present</option>
         <option value="absent" {% if request.GET.status == 'absent' %}selected{% endif %}>Absent</option>
@@ -160,9 +153,7 @@
       </tr>
     </thead>
     <tbody>
-        {% comment %} {% for student in students %} {% endcomment %}
           {% for attend in records %}
-            {% comment %} {% if attend.student == student %} {% endcomment %}
               <tr>
                 <td>{{ attend.date }}</td>
                 <td>
@@ -174,8 +165,6 @@
                 </td>
                
               </tr>
-            {% comment %} {% endif %} {% endcomment %}
-          {% comment %} {% endfor %} {% endcomment %}
         {% endfor %}
       </tbody>
 
@@ -206,7 +195,7 @@
     const startDate = document.getElementById("start_date").value;
     const endDate = document.getElementById("end_date").value;
     const result = `Selected dates: ${startDate} to ${endDate}`;
-    alert(result); // or display result on the page using DOM manipulation
+    alert(result); 
   }
   </script>
 {% endblock content %}

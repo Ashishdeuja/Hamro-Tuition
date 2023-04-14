@@ -1,8 +1,5 @@
 
 {% load static %}
-{% comment %} {% block page_title %}{{page_title}}{% endblock page_title %} {% endcomment %}
-
-{% comment %} {% block content %} {% endcomment %}
 <style>
   .container-fluid {
     padding: 30px;
@@ -41,47 +38,41 @@
 
 
 
-{% comment %} <a style='float:right;margin-right:2rem;' href='{% url "edit_attendance" section_id attendance_id %}' class="btn btn-primary">Edit</a> {% endcomment %}
 <section class="content">
-    <div class="container-fluid">
-      
-      <h1>{{page_title}}</h1>
-
-{% for week, records in attendance_by_week.items %}
-  <h3 style='text-align:center;'>Attendance of {{ week }}</h3>
-  <table class='table'>
-    <thead>
-      <tr>
-        <th>Student Name</th>
-        <th>Date</th>
-        <th>Status</th>
-      </tr>
-    </thead>
-    <tbody>
-        {% for student in students %}
-          {% for attend in records %}
-            {% if attend.student == student %}
-              <tr>
-                <td>{{ student.admin.first_name }} {{ student.admin.last_name }}</td>
-                <td>{{ attend.date }}</td>
-                <td>
-                  {% if attend.present %}
-                    Present
-                  {% else %}
-                    Absent
-                  {% endif %}
-                </td>
-               
-              </tr>
-            {% endif %}
-          {% endfor %}
-        {% endfor %}
-      </tbody>
-
-  </table>
-  
-{% endfor %}
-</div>
+  <div class="container-fluid">
+    <h1>{{page_title}}</h1>
+    {% for week, records in attendance_by_week.items %}
+      <h3 style='text-align:center;'>Attendance of {{ week }}</h3>
+      <table class='table'>
+        <thead>
+          <tr>
+            <th>Student Name</th>
+            <th>Date</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+            {% for student in students %}
+              {% for attend in records %}
+                {% if attend.student == student %}
+                  <tr>
+                    <td>{{ student.admin.first_name }} {{ student.admin.last_name }}</td>
+                    <td>{{ attend.date }}</td>
+                    <td>
+                      {% if attend.present %}
+                        Present
+                      {% else %}
+                        Absent
+                      {% endif %}
+                    </td>
+                  </tr>
+                {% endif %}
+              {% endfor %}
+            {% endfor %}
+          </tbody>
+      </table>
+    {% endfor %}
+  </div>
 </section> 
 
 {% comment %} {% endblock content %} {% endcomment %}

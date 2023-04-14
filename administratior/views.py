@@ -50,13 +50,12 @@ def Login(request, **kwargs):
         else:   
             messages.error(request, "Enter the valid detalis")
             return redirect(reverse("loginpage"))
-            # return redirect("/")
+
         
 
 def Logout(request):
     if request.user != None:
         logout(request)
-        # return redirect("/")
     return redirect(reverse("homepage"))
 
 def admin_home_page(request):
@@ -91,7 +90,6 @@ def admin_home_page(request):
     level=Level.objects.all()
     batch_selected=request.GET.get('batch_id')
     level_selected=request.GET.get('level_id') 
-    
     
     section=Section.objects.filter(level=level_selected)
     section_data=[]
@@ -433,18 +431,6 @@ def subject_details(request, subject_id):
     return render(request, "admin/subject_details.html", context)
 
 
-
-# def subject_details_pdf(request, subject_id):
-#     subject = get_object_or_404(Subject, id=subject_id)
-#     html = render_to_string('admin/subject_details.html',
-#                             {'subject': subject})
-#     response = HttpResponse(content_type='application/pdf')
-#     response['Content-Disposition'] = f'filename={subject.id}.pdf'
-#     weasyprint.HTML(string=html).write_pdf(response,
-#         stylesheets=[weasyprint.CSS(
-#             settings.STATIC_ROOT + 'css/style.css')])
-#     return response
-
 def add_teacher(request):
     form = TeacherForm(request.POST or None, request.FILES or None)
     context = {
@@ -467,24 +453,13 @@ def add_teacher(request):
             filename = fs.save(passport.name, passport)
             passport_url = fs.url(filename)
             try:
-
                 user = CustomUser.objects.create_user(
                     email=email, password=password, user_type=2, first_name=first_name, last_name=last_name, profile_pic=passport_url)
-                    # email=email, password=password, user_type=2, first_name=first_name, last_name=last_name, profile_pic=passport_url,address=address,gender=gender)
-                # a=Level.objects.filter(level=level)[0]
-                # tech=Teacher.objects.create(admin=user,level=a)
-                # tech.save()
-                # print(tech.query())
-                
                 user.gender = gender
                 user.address = address
                 user.dob=dob
                 user.phone_number=phone_number
                 user.teacher.salary=salary
-                # a=Level.objects.filter(level=level)[0]
-                # tech=Teacher.objects.create(admin=user,level=a)
-                # tech.save()
-                
                 user.save()
                 messages.success(request, "Successfully Added")
                 return redirect(reverse('add_teacher'))
@@ -517,9 +492,6 @@ def edit_teacher(request,teacher_id):
             phone_number=form.cleaned_data.get('phone_number')
             salary=form.cleaned_data.get('salary')
             image = request.FILES.get('profile_pic') or None
-            # fs = FileSystemStorage()
-            # filename = fs.save(passport.name, passport)
-            # passport_url = fs.url(filename)
             try:
 
                 user = CustomUser.objects.get(id=teacher.admin.id)
@@ -553,8 +525,6 @@ def edit_teacher(request,teacher_id):
             context['form'] = form
             return render(request, 'admin/edit_teacher.html', context)
     else:
-        # user=CustomUser.objects.get(id=teacher_id)
-        # teacher=Teacher.objects.get(id=user.id)
 
         return render(request, 'admin/edit_teacher.html', context)
 
@@ -592,20 +562,6 @@ def delete_teacher(request, teacher_id):
 
 
 
-
-
-
-
-
-# class FileView(generic.ListView):
-#     model =Book
-#     template_name = 'book/file.html'
-#     context_object_name = 'books'
-
-#     def get_queryset(self):
-#     	return Book.objects.order_by('-id')
- 
-
 def manage_book(request):
     books = Book.objects.all().order_by('-updated_date')
     query = request.GET.get('q')
@@ -638,10 +594,7 @@ def add_book(request):
             cover = request.FILES.get('cover')
             pdf = request.FILES.get('pdf')
             fs = FileSystemStorage()
-            covername = fs.save(cover.name, cover)
-            filename = fs.save(pdf.name, pdf)
-            pdf_url = fs.url(filename)
-            cover_url=fs.url(covername)
+            
             try:
                 
                 book = Book()
@@ -650,8 +603,14 @@ def add_book(request):
                 book.year=year
                 book.publisher=publisher
                 book.desc=desc 
-                book.cover=cover_url
-                book.pdf=pdf_url
+                if cover != None:
+                    covername = fs.save(cover.name, cover)
+                    cover_url=fs.url(covername)
+                    book.cover=cover_url
+                if pdf != None:
+                    filename = fs.save(pdf.name, pdf)
+                    pdf_url = fs.url(filename)
+                    book.pdf=pdf_url
                 book.save()
                 messages.success(request, 'Book uploaded successfully')
                 return redirect('manage_book')
@@ -974,7 +933,6 @@ def validate_password(password):
 
 def admin_profile(request):
     admin = get_object_or_404(Admin, admin=request.user.id)
-   
     form = AdminForm(request.POST or None, request.FILES or None, instance=admin)
     dob=admin.admin.dob
     today = date.today()
@@ -995,8 +953,6 @@ def admin_profile(request):
                 phone_number=form.cleaned_data.get('phone_number')
                 address = form.cleaned_data.get('address')
                 gender = form.cleaned_data.get('gender')
-                # today = date.today()
-                # age = today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
                 password = form.cleaned_data.get('password') or None
                 image = request.FILES.get('profile_pic') or None
                 if password != None:
@@ -1023,7 +979,6 @@ def admin_profile(request):
                 custom_user.phone_number=phone_number
                 custom_user.address=address
                 custom_user.gender=gender
-                # custom_user.age=age
                 custom_user.save()
                 messages.success(request, "Profile Updated!")
                 return redirect(reverse('loginpage'))
@@ -1250,12 +1205,6 @@ def teacher_check_leave(request):
         last_name=request.user.last_name
         if (status == '1'):
             status = 1
-            # leave=Leave.objects.filter(id=id).select_related('teacher')
-            # print(leave[0].teacher.admin.email)
-            # print(leave[0].teacher)
-            # print(request.user.first_name)
-            # print(request.user.last_name)
-            
             email_to = email
             email_from = "hamrotuition13@gmail.com"
             email_subject = "Approved Leave Application"
@@ -1296,9 +1245,7 @@ def teacher_check_leave(request):
 def student_check_leave(request):
     if request.method != 'POST':
         student=Student.objects.all()
-        # teacher = get_object_or_404(Teacher)
         allLeave = Leave.objects.all()
-        
         
         start_date = request.GET.get('start_date')
         end_date = request.GET.get('end_date')
@@ -1351,13 +1298,7 @@ def student_check_leave(request):
         first_name=request.user.first_name
         last_name=request.user.last_name
         if (status == '1'):
-            status = 1
-            # leave=Leave.objects.filter(id=id).select_related('teacher')
-            # print(leave[0].teacher.admin.email)
-            # print(leave[0].teacher)
-            # print(request.user.first_name)
-            # print(request.user.last_name)
-            
+            status = 1 
             email_to = email
             email_from = "hamrotuition13@gmail.com"
             email_subject = "Approved Leave Application"
@@ -1393,13 +1334,6 @@ def student_check_leave(request):
             return False
 
 
-
-def view_timetable(request):
-    timetable = TimeTable.objects.all()
-    context = {'timetable': timetable}
-    return render(request, 'admin/timetable.html', context)
-
-
 @csrf_exempt
 def check_email(request):
     email = request.POST.get("email")
@@ -1421,6 +1355,7 @@ def home(request):
         email_body = "Dear Administratior,\n\n{0}.\n\nRegards,\n{1}\n{2}".format(request.POST.get('message'),request.POST.get('name'),request.POST.get('email'))
         
         send_mail(email_subject, email_body, email_from, [email_to], fail_silently=False) 
+        messages.success(request,'Message Sent Successfully')
         return redirect(reverse('homepage'))
     context = {
         'testimonial': Testimonial.objects.all(),
@@ -1463,7 +1398,6 @@ def testimonial(request):
                 testimonials = testimonials.filter(status=-1)
         context = {
             'testimonials': testimonials,
-            # 'teacher':teacher,
             'page_title': 'Testimonials '
         }
         return render(request, "admin/view_testimonials.html", context)
@@ -1786,8 +1720,6 @@ def manage_attendance_section(request,session_id,level_id):
 
 
 def section_view_students_attendance(request,session_id,level_id,section_id):
-    # student= Student.objects.all()
-    # students = Student.objects.filter(section=section_id)
     student=Student.objects.filter(section=section_id,session=session_id)
     section = Section.objects.get(id=section_id)
     
@@ -1896,7 +1828,7 @@ def view_daily_attendance_pdf(request,session_id,student_id):
         return HttpResponse("PDF creation error: {0}".format(pisaStatus.err))
     else:
         return response
-    # return render(request, 'attendance/daily_attendance_pdf.html', context)
+
     
 def view_weekly_attendance_pdf(request,session_id,student_id):
     student = get_object_or_404(Student, id=student_id)
@@ -1935,7 +1867,7 @@ def view_weekly_attendance_pdf(request,session_id,student_id):
         return HttpResponse("PDF creation error: {0}".format(pisaStatus.err))
     else:
         return response
-    # return render(request, 'attendance/weekly_attendance_pdf.html', context)
+
 
 def view_yearly_attendance_pdf(request,session_id,student_id):
     student = get_object_or_404(Student, id=student_id)
@@ -1961,7 +1893,6 @@ def view_yearly_attendance_pdf(request,session_id,student_id):
         else:
             attendance_by_month[month]['absent_days'] += 1
             absent_days += 1
-
     context = {
         'year': year,
         'attendance_by_month': attendance_by_month,
@@ -1982,7 +1913,7 @@ def view_yearly_attendance_pdf(request,session_id,student_id):
         return HttpResponse("PDF creation error: {0}".format(pisaStatus.err))
     else:
         return response
-    # return render(request, 'attendance/yearly_attendance_pdf.html', context)
+   
 
 def admin_view_all_attendance(request,session_id,section_id):
     students = Student.objects.filter(section=section_id)
@@ -2006,7 +1937,6 @@ def admin_view_all_attendance(request,session_id,section_id):
         'students': students,
         'attendance': attendance,
         'section_id':section_id,
-        # 'attendance_id':attendance_id,
         'attendance_by_month_paginated': attendance_by_month_paginated,
         'page_title': 'Attendance of {0} Section {1}'.format(section.level,section)
     }
@@ -2031,7 +1961,6 @@ def admin_download_all_attendance(request,session_id,section_id):
         'students': students,
         'attendance': attendance,
         'section_id':section_id,
-        # 'attendance_id':attendance_id,
         'attendance_by_month': attendance_by_month,
         'page_title': 'Attendance of {0} Section {1}'.format(section.level,section)
     }
@@ -2076,7 +2005,7 @@ def daily_all_attendance_pdf(request,session_id,section_id):
         return HttpResponse("PDF creation error: {0}".format(pisaStatus.err))
     else:
         return response
-    # return render(request, 'attendance/daily_attendance_pdf.html', context)
+  
     
 def weekly_all_attendance_pdf(request,session_id,section_id):
     students = Student.objects.filter(section=section_id)
@@ -2115,125 +2044,13 @@ def weekly_all_attendance_pdf(request,session_id,section_id):
         return HttpResponse("PDF creation error: {0}".format(pisaStatus.err))
     else:
         return response
-    # return render(request, 'attendance/weekly_attendance_pdf.html', context)
-
-# def yearly_all_attendance_pdf(request,section_id):
-    # student = Student.objects.filter(section=section_id)
-    # attendance = Attendance.objects.all().order_by('date')
-    # section = Section.objects.get(id=section_id)
-    # year = datetime.datetime.now().year
-    # attendance_by_month = {}
-    # total_days = 0
-    # present_days = 0
-    # absent_days = 0
-    # for record in attendance:
-    #     month = record.date.strftime("%B")
-    #     if month not in attendance_by_month:
-    #         attendance_by_month[month] = {
-    #             'total_days': 0,
-    #             'present_days': 0,
-    #             'absent_days': 0,
-    #         }
-    #     attendance_by_month[month]['total_days'] += 1
-    #     total_days += 1
-    #     if record.present==True:
-    #         attendance_by_month[month]['present_days'] += 1
-    #         present_days += 1
-    #     else:
-    #         attendance_by_month[month]['absent_days'] += 1
-    #         absent_days += 1
-
-    # context = {
-    #     'year': year,
-    #     'attendance_by_month': attendance_by_month,
-    #     'student': student,
-    #     'total_days': total_days,
-    #     'present_days': present_days,
-    #     'absent_days': absent_days,
-    #     'page_title': 'Yearly Attendance of {0} Section {1}'.format(section.level,section)
-    # }
-    # # template = get_template("attendance/yearly_all_attendance.html")
-    # # html = template.render(context)
-    # # response = HttpResponse(content_type='application/pdf')
-    # # filename = f"{section.level}_section_{section}_Yearly_Attendance_Report.pdf"
-    # # response['Content-Disposition'] = 'attachment; filename={}'.format(filename)
-    # # pisaStatus = pisa.CreatePDF(html, dest=response)
-
-    # # if pisaStatus.err:
-    # #     return HttpResponse("PDF creation error: {0}".format(pisaStatus.err))
-    # # else:
-    # #     return response
+   
     
 def yearly_all_attendance_pdf(request, session_id,section_id):
     students = Student.objects.filter(section=section_id,session=session_id)
     attendances = Attendance.objects.all()
     section = Section.objects.get(id=section_id)
     year = datetime.now().year
-    # attendance_by_month = {}
-    # for record in attendances:
-    #     month = record.date.strftime("%B")
-    #     if month not in attendance_by_month:
-    #         attendance_by_month[month] = {}
-    #     for student in students:
-    #         if student.id not in attendance_by_month[month]:
-    #             attendance_by_month[month][student.id] = {
-    #                 'total_days': 0,
-    #                 'present_days': 0,
-    #                 'absent_days': 0,
-    #             }
-    #         if record.student == student:
-    #             attendance_by_month[month][student.id]['total_days'] += 1
-    #             if record.present:
-    #                 attendance_by_month[month][student.id]['present_days'] += 1
-    #             else:
-    #                 attendance_by_month[month][student.id]['absent_days'] += 1
-
-    # table_rows = []
-    # for student in students:
-    #     total_days = 0
-    #     present_days = 0
-    #     absent_days = 0
-    #     month_data = []
-    #     for month, attendance in attendance_by_month.items():
-    #         month_total_days = attendance[student.id]['total_days']
-    #         month_present_days = attendance[student.id]['present_days']
-    #         month_absent_days = attendance[student.id]['absent_days']
-    #         month_data.append({
-    #             'month': month,
-    #             'total_days': month_total_days,
-    #             'present_days': month_present_days,
-    #             'absent_days': month_absent_days,
-    #         })
-    #         total_days += month_total_days
-    #         present_days += month_present_days
-    #         absent_days += month_absent_days
-
-
-    #     if total_days == 0:
-    #         attendance_percentage = 0
-    #     else:
-    #         attendance_percentage = round((present_days / total_days) * 100, 2)
-            
-       
-    #     table_rows.append({
-    #         'student': student,
-    #         'total_days': total_days,
-    #         'present_days': present_days,
-    #         'absent_days': absent_days,
-    #         'month_data': month_data,
-    #         'percentage': attendance_percentage,
-    #     })
-    
-    
-    # context = {
-    #     'year': year,
-    #     'table_rows': table_rows,
-    #     'attendance_by_month': attendance_by_month,
-    #     'page_title': 'Yearly Attendance of {0} Section {1}'.format(section.level, section),
-    # }
-    # print(table_rows)
-    
-    
     
     attendance_by_month = {}
     for record in attendances:
@@ -2298,7 +2115,6 @@ def yearly_all_attendance_pdf(request, session_id,section_id):
         'page_title': 'Yearly Attendance of {0} Section {1}'.format(section.level, section),
     }
     
-    
     template = get_template("attendance/yearly_all_attendance.html")
     html = template.render(context)
     response = HttpResponse(content_type='application/pdf')
@@ -2310,4 +2126,4 @@ def yearly_all_attendance_pdf(request, session_id,section_id):
         return HttpResponse("PDF creation error: {0}".format(pisaStatus.err))
     else:
         return response
-    # return render(request, 'attendance/yearly_all_attendance.html', context)
+   

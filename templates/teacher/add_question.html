@@ -22,8 +22,6 @@
 {% endblock custom_css %}
 {% block content %}
 
-
-
 <section class="content">
     <div class="wrapper">
         <div class="inputfield">
@@ -32,7 +30,6 @@
                     <div class="card-header">
                         <h3 class="card-title">{{page_title}}</h3>
                     </div>
-
                     {% include "login/form.html" with messages=messages  form=form button_text="Add Question"%}
                 </div>
 

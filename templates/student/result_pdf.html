@@ -1,10 +1,8 @@
 {% load static %}
 <style>
 
-
     .container {
-
-     display: flex;
+        display: flex;
         flex-direction: row;
         align-items: center;
         justify-content: center;
@@ -34,51 +32,39 @@
         font-size: 18px;
     }
 </style>
-{% comment %} <button onclick="myfun('pt')" class="btn btn-primary mt-3"style="float:right">Print Result</button> {% endcomment %}
+
 <div id='pt'class="container ">
-    
-        <div class="card" align="centre">
-           
-            {% comment %} <img src="{% static 'images/logo.png' %}" style='height:100px;width:500px' alt=""> {% endcomment %}
-            <h1 class='title'>Report Card</h1>
-            <div class="card-body">
-                <h3 class="title">{{test_results.subject.level}}</h3>
-                <h3 class="title">Subject: {{test_results.subject.subject_name}}<h3>
-                <h3 class="title" style='color:grey;'>Test Level: {{test_results.test_level}}<h3><br>
-                <h5 class="name">Student Name: {{test_results.student.admin.first_name}} {{test_results.student.admin.last_name}}<h3>
-                    <table>
-                        <tr>
-                            <td>Total Question</td>
-                            <td><span class="tot-question">{{test_results.total_question}}</span></td>
-                        </tr>
-                        <tr>
-                            <td>Correct Answer</td>
-                            <td><span class="tot-correct">{{test_results.correct_ans}}</span></td>
-                        </tr>
-                        <tr>
-                            <td>Wrong Answer</td>
-                            <td><span class="tot-wrong">{{test_results.incorrect_ans}}</span></td>
-                        </tr>
-                        <tr>
-                            <td>Percentage</td>
-                            <td><span class="tot-percentage">{{test_results.percentage}}%</span></td>
-                        </tr>
-                        <tr>
-                            <td>Your Total Score</td>
-                            <td><span class="tot-score">{{test_results.score}}</span></td>
-                        </tr>
-                
-                    </table>
-                {% comment %} <h5 class="card-title">Score: {{score}}</h5>
- 
-                <p class="card-text">Percentage: {{percentage}}%</p>
-                <p class="card-text">Time Taken: {{time}} seconds</p>
-                <p class="card-text">Correct answers: {{correct}}</p>
-                <p class="card-text">Incorrect answers: {{incorrect}}</p>
-                <p class="card-text">Total questions: {{total}}</p>{% endcomment %}
+    <div class="card" align="centre">
+        <h1 class='title'>Report Card</h1>
+        <div class="card-body">
+            <h3 class="title">{{test_results.subject.level}}</h3>
+            <h3 class="title">Subject: {{test_results.subject.subject_name}}<h3>
+            <h3 class="title" style='color:grey;'>Test Level: {{test_results.test_level}}<h3><br>
+            <h5 class="name">Student Name: {{test_results.student.admin.first_name}} {{test_results.student.admin.last_name}}<h3>
+                <table>
+                    <tr>
+                        <td>Total Question</td>
+                        <td><span class="tot-question">{{test_results.total_question}}</span></td>
+                    </tr>
+                    <tr>
+                        <td>Correct Answer</td>
+                        <td><span class="tot-correct">{{test_results.correct_ans}}</span></td>
+                    </tr>
+                    <tr>
+                        <td>Wrong Answer</td>
+                        <td><span class="tot-wrong">{{test_results.incorrect_ans}}</span></td>
+                    </tr>
+                    <tr>
+                        <td>Percentage</td>
+                        <td><span class="tot-percentage">{{test_results.percentage}}%</span></td>
+                    </tr>
+                    <tr>
+                        <td>Your Total Score</td>
+                        <td><span class="tot-score">{{test_results.score}}</span></td>
+                    </tr>
+                </table>
             </div> 
         </div>
-    {% comment %} </div> {% endcomment %}
 </div><br><br>
 
 

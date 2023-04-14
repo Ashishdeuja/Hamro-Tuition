@@ -26,19 +26,8 @@
 
 <section class="content">
     <div class="container-fluid">
-        {% comment %} <div class="row">
-            <div class="col-md-12">
-                <!-- general form elements -->
-                <div class="card card-dark">
-                    <div class="card-header">
-                        <h3 class="card-title">{{page_title}}</h3>
-                    </div>
-
-                    {% include "login/form.html" with messages=messages  form=form button_text="Add Testimonial"%}
-                </div> {% endcomment %}
-                <!-- /.card -->
-
-<div class="card card-default">
+        
+    <div class="card card-default">
     <div class="col-md-12">
         <form method="get">
             {% csrf_token %}
@@ -48,7 +37,7 @@
                 <input class='btn btn-success' type="submit" value='Search'/>
             </div>
           </form>
-        <!-- general form elements -->
+       
         <div class="card card-dark"style="float:right;margin-top:-35px;">
             <div class="card-header">
               <a class="btn btn-primary" href="{% url 'bod_page' %}"><i class="fas fa-plus"></i>Add</a>
@@ -81,23 +70,22 @@
                 <img class="img img-fluid mb-2" height="100" width="100"src="{{bods.image}}" alt="">
                 {% endif %}
             </td>
-                {% comment %} <td><img class="img img-fluid mb-2" height="100" width="100"
-                    src="{{leave.home_image.url}}" alt=""></td> {% endcomment %}
-                    <td>{{bods.name}}</td>
-                    <td>{{bods.facebook_link}}</td>
-                    <td>{{bods.twiter_link}}</td>
-                    <td>{{bods.instagram_link}}</td>
-                    <td>{{bods.linkedin_link}}</td>
-                    <td>
-                        <a class="btn btn-primary" href="{% url 'edit_bod_page' pk=bods.id %}">
-                            
-                            <ion-icon name="create-sharp"></ion-icon>
-                        </a> - 
-                        <a class="btn btn-danger" href="{% url 'delete_bod_page' pk=bods.id %}"onclick="return confirm('Are you sure you want to delete this bod content ?')">
-                            
-                            <ion-icon name="trash-bin-sharp"></ion-icon>
-                        </a>
-                    </td>
+               
+            <td>{{bods.name}}</td>
+            <td>{{bods.facebook_link}}</td>
+            <td>{{bods.twiter_link}}</td>
+            <td>{{bods.instagram_link}}</td>
+            <td>{{bods.linkedin_link}}</td>
+            <td>
+                <a class="btn btn-primary" href="{% url 'edit_bod_page' pk=bods.id %}">
+                    
+                    <ion-icon name="create-sharp"></ion-icon>
+                </a> - 
+                <a class="btn btn-danger" href="{% url 'delete_bod_page' pk=bods.id %}"onclick="return confirm('Are you sure you want to delete this bod content ?')">
+                    
+                    <ion-icon name="trash-bin-sharp"></ion-icon>
+                </a>
+            </td>
             </tr>
             {% endfor %}
         </table>

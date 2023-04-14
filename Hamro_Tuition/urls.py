@@ -25,6 +25,10 @@ urlpatterns = [
     path('tinymce/', include('tinymce.urls')),
     path("accounts/", include('django.contrib.auth.urls')),
     path('admin/', admin.site.urls),
+  
+]
+if settings.DEBUG:
+    urlpatterns = urlpatterns + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns = urlpatterns + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-    
-]+static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)+static(settings.STATIC_URL,document_root=settings.STATIC_ROOT)
+handler404 = "Hamro_Tuition.views.page_not_found_view"

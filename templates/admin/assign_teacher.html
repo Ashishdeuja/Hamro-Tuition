@@ -40,29 +40,6 @@
 </section>
 
 
-
-    {% comment %} <script>
-        const subjectSelect = document.getElementById('id_subject');
-        const levelSelect = document.getElementById('id_level');
-    
-        levelSelect.addEventListener('change', () => {
-          const levelId = levelSelect.value;
-          fetch(`/get_subjects?level=${levelId}`)
-            .then(response => response.json())
-            .then(data => {
-              subjectSelect.innerHTML = '';
-              data.forEach(subject => {
-                const option = document.createElement('option');
-                option.value = subject.id;
-                option.text = subject.name;
-                subjectSelect.add(option);
-              });
-            })
-            .catch(error => console.log(error));
-        });
-      </script> {% endcomment %}
-
-
 <script>
     const subjectSelect = document.getElementById('id_subject');
         const levelSelect = document.getElementById('id_level');

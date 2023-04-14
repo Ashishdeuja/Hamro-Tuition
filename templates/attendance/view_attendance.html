@@ -46,7 +46,7 @@
         align-items: center;
         margin-bottom: 20px;
         margin-right:50px;
-        {% comment %} margin-top:-3%; {% endcomment %}
+        
       }
       
       .selection label {
@@ -90,7 +90,6 @@
 <div class='attend'>
   <a href='{% url "create_attendance" session_id section_id %}' class="btn btn-primary">Take</a>
   <a href='{% url "edit_attendance" session_id section_id %}' class="btn btn-primary">Edit</a>
-  {% comment %} <a href='{% url "teacher_download_all_attendance" session_id section_id %}' class="btn btn-success">Report</a> {% endcomment %}
   <div class="btn-group" role="group" >
     <button id="btnGroupDrop1" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
       Reports
@@ -107,36 +106,6 @@
 <br/><br/><br/>
   <section class="content">
     <div class="container-fluid">
-       {% comment %}  <table class='table'>
-            <thead>
-                <tr>
-                  <th>Student Name</th>
-                  <th>Date</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for student in students %}
-                  {% for attend in attendance %}
-                    {% if attend.student == student %}
-                      <tr>
-                        <td>{{ student.admin.first_name }} {{ student.admin.last_name }}</td>
-                        <td>{{ attend.date }}</td>
-                        <td>
-                          {% if attend.present %}
-                            Present
-                          {% else %}
-                            Absent
-                          {% endif %}
-                        </td>
-                      </tr>
-                    {% endif %}
-                  {% endfor %}
-                {% endfor %}
-              </tbody>
-          </table>
-    </div>
-</section> {% endcomment %}
 
 <div>
   <form method="get">

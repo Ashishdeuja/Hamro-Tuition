@@ -81,7 +81,6 @@
                         <span class="sub-title">Manage Session</span>
                     </a>   
                 </li>
-                
             </ul>
         </li>
         <li>
@@ -543,7 +542,6 @@
         <li>
             {% url 'student_home_page' as student_home_page %}
             <a href="{{student_home_page}}" class="nav-link {% if student_home_page == request.path %} active {% endif %}">
-            {% comment %} <a href="#"> {% endcomment %}
                 <span class="icon">
                     <ion-icon name="home-sharp"></ion-icon>
                 </span>
@@ -647,7 +645,6 @@
             </a>
          </li>
     </ul>
-    <!-- /.content -->
     {% block content %}
 
     {% endblock content %}

@@ -1,3 +1,4 @@
+{% load widget_tweaks %}
 <style>
     label {
         margin-bottom: 3px;
@@ -7,12 +8,10 @@
     }
 </style>
 
-<form role="form" method="POST" enctype="multipart/form-data">
+<form id="myForm" role="form" method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
     {% csrf_token %}
     {{form.media}}
     <div class="card-body">
-
-
         {% for field in form  %}
         <div class="form-group">
             {% if field.field.required %}
@@ -20,22 +19,14 @@
             {% else %}
             {{ field.label_tag }}
             {% endif %}
-            {% comment %} {{field.label_tag}} {% endcomment %}
-            {{field}}
+            {{ field }}
             {% if field.errors %}
-                <div class="text-danger">{{ field.label_tag }} {{ field.errors }}</div>
+                <div class="text-danger">{{ field.label }} is required.</div>
             {% endif %}
-            
-
+            <div class="text-danger" id="{{ field.auto_id }}_error"></div>
         </div>
         {% endfor %}
-
-
-
-
     </div>
-    <!-- /.card-body -->
-
     <div class="card-footer">
         <button type="submit" class="btn btn-success btn-block">
             {% if button_text %}
@@ -43,7 +34,15 @@
             {% else %}
             Submit
             {% endif %}
-
         </button>
     </div>
 </form>
+
+<script>
+    var formFields = document.querySelectorAll('form input, form select, form textarea');
+    for (var i = 0; i < formFields.length; i++) {
+        formFields[i].removeAttribute('required');
+    }
+</script>
+
+

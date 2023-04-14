@@ -3,55 +3,46 @@
 {% load widget_tweaks %}
 {% block page_title %}{{page_title}}{% endblock page_title %}
 
-
-
-
 {% block content %}
 <style>
-    /* CSS */
-
 .card-profile-image {
-width: 100%;
-text-align: center;
-margin-top: 20px;
+    width: 100%;
+    text-align: center;
+    margin-top: 20px;
 }
 
 .card-profile-image img {
-width: 150px;
-height: 150px;
-border-radius: 50%;
-object-fit: cover;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
 }
 
 .card-profile-image a {
-display: block;
+    display: block;
 }
 
-/* Responsive CSS */
 
 @media (max-width: 991px) {
-.card-profile-image img {
-width: 100px;
-height: 100px;
+    .card-profile-image img {
+        width: 100px;
+        height: 100px;
 }
 }
 
 .image-info{
     width: 25%; 
-    float: left; 
-    {% comment %} padding: 20px;
-    border-radius: 10px; {% endcomment %}
-    
+    float: left;   
 }
 .image-content{
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding: 10px 14px;
-        position: relative;
-        row-gap: 5px;
-        padding: 25px 0;
-      }
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 14px;
+    position: relative;
+    row-gap: 5px;
+    padding: 25px 0;
+}
 .card-image{
     position: relative;
     height: 150px;
@@ -64,7 +55,6 @@ height: 100px;
     width: 100%;
     object-fit: cover;
     border-radius: 50%;
-    {% comment %} border: 1px solid #4070F4; {% endcomment %}
   }
 @media (max-width: 991px) {
     .image-info {

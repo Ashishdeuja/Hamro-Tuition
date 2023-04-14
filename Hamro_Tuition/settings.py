@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-8g_!_o_b3$29-@0w25@mby1)$(ix2noa6yt%960#@(k@bkb@2f
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["127.0.0.1", "192.168.1.103", "localhost"]
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -154,15 +154,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'administratior.CustomUser'
 AUTHENTICATION_BACKENDs = ['administratior.EmailBackend.EmailBackend']
 
-
-
-
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 STATICFILES_DIRS = [
    os.path.join(BASE_DIR, 'static')
 ]
 
-
-KHALTI_SECRET_KEY = "9cf26609a75a447ba55db50b47b544f1"
-KHALTI_VERIFY_URL = "https://khalti.com/api/v2/payment/verify/"

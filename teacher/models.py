@@ -32,12 +32,7 @@ class Test_Resut(models.Model):
     score=models.CharField(max_length=30)
     test_level=models.CharField(max_length=50)
 
-class NoteRoom(models.Model):
-    code = models.CharField(max_length = 10,default='0000000')
-    level=models.ForeignKey(Level,on_delete=models.CASCADE)
 
-    def __str__(self):
-        return self.code
 
 # class Image(models.Model):
 #     images=models.ImageField(upload_to='notes/images/', null=True, blank=True)
@@ -45,10 +40,8 @@ class NoteRoom(models.Model):
 
 class Notes(models.Model):
     title = models.CharField(max_length=200)
-    # description = models.CharField(max_length=200)
     description=RichTextField()
     images=models.ImageField(upload_to='notes/images/', null=True, blank=True)
-    # images = models.ManyToManyField(Image)
     file = models.FileField(upload_to='notes/pdfs/', null=True, blank=True) 
     subject = models.ForeignKey(Subject,on_delete=models.CASCADE,null=True,blank=True)
     session = models.ForeignKey(Session,on_delete=models.CASCADE,null=True,blank=True)
@@ -72,10 +65,7 @@ class Leave(models.Model):
     def __str__(self):
         return self.reason
 
-class Feedback(models.Model):
-    message=models.TextField()
-    updated_date = models.DateTimeField(auto_now=True, auto_now_add=False, null=True)
-    upload_time = models.DateTimeField(auto_now=False, auto_now_add=True, null=True)
+
 
     
 class Attendance(models.Model):

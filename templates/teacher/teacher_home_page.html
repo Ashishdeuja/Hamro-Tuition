@@ -1,215 +1,186 @@
-{% extends 'base.html' %}
-{% load static %}
-{% block page_title %}{{page_title}}{% endblock page_title %}
+{% extends 'base.html' %} 
+{% load static %} 
+{% block page_title %}{{page_title}}{% endblock page_title %} 
 {% block content %}
 
 <style>
-    .MainCard {
-        width: 100%;
-        padding: 0 20px;
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        grid-gap: 20px;
-      }
-      .MainCard .Card {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 20px;
-        background: #fff;
-        border-radius: 10px;
-        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.9);
-        transition: 0.2s;
-      }
-      .Card:hover {
-        background: #9d9d9d;
-        color: #fff;
-        cursor: pointer;
-      }
-      .Card .num {
-        color: #2c2c56;
-        font-size: 35px;
-        font-weight: 500;
-      }
-      .Card .name {
-        font-weight: 600;
-        font-size: 20px;
-        color: black;
-      }
-      .Card:hover .name {
-        color: #fff;
-      }
-      .Card .icon  {
-        color:#2c2c56;
-        font-size: 45px;
-      }
-      .MainNotice {
-        display: grid;
-        grid-template-columns:  1fr 2fr;
-        grid-gap: 20px;
-        width: 100%;
-        padding: 20px;
-        padding-top: 0;
-      }
-      .MainNotice .Notice {
-        background: #fff;
-        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.9);
-        padding: 20px;
-        border-radius: 10px;
-        width: 100%;
-      }
-      .MainNotice .Notice h1 {
-        text-align: center;
-        font-weight:bold;
-        color: #333;
-        margin-bottom: 10px;
-        font-size: 20px;
-      }
-      
-      .news {
-        background-color: #007bff;
-        color: white;
-        }
-        
-        .events {
-        background-color: #6f42c1;
-        color: white;
-        }
-        
-        .p-2 {
-        padding: 16px;
-        }
-        
-.p-0{
-    text-align:center;
-}
-        .bg-purple {
-            background-color: #6f42c1;
-        }
+  .MainCard {
+    width: 100%;
+    padding: 0 20px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 20px;
+  }
+  .MainCard .Card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.9);
+    transition: 0.2s;
+  }
+  .Card:hover {
+    background: #9d9d9d;
+    color: #fff;
+    cursor: pointer;
+  }
+  .Card .num {
+    color: #2c2c56;
+    font-size: 35px;
+    font-weight: 500;
+  }
+  .Card .name {
+    font-weight: 600;
+    font-size: 20px;
+    color: black;
+  }
+  .Card:hover .name {
+    color: #fff;
+  }
+  .Card .icon {
+    color: #2c2c56;
+    font-size: 45px;
+  }
+  .MainNotice {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    grid-gap: 20px;
+    width: 100%;
+    padding: 20px;
+    padding-top: 0;
+  }
+  .MainNotice .Notice {
+    background: #fff;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.9);
+    padding: 20px;
+    border-radius: 10px;
+    width: 100%;
+  }
+  .MainNotice .Notice h1 {
+    text-align: center;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 10px;
+    font-size: 20px;
+  }
 
-        .card-header-ne {
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            
-        }
+  .news {
+    background-color: #007bff;
+    color: white;
+  }
 
-        .card-header-ne .title {
-            vertical-align: middle;
-        }
+  .events {
+    background-color: #6f42c1;
+    color: white;
+  }
 
-      
-                
-                
-                
-                
-                .date-wrapper {
-                    display: flex;
-                    align-items: center;
-                    padding: 8px 16px;
-                    font-size: 12px;
-                    color: #6c757d;
-                    background:#efeff5;
-                    }
-                    
-                    .date-wrapper ion-icon {
-                    margin-right: 8px;
-                    }
-            .bg-white {
-            background-color: white;
-            }
-            
-            .border {
-            border: 1px solid #ccc;
-            }
+  .p-2 {
+    padding: 16px;
+  }
 
-    </style>
+  .p-0 {
+    text-align: center;
+  }
+  .bg-purple {
+    background-color: #6f42c1;
+  }
 
+  .card-header-ne {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
 
-    <div class="MainCard">
+  .card-header-ne .title {
+    vertical-align: middle;
+  }
 
-        <div class="Card">
-            <div class="content">
-                <div class="num">{{subjects}}</div>
-                <div class="name">Subjects</div>
-            </div>
-            <div class="icon">
-                <ion-icon name="apps-sharp"></ion-icon>
-            </div>
-        </div>
+  .date-wrapper {
+    display: flex;
+    align-items: center;
+    padding: 8px 16px;
+    font-size: 12px;
+    color: #6c757d;
+    background: #efeff5;
+  }
 
-        <div class="Card">
-            <div class="content">
-                <div class="num">{{total_leave}}</div>
-                <div class="name">Total Leave</div>
-            </div>
-            <div class="icon">
-                <ion-icon name="walk-sharp"></ion-icon>
-            </div>
-        </div>
+  .date-wrapper ion-icon {
+    margin-right: 8px;
+  }
+  .bg-white {
+    background-color: white;
+  }
 
-        <div class="Card">
-            <div class="content">
-                <div class="num">{{books}}</div>
-                <div class="name">Books</div>
-            </div>
-            <div class="icon">
-                <ion-icon name="book-sharp"></ion-icon>
-            </div>
-        </div>
+  .border {
+    border: 1px solid #ccc;
+  }
+</style>
 
-
-        
-
-
-
-    </div><br/><br/>
-
-
-    <div class="MainNotice">
-
-        <div class="Notice">
-            <h1>Latest Notice</h1>
- 
-                <div class="row">
-                    {% for notice in notices %}
-                    <div style="margin-bottom:25px;">
-                        <div class="bg-white border">
-                            <div class="card-header-ne {% if notice.posted_as == 'News' %}news{% else %}events{% endif %} p-2">
-                                <span class="p-0">
-                                    {{ notice.title|title }}
-                                </span>
-                                
-                            </div>
-            
-                            <div class="p-2">{{ notice.summary }}</div>
-            
-                            <div class="date-wrapper">
-                                <ion-icon name="calendar-sharp"></ion-icon>
-            
-                                {{ notice.updated_date|timesince }} ago
-                            </div>
-            
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-        </div>
- 
-
-        <div class="Notice">
-            <h1>Current Year ({{current_year}}) Leave Record</h1>
-            <div>
-                <canvas id="myChart"></canvas>
-            </div>
-        </div>
-
-
+<div class="MainCard">
+  <div class="Card">
+    <div class="content">
+      <div class="num">{{subjects}}</div>
+      <div class="name">Subjects</div>
     </div>
-    
-{% endblock content %}
-{% block custom_js %}
+    <div class="icon">
+      <ion-icon name="apps-sharp"></ion-icon>
+    </div>
+  </div>
+  <div class="Card">
+    <div class="content">
+      <div class="num">{{total_leave}}</div>
+      <div class="name">Total Leave</div>
+    </div>
+    <div class="icon">
+      <ion-icon name="walk-sharp"></ion-icon>
+    </div>
+  </div>
+  <div class="Card">
+    <div class="content">
+      <div class="num">{{books}}</div>
+      <div class="name">Books</div>
+    </div>
+    <div class="icon">
+      <ion-icon name="book-sharp"></ion-icon>
+    </div>
+  </div>
+</div>
+<br /><br />
+
+<div class="MainNotice">
+  <div class="Notice">
+    <h1>Latest Notice</h1>
+    <div class="row">
+      {% for notice in notices %}
+      <div style="margin-bottom: 25px">
+        <div class="bg-white border">
+          <div
+            class="card-header-ne {% if notice.posted_as == 'News' %}news{% else %}events{% endif %} p-2"
+          >
+            <span class="p-0"> {{ notice.title|title }} </span>
+          </div>
+          <div class="p-2">{{ notice.summary }}</div>
+          <div class="date-wrapper">
+            <ion-icon name="calendar-sharp"></ion-icon>
+            {{ notice.updated_date|timesince }} ago
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="Notice">
+    <h1>Current Year ({{current_year}}) Leave Record</h1>
+    <div>
+      <canvas id="myChart"></canvas>
+    </div>
+  </div>
+</div>
+
+{% endblock content %} {% block custom_js %}
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -237,7 +208,5 @@
       }
     }
   });
-
-
 </script>
 {% endblock custom_js %}

@@ -10,7 +10,6 @@
         align-items: center;
         margin-bottom: 20px;
         margin-right:50px;
-        {% comment %} margin-top:-3%; {% endcomment %}
       }
       
       .selection label {
@@ -53,7 +52,6 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-12">
-                <!-- general form elements -->
                 <div class="card card-dark">
                     <div class="card-header">
                         <h3 class="card-title">{{page_title}}</h3>
@@ -88,9 +86,8 @@
                                 <th>Submitted On</th>
                                 <th>Status</th>
                                 <th>Action</th>
-
                             </tr>
-                        </thead>
+                            </thead>
                             {% for testimonial in  testimonials %}
                               <tr>
                                   <td>{{forloop.counter}}</td>
@@ -102,8 +99,6 @@
                                     {% endif %}
                                 </td>
                                 <td>{{testimonial.description|safe}}</td>
-                                  
-
                                   <td>{{testimonial.created_at}}</td>
                                   <td>
                                     {% if testimonial.status == 1 %}
@@ -123,7 +118,6 @@
                                     {% endif %}
                                   </td>
                                   <td>
-
                                     {% if testimonial.status == 0 %}
                                     <form method="post" action="#" id="myForm">
                                         <input type="hidden" name="id" value="{{ testimonial.id }}">
@@ -131,18 +125,12 @@
                                         <button type="submit" name="status" value="-1" id="reject-button" class='btn btn-danger'>Reject</button>
                                     </form>
                                     {% endif %}
-                                     </td>
-                                  
-                                      
-                                    
-                       
+                                  </td>
                               </tr>
                             {% endfor %}
                         </table>
                     </div>
-                    </div>
-                <!-- /.card -->
-
+                  </div>
             </div>
         </div>
     </div>
@@ -150,31 +138,6 @@
 
 {% endblock content %}
 {% block custom_js %}
-{% comment %} <script>
-    var approveButtons = document.querySelectorAll("button[name='status'][value='1']");
-    var rejectButtons = document.querySelectorAll("button[name='status'][value='-1']");
-    approveButtons.forEach(function(button) {
-        button.addEventListener("click", function(e) {
-            e.preventDefault();
-            var form = button.closest("form");
-            var id = form.elements["id"].value;
-            alert("Leave request has been approved.");
-            //form.submit();
-            
-        });
-    });
-    rejectButtons.forEach(function(button) {
-        button.addEventListener("click", function(e) {
-            e.preventDefault();
-            var form = button.closest("form");
-            var id = form.elements["id"].value;
-            alert("Leave request has been rejected.");
-            //form.submit();
-            button.innerHTML = "Rejected";
-        });
-    });
-</script>  {% endcomment %}
-
 <script>
     $(document).ready(function(){
         var buttons = document.querySelectorAll("button[name='status']");
@@ -185,13 +148,11 @@
                 var id = form.elements["id"].value;
                 if(button.value == "1"){
                   alert("Leave request has been approved.");
-                  //form.submit();
                   button.innerHTML = "Approved";
                   
                 }
                 else if(button.value == "-1"){
                   alert("Leave request has been rejected.");
-                  //form.submit();
                   button.innerHTML = "Rejected";
                 }
             });

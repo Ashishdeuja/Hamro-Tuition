@@ -27,39 +27,32 @@
 
 <section class="content">
     <div class="container">
-      {% comment %} <img src="{% static 'images/logo.png' %}" style='height:100px;width:500px' alt=""> {% endcomment %}
-{% for week, records in attendance_by_week.items %}
-  <h3 style='text-align:center;'>Attendance of {{student}} ({{ week }})</h3>
-  <table class='table'>
-    <thead>
-      <tr>
-        <th>Date</th>
-        <th>Status</th>
-      </tr>
-    </thead>
-    <tbody>
-        {% comment %} {% for student in students %} {% endcomment %}
-          {% for attend in records %}
-            {% comment %} {% if attend.student == student %} {% endcomment %}
-              <tr>
-                <td>{{ attend.date }}</td>
-                <td>
-                  {% if attend.present %}
-                    Present
-                  {% else %}
-                    Absent
-                  {% endif %}
-                </td>
-               
-              </tr>
-            {% comment %} {% endif %} {% endcomment %}
-          {% comment %} {% endfor %} {% endcomment %}
-        {% endfor %}
-      </tbody>
-
-  </table>
-{% endfor %}
-</div>
+      {% for week, records in attendance_by_week.items %}
+        <h3 style='text-align:center;'>Attendance of {{student}} ({{ week }})</h3>
+        <table class='table'>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+              {% for attend in records %}
+                <tr>
+                  <td>{{ attend.date }}</td>
+                  <td>
+                    {% if attend.present %}
+                      Present
+                    {% else %}
+                      Absent
+                    {% endif %}
+                  </td>
+                </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% endfor %}
+  </div>
 </section> 
 
 {% comment %} {% endblock content %} {% endcomment %}

@@ -47,7 +47,7 @@ class CustomUser(AbstractUser):
     GENDER = [("M", "Male"), ("F", "Female")]
     
     
-    username = None  # Removed username, using email instead
+    username = None  
     email = models.EmailField(unique=True)
     user_type = models.CharField(default=1, choices=USER_TYPE, max_length=1)
     gender = models.CharField(max_length=1, choices=GENDER)
@@ -55,7 +55,7 @@ class CustomUser(AbstractUser):
     address = models.TextField()
     dob = models.DateField(null=True)
     phone_number = models.CharField(max_length=16, validators=[phone_validator])
-    fcm_token = models.TextField(default="")  # For firebase notifications
+    fcm_token = models.TextField(default="") 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     USERNAME_FIELD = "email"
@@ -172,22 +172,6 @@ class NewsAndEvents(models.Model):
     def __str__(self):
         return self.title
 
-
-class TimeTable(models.Model):
-    DAY_CHOICES = (
-        ('Monday', 'Monday'),
-        ('Tuesday', 'Tuesday'),
-        ('Wednesday', 'Wednesday'),
-        ('Thursday', 'Thursday'),
-        ('Friday', 'Friday'),
-        ('Saturday', 'Saturday'),
-        ('Sunday', 'Sunday'),
-    )
-    day = models.CharField(max_length=20, choices=DAY_CHOICES)
-    start_time = models.TimeField()
-    end_time = models.TimeField()
-    class_name = models.CharField(max_length=50)
-    teacher = models.CharField(max_length=50)
 
 
 class About(SingletonModel):

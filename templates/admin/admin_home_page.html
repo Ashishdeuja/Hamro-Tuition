@@ -169,8 +169,7 @@
     </style>
 
 
-    <div class="MainCard">
-
+      <div class="MainCard">
         <div class="Card">
             <div class="content">
                 <div class="num">{{students}}</div>
@@ -180,7 +179,6 @@
                 <ion-icon name="people-sharp"></ion-icon>
             </div>
         </div>
-
         <div class="Card">
             <div class="content">
                 <div class="num">{{teachers}}</div>
@@ -190,7 +188,6 @@
                 <ion-icon name="person-sharp"></ion-icon>
             </div>
         </div>
-
         <div class="Card">
             <div class="content">
                 <div class="num">{{books}}</div>
@@ -200,8 +197,6 @@
                 <ion-icon name="book-sharp"></ion-icon>
             </div>
         </div>
-
-
         <div class="Card">
             <div class="content">
                 <div class="num">{{subjects}}</div>
@@ -211,44 +206,31 @@
                 <ion-icon name="apps-sharp"></ion-icon>
             </div>
         </div>
+      </div><br/><br/>
 
-
-
-
-    </div><br/><br/>
-
-
-    <div class="MainNotice">
-
+      <div class="MainNotice">
         <div class="Notice">
             <h1>Latest Notice</h1>
- 
-                <div class="row">
-                    {% for notice in notices %}
-                    <div style="margin-bottom:25px;">
-                        <div class="bg-white border">
-                            <div class="card-header-ne {% if notice.posted_as == 'News' %}news{% else %}events{% endif %} p-2">
-                                <span class="p-0">
-                                    {{ notice.title|title }}
-                                </span>
-                                
-                            </div>
-            
-                            <div class="p-2">{{ notice.summary }}</div>
-            
-                            <div class="date-wrapper">
-                                <ion-icon name="calendar-sharp"></ion-icon>
-            
-                                {{ notice.updated_date|timesince }} ago
-                            </div>
-            
+            <div class="row">
+                {% for notice in notices %}
+                <div style="margin-bottom:25px;">
+                    <div class="bg-white border">
+                        <div class="card-header-ne {% if notice.posted_as == 'News' %}news{% else %}events{% endif %} p-2">
+                            <span class="p-0">
+                                {{ notice.title|title }}
+                            </span> 
+                        </div>
+                        <div class="p-2">{{ notice.summary }}</div>
+                        <div class="date-wrapper">
+                            <ion-icon name="calendar-sharp"></ion-icon>
+                            {{ notice.updated_date|timesince }} ago
                         </div>
                     </div>
-                    {% endfor %}
                 </div>
+                {% endfor %}
+            </div>
         </div>
  
-
         <div class="Notice">
             <h1>Current Year ({{current_year}}) Leave Record</h1>
             <div>
@@ -275,8 +257,6 @@
                 <option value="{{ level.id }}">{{ level.level }}</option>
                 {% endfor %}
               </select>
-          
-          {% comment %} <input type="submit" class="btn btn-success"/> {% endcomment %}
             </form>
           </div>
           <canvas id="attendanceChart"></canvas>
@@ -284,14 +264,12 @@
  
 
         <div class="Chart">
-            <h1>Total Enrolled Student in Each Class </h1>
-            <div>
-                <canvas id="chart"></canvas>
-            </div>
+          <h1>Total Enrolled Student in Each Class </h1>
+          <div>
+              <canvas id="chart"></canvas>
+          </div>
         </div>
-
-
-    </div>
+      </div>
   
 {% endblock content %}
 {% block custom_js %}

@@ -8,7 +8,7 @@
 
 {% block content %}
 <style>
-    /* CSS */
+
 
 .card-profile-image {
 width: 100%;
@@ -39,8 +39,7 @@ height: 100px;
 .image-info{
     width: 25%; 
     float: left; 
-    {% comment %} padding: 20px;
-    border-radius: 10px; {% endcomment %}
+   
     
 }
 .image-content{
@@ -64,7 +63,7 @@ height: 100px;
     width: 100%;
     object-fit: cover;
     border-radius: 50%;
-    {% comment %} border: 1px solid #4070F4; {% endcomment %}
+    
   }
 @media (max-width: 991px) {
     .image-info {
@@ -74,216 +73,176 @@ height: 100px;
     }
 </style>
 
-{% comment %} <div class="main-panel"> {% endcomment %}
-    {% comment %} <div class="main-content"> {% endcomment %}
-        <!-- Header -->
-        {% comment %} <div class="header"> {% endcomment %}
-            {% comment %} <div class="main-content"> {% endcomment %}
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="image-info">
-                            <div class="card">
-                                {% comment %} <div class="row justify-content-center"> {% endcomment %}
-                                    <div class="image-content">
-                                        <div class="card-image">
-                                            <a href="#">
-                                                <img src="{{ request.user.profile_pic }}"
-                                                     class="card-img" alt="">
-                                            </a>
-                                        </div>
-                                    </div>
-                                {% comment %} </div> {% endcomment %}
-                                <div class="card-body pt-0">
-                                    <div class="row">
-                                        <div class="center">
-                                            <div class="profile-card-subtitle">
-                                                <div class="text-center">
-                                                    <h3 class="text-primary">
-                                                        <b>{{ user.first_name }} {{ user.last_name }}</b>
-                                                    </h3>
-
-                                                    {{ request.user.email }} <br>
-                                                    +977 {{ request.user.phone_number }}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div> 
+    <div class="container-fluid">
+        <div class="row">
+            <div class="image-info">
+                <div class="card">
+                        <div class="image-content">
+                            <div class="card-image">
+                                <a href="#">
+                                    <img src="{{ request.user.profile_pic }}"
+                                            class="card-img" alt="">
+                                </a>
                             </div>
                         </div>
+                
+                    <div class="card-body pt-0">
+                        <div class="row">
+                            <div class="center">
+                                <div class="profile-card-subtitle">
+                                    <div class="text-center">
+                                        <h3 class="text-primary">
+                                            <b>{{ user.first_name }} {{ user.last_name }}</b>
+                                        </h3>
 
-                        <div class="col-xl-8">
-                            <form method="POST" enctype="multipart/form-data">
-                                {% csrf_token %}
-                                <div class="card">
-                                    <p>
-                                    <div class="card-body">
-                                        {% comment %} <div class="pl-lg-4"> {% endcomment %}
-                                            {% comment %} <div class="row">
-                                                <div class="col-lg-6">
-                                                    <div class="form-group focused">
-                                                        <label class="text-l font-weight-bold text-primary text-uppercase mb-1"
-                                                               for="input-username">Username</label>
-                                                        <input readonly type="text"
-                                                               id="input-username"
-                                                               class="form-control form-control-alternative"
-                                                               placeholder="{{ user.username }}">
-                                                    </div>
-                                                </div>
-                                                <div class="col-lg-6">
-                                                    <div class="form-group">
-                                                        <label class="text-l font-weight-bold text-primary text-uppercase mb-1"
-                                                               for="input-email">Email
-                                                            Address</label>
-                                                        <input readonly type="email"
-                                                               id="input-email"
-                                                               class="form-control form-control-alternative"
-                                                               placeholder="{{ user.email }}">
-                                                    </div>
-                                                </div>
-                                            </div> {% endcomment %}
-                                            <div class="row">
-                                                <div class="col-lg-6">
-                                                    <div class="form-group focused">
-                                                        <label class="text-l font-weight-bold text-primary text-uppercase mb-1"
-                                                               for="input-first-name">First
-                                                            Name</label>
-                                                        {{ form.first_name|add_class:"form-control form-control-alternative" }}
-                                                        {{ form.first_name.errors }}
-                                                    </div>
-                                                </div>
-                                                <div class="col-lg-6">
-                                                    <div class="form-group">
-                                                        <label class="text-l font-weight-bold text-primary text-uppercase mb-1"
-                                                               for="input-last-name">Last
-                                                            Name</label>
-                                                        {{ form.last_name|add_class:"form-control form-control-alternative" }}
-                                                        {{ form.last_name.errors }}
-                                                    </div>
-                                                </div>
-                                            </div><br>
-                                            <div class="row">
-                                                <div class="col-lg-6">
-                                                    <div class="form-group">
-                                                        <label class="text-l font-weight-bold text-primary text-uppercase mb-1"
-                                                               for="input-email">Email
-                                                            Address</label>
-                                                        <input readonly type="email"
-                                                               id="input-email"
-                                                               class="form-control form-control-alternative"
-                                                               {{ form.email |add_class:"form-control form-control-alternative"}}
-                                                    </div>
-                                                </div>
-                                                <div class="col-lg-6">
-                                                    <div class="form-group">
-                                                        <label class="text-l font-weight-bold text-primary text-uppercase mb-1"
-                                                               for="input-date">Password
-                                                            </label>
-                                                            <input type="password" id="password" class="form-control form-control-alternative"
-                                                            {{ form.password|add_class:"form-control form-control-alternative" }}
-                                                            {{ form.password.errors }}
-                                                            <div id="password-message"></div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <hr class="my-1">
-                                        <br>
-                                        {% comment %} <div class="pl-lg-4"> {% endcomment %}
-                                            {% comment %} <div class="row">
-                                                <div class="col-md-12">
-                                                    <div class="form-group focused">
-                                                        <label class="text-l font-weight-bold text-primary text-uppercase mb-1"
-                                                               for="input-address">Address</label>
-                                                        {{ form.address|add_class:"form-control form-control-alternative" }}
-                                                        {{ form.address.errors }}
-                                                    </div>
-                                                </div>
-                                            </div> {% endcomment %}
-                                            <div class="row">
-
-                                                <div class="col-md-12">
-                                                    <div class="form-group">
-                                                        <label class="text-l font-weight-bold text-primary text-uppercase mb-1"
-                                                               for="input-address">
-                                                            Address</label>
-                                                            {{ form.address|add_class:"form-control form-control-alternative" }}
-                                                            {{ form.address.errors }}
-                                                    </div>
-                                                </div>
-                                            </div><br>
-                                            <div class="row">
-                                                <div class="col-lg-6">
-                                                    <div class="form-group">
-                                                        <label class="text-l font-weight-bold text-primary text-uppercase mb-1"
-                                                               for="input-date">Date of Birth
-                                                            </label>
-                                                        {{ form.dob|add_class:"form-control form-control-alternative" }}
-                                                        {{ form.dob.errors }}
-                                                    </div>
-                                                </div>
-                                                <div class="col-lg-6">
-                                                    <div class="form-group">
-                                                        <label class="text-l font-weight-bold text-primary text-uppercase mb-1"
-                                                               for="input-age">Age
-                                                            </label>
-                                                            <input readonly type="text"
-                                                            id="input-age"
-                                                            class="form-control form-control-alternative"
-                                                            placeholder="{{ age }}">
-                                                    </div>
-                                                </div>
-                                            </div><br>
-                                            <div class="row">
-                                                <div class="col-lg-6">
-                                                    <div class="form-group">
-                                                        <label class="text-l font-weight-bold text-primary text-uppercase mb-1"
-                                                               for="input-date">Gender
-                                                            </label>
-                                                        {{ form.gender|add_class:"form-control form-control-alternative" }}
-                                                        {{ form.gender.errors }}
-                                                    </div>
-                                                </div>
-                                                <div class="col-lg-6">
-                                                    <div class="form-group">
-                                                        <label class="text-l font-weight-bold text-primary text-uppercase mb-1"
-                                                               for="input-phone_number">Phone Number
-                                                            </label>
-                                                        {{ form.phone_number|add_class:"form-control form-control-alternative" }}
-                                                        {{ form.phone_number.errors }}
-                                                    </div>
-                                                </div>
-                                            </div><br>
-
-                                            
-                                                <div class="col-md-12">
-                                                    <div class="form-group">
-                                                        <label class="text-l font-weight-bold text-primary text-uppercase mb-1"
-                                                               for="input-image">Profile
-                                                            Picture</label>
-                                                        {{ form.profile_pic|add_class:"form-control form-control-alternative" }}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div><br>
-
-                                    <div class="form-group text-center">
-                                        <button class="btn btn-primary" type="submit" onclick="return confirm('After a successful profile update:\n\nYour session would be terminated\nYou would be required to login again')">
-                                            Update Profile
-                                        </button>
-                                    </div>
-                                    <div>
-                                        <br><br>
+                                        {{ request.user.email }} <br>
+                                        +977 {{ request.user.phone_number }}
                                     </div>
                                 </div>
-                            </form>
+                            </div>
+                        </div>
+                    </div> 
+                </div>
+            </div>
+
+            <div class="col-xl-8">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="card">
+                    <p>
+                    <div class="card-body">
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="form-group focused">
+                                        <label class="text-l font-weight-bold text-primary text-uppercase mb-1"
+                                                for="input-first-name">First
+                                            Name</label>
+                                        {{ form.first_name|add_class:"form-control form-control-alternative" }}
+                                        {{ form.first_name.errors }}
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label class="text-l font-weight-bold text-primary text-uppercase mb-1"
+                                                for="input-last-name">Last
+                                            Name</label>
+                                        {{ form.last_name|add_class:"form-control form-control-alternative" }}
+                                        {{ form.last_name.errors }}
+                                    </div>
+                                </div>
+                            </div><br>
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label class="text-l font-weight-bold text-primary text-uppercase mb-1"
+                                                for="input-email">Email
+                                            Address</label>
+                                        <input readonly type="email"
+                                                id="input-email"
+                                                class="form-control form-control-alternative"
+                                                {{ form.email |add_class:"form-control form-control-alternative"}}
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label class="text-l font-weight-bold text-primary text-uppercase mb-1"
+                                                for="input-date">Password
+                                            </label>
+                                            <input type="password" id="password" class="form-control form-control-alternative"
+                                            {{ form.password|add_class:"form-control form-control-alternative" }}
+                                            {{ form.password.errors }}
+                                            <div id="password-message"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr class="my-1">
+                        <br>
+                               
+                        <div class="row">
+
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="text-l font-weight-bold text-primary text-uppercase mb-1"
+                                            for="input-address">
+                                        Address</label>
+                                        {{ form.address|add_class:"form-control form-control-alternative" }}
+                                        {{ form.address.errors }}
+                                </div>
+                            </div>
+                        </div><br>
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label class="text-l font-weight-bold text-primary text-uppercase mb-1"
+                                            for="input-date">Date of Birth
+                                        </label>
+                                    {{ form.dob|add_class:"form-control form-control-alternative" }}
+                                    {{ form.dob.errors }}
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label class="text-l font-weight-bold text-primary text-uppercase mb-1"
+                                            for="input-age">Age
+                                        </label>
+                                        <input readonly type="text"
+                                        id="input-age"
+                                        class="form-control form-control-alternative"
+                                        placeholder="{{ age }}">
+                                </div>
+                            </div>
+                        </div><br>
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label class="text-l font-weight-bold text-primary text-uppercase mb-1"
+                                            for="input-date">Gender
+                                        </label>
+                                    {{ form.gender|add_class:"form-control form-control-alternative" }}
+                                    {{ form.gender.errors }}
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label class="text-l font-weight-bold text-primary text-uppercase mb-1"
+                                            for="input-phone_number">Phone Number
+                                        </label>
+                                    {{ form.phone_number|add_class:"form-control form-control-alternative" }}
+                                    {{ form.phone_number.errors }}
+                                </div>
+                            </div>
+                        </div><br>
+
+                        
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="text-l font-weight-bold text-primary text-uppercase mb-1"
+                                        for="input-image">Profile
+                                    Picture</label>
+                                {{ form.profile_pic|add_class:"form-control form-control-alternative" }}
+                            </div>
+                        </div>
                         </div>
                     </div>
+                </div><br>
+
+                <div class="form-group text-center">
+                    <button class="btn btn-primary" type="submit" onclick="return confirm('After a successful profile update:\n\nYour session would be terminated\nYou would be required to login again')">
+                        Update Profile
+                    </button>
                 </div>
+                <div>
+                    <br><br>
+                </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
+    </div>
+</div>
+</div>
 
  
 
